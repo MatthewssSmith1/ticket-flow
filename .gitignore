@@ -1,6 +1,7 @@
 .env
 .env.local
 .cursorrules
+docs/
 
 logs
 *.log
