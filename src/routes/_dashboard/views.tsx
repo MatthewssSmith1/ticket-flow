@@ -28,11 +28,28 @@ function Views() {
       </section>
       <section>
         <h1 className="text-2xl font-bold">Messages</h1>
-        <ul>
-          {tickets && tickets.map((ticket, index) => (
-            <li key={index}>{ticket.title}</li>
-          ))}
-        </ul>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left p-2">Status</th>
+              <th className="text-left p-2">Subject</th>
+              <th className="text-left p-2">Description</th>
+              <th className="text-left p-2">Email</th>
+              <th className="text-left p-2">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tickets && tickets.map((ticket) => (
+              <tr key={ticket.id} className="border-b">
+                <td className="p-2">{ticket.status}</td>
+                <td className="p-2">{ticket.subject}</td>
+                <td className="p-2">{ticket.description}</td>
+                <td className="p-2">{ticket.email || '-'}</td>
+                <td className="p-2">{ticket.name || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
     </main>
   )

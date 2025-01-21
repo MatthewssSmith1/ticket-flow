@@ -21,7 +21,7 @@ function PublicLayout() {
 
 const navLinks = linkOptions([
   { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' },
+  { to: '/ticket', label: 'Submit ticket' },
   { to: '/home', label: 'Dashboard' },
 ])
 

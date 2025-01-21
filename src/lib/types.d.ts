@@ -1,5 +1,5 @@
 export type Member = {
-  id: number;
+  id: number; // incrementing int
   org_id: string; // uuid
   user_id: string; // uuid
   role: Role;
@@ -7,16 +7,19 @@ export type Member = {
 };
 
 export type Ticket = {
-  id: number;
+  id: string; // uuid
   org_id: string; // uuid
-  creator_id: number;
+  author_id: number | null;
   assignee_id: number | null;
   status: Status;
-  title: string;
-  content: string;
+  subject: string;
+  description: string;
+  email: string | null;
+  name: string | null;
   metadata: any;
   created_at: string;
   updated_at: string;
+  verified_at: string | null;
 };
 
 export type Role = 'OWNER' | 'ADMIN' | 'AGENT' | 'CUSTOMER';

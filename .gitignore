@@ -1,6 +1,8 @@
 .env
 .env.local
+.env.prod
 .cursorrules
+.cursorignore
 docs/
 
 logs

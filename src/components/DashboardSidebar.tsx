@@ -3,7 +3,7 @@ import {
   Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroupLabel,
   SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton
 } from '@/components/ui/sidebar'
-import { Building, ChevronsUpDown, Home, Plus, Tags, UserIcon, Users, LogOutIcon } from 'lucide-react'
+import { Building, ChevronsUpDown, Home, Plus, Tags, UserIcon, Users, LogOutIcon, Ticket } from 'lucide-react'
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -78,8 +78,9 @@ function Header() {
 }
 
 const footerLinks = linkOptions([
-  { to: '/profile', label: 'Profile', separator: false, icon: UserIcon },
   { to: '/', label: 'Landing Page', separator: false, icon: Home },
+  { to: '/ticket', label: 'Submit ticket', separator: false, icon: Ticket },
+  { to: '/profile', label: 'Profile', separator: false, icon: UserIcon },
   { to: '/logout', label: 'Logout', separator: true, icon: LogOutIcon },
 ])
 

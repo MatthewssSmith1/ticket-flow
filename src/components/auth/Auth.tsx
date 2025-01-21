@@ -1,17 +1,12 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Link } from "@tanstack/react-router"
 import { z } from 'zod'
 
 export const authSchema = z.object({
   email: z.string().email('Please enter a valid email'),
-  password: z.string()
-    .refine((val) => {
-      // If password is empty, it's for magic link flow
-      if (!val) return true
-
-      return val.length >= 6
-    }, 'Password must be at least 6 characters')
+  // empty password iff magic link flow
+  password: z.string().refine((val) => !val || val.length >= 6, 'Password must be at least 6 characters')
 })
 
 export type Credentials = z.infer<typeof authSchema>
@@ -26,7 +21,7 @@ export default function Auth({ children, title }: AuthProps) {
     <main className="min-h-screen grid place-items-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <h1 className="text-2xl font-semibold text-center">{title}</h1>
+          <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent className="[&>form]:space-y-4">
           {children}

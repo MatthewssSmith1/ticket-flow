@@ -14,7 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as PublicImport } from './routes/_public'
 import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as PublicIndexImport } from './routes/_public/index'
-import { Route as PublicAboutImport } from './routes/_public/about'
+import { Route as PublicTicketImport } from './routes/_public/ticket'
 import { Route as DashboardViewsImport } from './routes/_dashboard/views'
 import { Route as DashboardProfileImport } from './routes/_dashboard/profile'
 import { Route as DashboardHomeImport } from './routes/_dashboard/home'
@@ -41,9 +41,9 @@ const PublicIndexRoute = PublicIndexImport.update({
   getParentRoute: () => PublicRoute,
 } as any)
 
-const PublicAboutRoute = PublicAboutImport.update({
-  id: '/about',
-  path: '/about',
+const PublicTicketRoute = PublicTicketImport.update({
+  id: '/ticket',
+  path: '/ticket',
   getParentRoute: () => PublicRoute,
 } as any)
 
@@ -156,11 +156,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardViewsImport
       parentRoute: typeof DashboardImport
     }
-    '/_public/about': {
-      id: '/_public/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof PublicAboutImport
+    '/_public/ticket': {
+      id: '/_public/ticket'
+      path: '/ticket'
+      fullPath: '/ticket'
+      preLoaderRoute: typeof PublicTicketImport
       parentRoute: typeof PublicImport
     }
     '/_public/': {
@@ -194,12 +194,12 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 )
 
 interface PublicRouteChildren {
-  PublicAboutRoute: typeof PublicAboutRoute
+  PublicTicketRoute: typeof PublicTicketRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
-  PublicAboutRoute: PublicAboutRoute,
+  PublicTicketRoute: PublicTicketRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 
@@ -215,7 +215,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof DashboardHomeRoute
   '/profile': typeof DashboardProfileRoute
   '/views': typeof DashboardViewsRoute
-  '/about': typeof PublicAboutRoute
+  '/ticket': typeof PublicTicketRoute
   '/': typeof PublicIndexRoute
 }
 
@@ -228,7 +228,7 @@ export interface FileRoutesByTo {
   '/home': typeof DashboardHomeRoute
   '/profile': typeof DashboardProfileRoute
   '/views': typeof DashboardViewsRoute
-  '/about': typeof PublicAboutRoute
+  '/ticket': typeof PublicTicketRoute
   '/': typeof PublicIndexRoute
 }
 
@@ -243,7 +243,7 @@ export interface FileRoutesById {
   '/_dashboard/home': typeof DashboardHomeRoute
   '/_dashboard/profile': typeof DashboardProfileRoute
   '/_dashboard/views': typeof DashboardViewsRoute
-  '/_public/about': typeof PublicAboutRoute
+  '/_public/ticket': typeof PublicTicketRoute
   '/_public/': typeof PublicIndexRoute
 }
 
@@ -258,7 +258,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/profile'
     | '/views'
-    | '/about'
+    | '/ticket'
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -270,7 +270,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/profile'
     | '/views'
-    | '/about'
+    | '/ticket'
     | '/'
   id:
     | '__root__'
@@ -283,7 +283,7 @@ export interface FileRouteTypes {
     | '/_dashboard/home'
     | '/_dashboard/profile'
     | '/_dashboard/views'
-    | '/_public/about'
+    | '/_public/ticket'
     | '/_public/'
   fileRoutesById: FileRoutesById
 }
@@ -333,7 +333,7 @@ export const routeTree = rootRoute
     "/_public": {
       "filePath": "_public.tsx",
       "children": [
-        "/_public/about",
+        "/_public/ticket",
         "/_public/"
       ]
     },
@@ -362,8 +362,8 @@ export const routeTree = rootRoute
       "filePath": "_dashboard/views.tsx",
       "parent": "/_dashboard"
     },
-    "/_public/about": {
-      "filePath": "_public/about.tsx",
+    "/_public/ticket": {
+      "filePath": "_public/ticket.tsx",
       "parent": "/_public"
     },
     "/_public/": {
