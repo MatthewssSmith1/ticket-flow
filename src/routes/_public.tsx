@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Link, Outlet, linkOptions } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_public')({
   component: PublicLayout,
@@ -7,23 +7,10 @@ export const Route = createFileRoute('/_public')({
 function PublicLayout() {
   return (
     <div className="min-h-screen">
-      <nav className="border-b">
-        <div className="container mx-auto px-4 py-2 flex gap-4">
-          <Link to="/" className="[&.active]:font-bold">
-            Home
-          </Link>
-          <Link to="/about" className="[&.active]:font-bold">
-            About
-          </Link>
-          <Link to="/dashboard" className="[&.active]:font-bold">
-            Dashboard
-          </Link>
-          <div className="ml-auto">
-            <Link to="/login" className="[&.active]:font-bold">
-              Login
-            </Link>
-          </div>
-        </div>
+      <nav className="border-b container mx-auto px-4 py-2 flex gap-4">
+        <NavLinks />
+        <div className="flex-1" />
+        <AuthLinks />
       </nav>
       <main className="container mx-auto px-4 py-8">
         <Outlet />
@@ -31,3 +18,34 @@ function PublicLayout() {
     </div>
   )
 } 
+
+const navLinks = linkOptions([
+  { to: '/', label: 'Home' },
+  { to: '/about', label: 'About' },
+  { to: '/home', label: 'Dashboard' },
+])
+
+function NavLinks() {
+  return (
+    <>
+      {navLinks.map((link, index) => (
+        <Link key={index} to={link.to} activeProps={{ className: 'font-bold' }}>
+          {link.label}
+        </Link>
+      ))}
+    </>
+  )
+}
+
+function AuthLinks() {
+  const { user } = Route.useRouteContext()
+
+  if (user) return <Link to="/logout">Logout</Link>
+
+  return (
+    <>
+      <Link to="/login">Login</Link>
+      <Link to="/signup">Signup</Link>
+    </>
+  )
+}
