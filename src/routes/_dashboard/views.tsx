@@ -1,8 +1,8 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { queryClient } from '@/main'
-import { supabase } from '@/lib/supabase'
-import { Ticket } from '@/lib/types'
+import { Ticket } from '@/types/types'
+import supabase from '@/lib/supabase'
 
 const ticketsQueryOptions = queryOptions({
   queryKey: ['tickets'],

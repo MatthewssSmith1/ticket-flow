@@ -4,10 +4,10 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '@/components/ui/textarea'
-import { supabase } from '@/lib/supabase'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import supabase from '@/lib/supabase'
 import { z } from 'zod'
 
 const ticketSchema = z.object({
@@ -45,14 +45,15 @@ function TicketForm() {
 
       if (result.error) throw result.error
 
-      const { data: inviteData, error: inviteError } = await supabase.functions.invoke(
+      // const { data: inviteData, error: inviteError } = 
+      await supabase.functions.invoke(
         'send-ticket-invite',
         { body: { email: formData.email } }
       )
 
-      if (inviteError) throw inviteError
+      // if (inviteError) throw inviteError
 
-      return inviteData
+      // return inviteData
     },
     onSuccess: async () => {
       navigate({ to: '/' })

@@ -1,14 +1,14 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import {
   Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroupLabel,
-  SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton
+  SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton, SidebarMenu
 } from '@/components/ui/sidebar'
 import { Building, ChevronsUpDown, Home, Plus, Tags, UserIcon, Users, LogOutIcon, Ticket } from 'lucide-react'
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Button } from '@/components/ui/button'
 import { Fragment } from "react/jsx-runtime"
+import { Button } from '@/components/ui/button'
 
 export function DashboardSidebar() {
   return (
@@ -35,16 +35,18 @@ function PagesGroup() {
     <SidebarGroup>
       <SidebarGroupLabel>Pages</SidebarGroupLabel>
       <SidebarGroupContent>
-        {pageLinks.map(({ to, label, icon: Icon }, index) => (
-          <SidebarMenuItem key={index}>
-            <SidebarMenuButton asChild>
-              <Link to={to} className="flex items-center gap-2">
-                <Icon className="mr-1 size-4" />
-                <span>{label}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
+        <SidebarMenu>
+          {pageLinks.map(({ to, label, icon: Icon }, index) => (
+            <SidebarMenuItem key={index}>
+              <SidebarMenuButton asChild>
+                <Link to={to}>
+                  <Icon className="mr-2 size-4" />
+                  <span>{label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
   )

@@ -1,6 +1,6 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 // import { TanStackRouterDevtools } from '@tanstack/router-devtools'
-import { getUser } from '@/lib/utils'
+import { getUser } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
 
 interface RootContext {

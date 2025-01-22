@@ -16,11 +16,11 @@ CREATE TABLE IF NOT EXISTS public.tickets (
     status public.ticket_status DEFAULT 'NEW' NOT NULL,
     subject text NOT NULL,
     description text NOT NULL,
-    created_at timestamptz DEFAULT now() NOT NULL,
-    updated_at timestamptz DEFAULT now() NOT NULL,
-    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
     email text,
     name text,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamptz DEFAULT now() NOT NULL,
+    updated_at timestamptz DEFAULT now() NOT NULL,
     verified_at timestamptz,
     PRIMARY KEY (id)
 );

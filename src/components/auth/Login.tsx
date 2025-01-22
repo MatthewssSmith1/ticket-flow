@@ -1,12 +1,12 @@
 import Auth, { Divider, NavText, authSchema, Credentials } from "@/components/auth/Auth"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from "@tanstack/react-router"
-import { supabase } from '@/lib/supabase'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import supabase from '@/lib/supabase'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
