@@ -9,18 +9,17 @@ CREATE TYPE public.ticket_status AS ENUM (
 );
 
 CREATE TABLE IF NOT EXISTS public.tickets (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     org_id uuid NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
     author_id bigint REFERENCES public.members(id) ON DELETE SET NULL,
     assignee_id bigint REFERENCES public.members(id) ON DELETE SET NULL,
-    status public.ticket_status DEFAULT 'NEW' NOT NULL,
+    status public.ticket_status NOT NULL DEFAULT 'NEW',
     subject text NOT NULL,
     description text NOT NULL,
     email text,
     name text,
-    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
-    created_at timestamptz DEFAULT now() NOT NULL,
-    updated_at timestamptz DEFAULT now() NOT NULL,
-    verified_at timestamptz,
-    PRIMARY KEY (id)
+    metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    verified_at timestamptz
 );

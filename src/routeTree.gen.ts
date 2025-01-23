@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as PublicImport } from './routes/_public'
 import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as PublicIndexImport } from './routes/_public/index'
+import { Route as PublicVerifyTicketImport } from './routes/_public/verify-ticket'
 import { Route as PublicTicketImport } from './routes/_public/ticket'
 import { Route as DashboardViewsImport } from './routes/_dashboard/views'
 import { Route as DashboardProfileImport } from './routes/_dashboard/profile'
@@ -38,6 +39,12 @@ const DashboardRoute = DashboardImport.update({
 const PublicIndexRoute = PublicIndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PublicRoute,
+} as any)
+
+const PublicVerifyTicketRoute = PublicVerifyTicketImport.update({
+  id: '/verify-ticket',
+  path: '/verify-ticket',
   getParentRoute: () => PublicRoute,
 } as any)
 
@@ -163,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicTicketImport
       parentRoute: typeof PublicImport
     }
+    '/_public/verify-ticket': {
+      id: '/_public/verify-ticket'
+      path: '/verify-ticket'
+      fullPath: '/verify-ticket'
+      preLoaderRoute: typeof PublicVerifyTicketImport
+      parentRoute: typeof PublicImport
+    }
     '/_public/': {
       id: '/_public/'
       path: '/'
@@ -195,11 +209,13 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 interface PublicRouteChildren {
   PublicTicketRoute: typeof PublicTicketRoute
+  PublicVerifyTicketRoute: typeof PublicVerifyTicketRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicTicketRoute: PublicTicketRoute,
+  PublicVerifyTicketRoute: PublicVerifyTicketRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 
@@ -216,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof DashboardProfileRoute
   '/views': typeof DashboardViewsRoute
   '/ticket': typeof PublicTicketRoute
+  '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
 }
 
@@ -229,6 +246,7 @@ export interface FileRoutesByTo {
   '/profile': typeof DashboardProfileRoute
   '/views': typeof DashboardViewsRoute
   '/ticket': typeof PublicTicketRoute
+  '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
 }
 
@@ -244,6 +262,7 @@ export interface FileRoutesById {
   '/_dashboard/profile': typeof DashboardProfileRoute
   '/_dashboard/views': typeof DashboardViewsRoute
   '/_public/ticket': typeof PublicTicketRoute
+  '/_public/verify-ticket': typeof PublicVerifyTicketRoute
   '/_public/': typeof PublicIndexRoute
 }
 
@@ -259,6 +278,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/views'
     | '/ticket'
+    | '/verify-ticket'
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -271,6 +291,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/views'
     | '/ticket'
+    | '/verify-ticket'
     | '/'
   id:
     | '__root__'
@@ -284,6 +305,7 @@ export interface FileRouteTypes {
     | '/_dashboard/profile'
     | '/_dashboard/views'
     | '/_public/ticket'
+    | '/_public/verify-ticket'
     | '/_public/'
   fileRoutesById: FileRoutesById
 }
@@ -334,6 +356,7 @@ export const routeTree = rootRoute
       "filePath": "_public.tsx",
       "children": [
         "/_public/ticket",
+        "/_public/verify-ticket",
         "/_public/"
       ]
     },
@@ -364,6 +387,10 @@ export const routeTree = rootRoute
     },
     "/_public/ticket": {
       "filePath": "_public/ticket.tsx",
+      "parent": "/_public"
+    },
+    "/_public/verify-ticket": {
+      "filePath": "_public/verify-ticket.tsx",
       "parent": "/_public"
     },
     "/_public/": {

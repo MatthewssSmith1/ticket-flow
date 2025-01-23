@@ -103,7 +103,7 @@ function Footer() {
                   {user.email?.[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col items-start text-sm min-w-0 overflow-hidden [&>span]:truncate [&>span]:w-full [&>span]:text-left">
+              <div className="flex flex-col items-start text-sm min-w-0 mr-auto overflow-hidden [&>span]:truncate [&>span]:w-full [&>span]:text-left">
                 <span className="font-medium">{user.email?.split('@')[0]}</span>
                 <span className="text-xs text-muted-foreground">{user.email}</span>
               </div>

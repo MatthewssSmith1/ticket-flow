@@ -22,10 +22,10 @@ function Views() {
   const { data: tickets } = useSuspenseQuery(ticketsQueryOptions)
 
   return (
-    <main className="grid grid-cols-[1fr_2fr]">
-      <section>
+    <main className="grid grid-cols-[1fr]">
+      {/* <section>
         <h1 className="text-2xl font-bold">Views</h1>
-      </section>
+      </section> */}
       <section>
         <h1 className="text-2xl font-bold">Messages</h1>
         <table className="w-full border-collapse">

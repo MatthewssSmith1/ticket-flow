@@ -1,0 +1,9 @@
+// validation shared across frontend and edge functions
+
+export const createTicketSchema = (z: any) => z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  subject: z.string().min(2, 'Subject must be at least 2 characters'),
+  description: z.string().min(5, 'Please provide more details'),
+  org_id: z.string().uuid().optional(),
+})

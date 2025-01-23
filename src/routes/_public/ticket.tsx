@@ -1,22 +1,18 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createTicketSchema } from '@shared/validation'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '@/components/ui/textarea'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/hooks/use-toast'
 import supabase from '@/lib/supabase'
 import { z } from 'zod'
 
-const ticketSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  subject: z.string().min(2, 'Subject must be at least 2 characters'),
-  description: z.string().min(10, 'Please provide more details'),
-})
-
+const ticketSchema = createTicketSchema(z)
 type TicketForm = z.infer<typeof ticketSchema>
 
 export const Route = createFileRoute('/_public/ticket')({
@@ -24,12 +20,14 @@ export const Route = createFileRoute('/_public/ticket')({
 })
 
 function TicketForm() {
+  const { user } = Route.useRouteContext()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const form = useForm<TicketForm>({
     resolver: zodResolver(ticketSchema),
     defaultValues: {
-      name: 'John Doe',
-      email: 'john@doe.com',
+      name: user ? '' : 'John Doe',
+      email: user?.email ?? 'john@example.com',
       subject: 'Sign in issue',
       description: 'I cannot sign in to my account.',
     },
@@ -37,27 +35,46 @@ function TicketForm() {
 
   const mutation = useMutation({
     mutationFn: async (formData: TicketForm) => {
-      // TODO: store org_id in route context
-      // consider moving insertion to the end function
-      const result = await supabase.from('tickets').insert(
-        { ...formData, org_id: '7e7a9db6-d2bc-44a4-95b1-21df9400b7a7' }
-      ).select()
+      // TODO: store org_id in the route context
+      const body = { 
+        ...formData,
+        org_id: '7e7a9db6-d2bc-44a4-95b1-21df9400b7a7'
+      }
 
-      if (result.error) throw result.error
+      const { data, error } = await supabase.functions.invoke('send-ticket-invite', { body })
+      if (error) throw error
 
-      // const { data: inviteData, error: inviteError } = 
-      await supabase.functions.invoke(
-        'send-ticket-invite',
-        { body: { email: formData.email } }
-      )
-
-      // if (inviteError) throw inviteError
-
-      // return inviteData
+      return data
     },
-    onSuccess: async () => {
-      navigate({ to: '/' })
+    onSuccess: (data) => {
+      if (data.status === 'AUTHENTICATED') {
+        navigate({ to: '/home' })
+      } else {
+        toast({
+          title: 'Check your email',
+          description: 'We\'ve sent you a link to verify your ticket and create your account.',
+        })
+      }
     },
+    onError: (error: any) => {
+      console.log('error', error)
+      if (error.message?.includes('NEEDS_AUTH')) {
+        navigate({ 
+          to: '/login',
+          search: { 
+            redirect: '/ticket',
+            email: form.getValues('email')
+          }
+        })
+        return
+      }
+
+      toast({
+        title: 'Error',
+        description: error.message || 'Something went wrong. Please try again.',
+        variant: 'destructive'
+      })
+    }
   })
 
   const onSubmit = (data: TicketForm) => mutation.mutate(data)
@@ -137,12 +154,6 @@ function TicketForm() {
             >
               {mutation.isPending ? 'Submitting...' : 'Submit Ticket'}
             </Button>
-
-            {mutation.isError && (
-              <p className="text-red-500 text-center">
-                {mutation.error.message || 'Something went wrong. Please try again.'}
-              </p>
-            )}
           </form>
         </Form>
       </CardContent>
