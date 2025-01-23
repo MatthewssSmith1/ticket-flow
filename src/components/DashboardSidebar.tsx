@@ -7,6 +7,8 @@ import { Building, ChevronsUpDown, Home, Plus, Tags, UserIcon, Users, LogOutIcon
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { useOrgStore } from '@/stores/orgStore'
+import { useEffect } from 'react'
 import { Fragment } from "react/jsx-runtime"
 import { Button } from '@/components/ui/button'
 
@@ -53,21 +55,45 @@ function PagesGroup() {
 }
 
 function Header() {
+  const dashboardRoute = getRouteApi('/_dashboard')
+  const { user } = dashboardRoute.useRouteContext()
+  const { orgs, currentOrg, setCurrentOrg, loadOrgs } = useOrgStore()
+
+  useEffect(() => {
+    if (user && orgs.length === 0) loadOrgs(user.id);
+  }, [user, orgs, loadOrgs]);
+
+  if (!orgs?.length) {
+    return (
+      <SidebarHeader>
+        <Button variant="ghost" className="w-full justify-start" disabled>
+          <Building className="mr-2 h-4 w-4" />
+          <span className="flex-1 text-left">No Organizations</span>
+        </Button>
+      </SidebarHeader>
+    )
+  }
+
   return (
     <SidebarHeader>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="w-full justify-start">
             <Building className="mr-2 h-4 w-4" />
-            <span className="flex-1 text-left">First Org</span>
+            <span className="flex-1 text-left">{currentOrg?.name}</span>
             <ChevronsUpDown className="h-4 w-4 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
-          <DropdownMenuItem>
-            <Building className="mr-2 h-4 w-4" />
-            First Org
-          </DropdownMenuItem>
+          {orgs.map((org) => (
+            <DropdownMenuItem 
+              key={org.id} 
+              onSelect={() => setCurrentOrg(org)}
+            >
+              <Building className="mr-2 h-4 w-4" />
+              {org.name}
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem disabled>
             <Plus className="mr-2 h-4 w-4" />

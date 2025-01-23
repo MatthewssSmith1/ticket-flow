@@ -6,14 +6,13 @@ import { User } from '@supabase/supabase-js'
 
 export type Context = {
   user: User | null
-  orgIds: string[]
 }
 
 export const Route = createRootRouteWithContext<Context>()({
   beforeLoad: async () => ({ user: await getUser() }),
   component: () => (<>
     <Outlet />
-    {/* <TanStackRouterDevtools /> */}
     <Toaster />
+    {/* <TanStackRouterDevtools /> */}
   </>),
 })
