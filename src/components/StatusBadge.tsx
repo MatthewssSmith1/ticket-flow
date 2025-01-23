@@ -1,5 +1,5 @@
-import { Badge } from '@/components/ui/badge'
 import { Status } from '@/types/types'
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 const colors: Record<Status, string> = {
@@ -18,8 +18,8 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   return (
-    <Badge className={cn(colors[status], 'rounded-full font-semibold')}>
-      {status.toLowerCase()}
+    <Badge className={cn(colors[status], 'rounded-full font-semibold select-none')}>
+      {status.toLowerCase().replace('_', ' ')}
     </Badge>
   )
 }

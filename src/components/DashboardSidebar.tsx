@@ -28,7 +28,7 @@ export function DashboardSidebar() {
 
 const pageLinks = linkOptions([
   { to: '/home', label: 'Home', icon: Home },
-  { to: '/views', label: 'Views', icon: Tags },
+  { to: '/tickets', label: 'Tickets', icon: Tags },
   { to: '/customers', label: 'Customers', icon: Users },
 ])
 
@@ -41,7 +41,7 @@ function PagesGroup() {
           {pageLinks.map(({ to, label, icon: Icon }, index) => (
             <SidebarMenuItem key={index}>
               <SidebarMenuButton asChild>
-                <Link to={to}>
+                <Link to={to} activeProps={{ className: 'bg-accent' }} className="transition-colors">
                   <Icon className="mr-2 size-4" />
                   <span>{label}</span>
                 </Link>
