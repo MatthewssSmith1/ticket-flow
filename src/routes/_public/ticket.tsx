@@ -2,14 +2,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { createTicketSchema } from '@shared/validation'
+import supabase, { unwrap } from '@/lib/supabase'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/hooks/use-toast'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useToast } from '@/hooks/use-toast'
-import supabase from '@/lib/supabase'
 import { z } from 'zod'
 
 const ticketSchema = createTicketSchema(z)
@@ -35,43 +35,33 @@ function TicketForm() {
 
   const mutation = useMutation({
     mutationFn: async (formData: TicketForm) => {
-      // TODO: store org_id in the route context
+      // TODO: require org_id in the query params
       const body = { 
         ...formData,
         org_id: '7e7a9db6-d2bc-44a4-95b1-21df9400b7a7'
       }
 
-      const { data, error } = await supabase.functions.invoke('send-ticket-invite', { body })
-      if (error) throw error
+      return await supabase.functions
+        .invoke('send-ticket-invite', { body })
+        .then(unwrap)
+    },
+    onSuccess: ({ shouldRedirect }) => {
+      if (shouldRedirect) return navigate({ to: '/home' })
 
-      return data
+      form.reset()
+
+      toast({
+        title: 'Check your email',
+        description: 'We\'ve sent you a link to verify your ticket and create your account.',
+      })
     },
-    onSuccess: (data) => {
-      if (data.status === 'AUTHENTICATED') {
-        navigate({ to: '/home' })
-      } else {
-        toast({
-          title: 'Check your email',
-          description: 'We\'ve sent you a link to verify your ticket and create your account.',
-        })
-      }
-    },
-    onError: (error: any) => {
-      console.log('error', error)
-      if (error.message?.includes('NEEDS_AUTH')) {
-        navigate({ 
-          to: '/login',
-          search: { 
-            redirect: '/ticket',
-            email: form.getValues('email')
-          }
-        })
-        return
-      }
+    onError: ({ message}) => {
+      if (message?.includes('Please login')) 
+        return navigate({ to: '/login' })
 
       toast({
         title: 'Error',
-        description: error.message || 'Something went wrong. Please try again.',
+        description: message || 'Something went wrong. Please try again.',
         variant: 'destructive'
       })
     }

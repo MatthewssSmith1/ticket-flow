@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import supabase, { unwrap } from '@/lib/supabase'
 import { useEffect } from 'react'
-import supabase from '@/lib/supabase'
+import { toast } from '@/hooks/use-toast'
 import { z } from 'zod'
 
 const searchSchema = z.object({
@@ -22,20 +23,20 @@ function VerifyTicket() {
     async function verifyTicket() {
       if (!user) return
 
-      const { data: ticketData, error: ticketError } = await supabase.from('tickets')
+      const ticket = await supabase
+        .from('tickets')
         .select()
         .eq('id', ticketId)
         .single()
+        .then(unwrap)
 
-      if (ticketError) throw ticketError
+      const authorId = await getOrCreateMember(user.id, ticket.org_id)
 
-      const authorId = await getOrCreateMember(user.id, ticketData.org_id)
-
-      const { error: updateError } = await supabase.from('tickets')
+      await supabase
+        .from('tickets')
         .update({ author_id: authorId, email: null })
         .eq('id', ticketId)
-
-      if (updateError) throw updateError
+        .then(unwrap)
 
       navigate({ to: '/home' })
     }
@@ -43,36 +44,32 @@ function VerifyTicket() {
     try {
       verifyTicket()
     } catch (e: any) {
-      console.log('Error verifying ticket', e)
+      toast({
+        title: 'Error',
+        description: e.message || 'Something went wrong. Please try again.',
+        variant: 'destructive'
+      })
     }
   }, [ticketId, navigate, user])
 
   return <div>Verifying ticket...</div>
 }
 
-async function getOrCreateMember(userId: string, orgId: string): Promise<number> {
-  const { data: member, error: memberError } = await supabase
-    .from('members')
+// TODO: share across backend and frontend
+async function getOrCreateMember(user_id: string, org_id: string) {
+  const member = await supabase.from('members')
     .select()
-    .eq('user_id', userId)
-    .eq('org_id', orgId)
-    .single()
-
-  if (memberError && memberError.code !== 'PGRST116') throw memberError
+    .eq('user_id', user_id)
+    .eq('org_id', org_id)
+    .maybeSingle()
+    .then(unwrap)
 
   if (member) return member.id
 
-  const { data: newMember, error: createError } = await supabase
-    .from('members')
-    .insert({
-      user_id: userId,
-      org_id: orgId,
-      role: 'CUSTOMER'
-    })
-    .select()
-    .single()
-
-  if (createError) throw createError
-
-  return newMember.id
-} 
+  return await supabase.from('members')
+      .insert({ user_id, org_id, role: 'CUSTOMER' })
+      .select()
+      .single()
+      .then(unwrap)
+      .then(member => member.id)
+}

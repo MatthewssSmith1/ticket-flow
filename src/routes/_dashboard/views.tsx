@@ -1,16 +1,13 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import supabase, { unwrap } from '@/lib/supabase'
 import { createFileRoute } from '@tanstack/react-router'
 import { queryClient } from '@/main'
 import { Ticket } from '@/types/types'
-import supabase from '@/lib/supabase'
 
 const ticketsQueryOptions = queryOptions({
   queryKey: ['tickets'],
-  queryFn: async () => {
-    const { data, error } = await supabase.from('tickets').select('*')
-    if (error) throw new Error(error.message)
-    return data as Ticket[]
-  },
+  queryFn: async (): Promise<Ticket[]> => 
+    (await supabase.from('tickets').select('*').then(unwrap)),
 })
 
 export const Route = createFileRoute('/_dashboard/views')({
