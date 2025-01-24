@@ -2,6 +2,7 @@ import { Tables, Enums } from "./database";
 
 export type Ticket = Tables<"tickets">
 export type Member = Tables<"members">
+export type Message = Tables<"messages">
 export type Organization = Tables<"organizations">
 
 export type Role = Enums<"member_role">

@@ -39,7 +39,7 @@ export function EnumSelect({
       onValueChange={handleChange}
       disabled={disabled}
     >
-      <SelectTrigger className="max-w-[125px]">
+      <SelectTrigger className="max-w-[125px] md:max-w-[150px]">
         <SelectValue>
           {currentValue ? <Pill text={currentValue} /> : placeholder}
         </SelectValue>

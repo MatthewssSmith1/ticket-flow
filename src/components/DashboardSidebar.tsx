@@ -34,13 +34,13 @@ const pageLinks = linkOptions([
 function PagesGroup() {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Pages</SidebarGroupLabel>
+      <SidebarGroupLabel className="select-none">Pages</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           {pageLinks.map(({ to, label, icon: Icon }, index) => (
             <SidebarMenuItem key={index}>
               <SidebarMenuButton asChild>
-                <Link to={to} activeProps={{ className: 'bg-accent' }} className="transition-colors">
+                <Link to={to} activeProps={{ className: 'bg-accent' }} className="transition-colors select-none">
                   <Icon className="mr-2 size-4" />
                   <span>{label}</span>
                 </Link>
@@ -80,10 +80,7 @@ function Header() {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           {orgs.map((org) => (
-            <DropdownMenuItem 
-              key={org.id} 
-              onSelect={() => setCurrentOrg(org)}
-            >
+            <DropdownMenuItem key={org.id} onSelect={() => setCurrentOrg(org, user?.id)}>
               <Building className="mr-2 h-4 w-4" />
               {org.name}
             </DropdownMenuItem>

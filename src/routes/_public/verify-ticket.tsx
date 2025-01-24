@@ -11,7 +11,6 @@ const searchSchema = z.object({
 export const Route = createFileRoute('/_public/verify-ticket')({
   validateSearch: searchSchema,
   component: VerifyTicket,
-  beforeLoad: async ({ context }) => console.log('beforeLoad', context.user),
 })
 
 function VerifyTicket() {
