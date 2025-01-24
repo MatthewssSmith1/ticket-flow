@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_dashboard/tickets')({
     if (!id) return { ticket: null }
 
     return { 
-      ticket: await supabase.from('tickets').select('*').eq('id', id).single().then(unwrap)
+      ticket: await supabase.from('tickets').select('*, tickets_members(member_id)').eq('id', id).single().then(unwrap)
     }
   },
   component: () => {

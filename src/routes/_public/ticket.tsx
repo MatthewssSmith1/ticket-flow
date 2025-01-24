@@ -48,7 +48,7 @@ function TicketForm() {
         .then(unwrap)
     },
     onSuccess: ({ shouldRedirect }) => {
-      if (shouldRedirect) return navigate({ to: '/home' })
+      if (shouldRedirect) return navigate({ to: '/tickets' })
 
       form.reset()
 

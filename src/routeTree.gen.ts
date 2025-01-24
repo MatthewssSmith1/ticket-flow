@@ -16,9 +16,9 @@ import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as PublicIndexImport } from './routes/_public/index'
 import { Route as PublicVerifyTicketImport } from './routes/_public/verify-ticket'
 import { Route as PublicTicketImport } from './routes/_public/ticket'
-import { Route as DashboardProfileImport } from './routes/_dashboard/profile'
-import { Route as DashboardHomeImport } from './routes/_dashboard/home'
-import { Route as DashboardCustomersImport } from './routes/_dashboard/customers'
+import { Route as DashboardTicketsImport } from './routes/_dashboard/tickets'
+import { Route as DashboardSettingsImport } from './routes/_dashboard/settings'
+import { Route as DashboardPeopleImport } from './routes/_dashboard/people'
 import { Route as authSignupImport } from './routes/(auth)/signup'
 import { Route as authLogoutImport } from './routes/(auth)/logout'
 import { Route as authLoginImport } from './routes/(auth)/login'
@@ -53,21 +53,21 @@ const PublicTicketRoute = PublicTicketImport.update({
   getParentRoute: () => PublicRoute,
 } as any)
 
-const DashboardProfileRoute = DashboardProfileImport.update({
-  id: '/profile',
-  path: '/profile',
+const DashboardTicketsRoute = DashboardTicketsImport.update({
+  id: '/tickets',
+  path: '/tickets',
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardHomeRoute = DashboardHomeImport.update({
-  id: '/home',
-  path: '/home',
+const DashboardSettingsRoute = DashboardSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardCustomersRoute = DashboardCustomersImport.update({
-  id: '/customers',
-  path: '/customers',
+const DashboardPeopleRoute = DashboardPeopleImport.update({
+  id: '/people',
+  path: '/people',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -128,25 +128,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignupImport
       parentRoute: typeof rootRoute
     }
-    '/_dashboard/customers': {
-      id: '/_dashboard/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof DashboardCustomersImport
+    '/_dashboard/people': {
+      id: '/_dashboard/people'
+      path: '/people'
+      fullPath: '/people'
+      preLoaderRoute: typeof DashboardPeopleImport
       parentRoute: typeof DashboardImport
     }
-    '/_dashboard/home': {
-      id: '/_dashboard/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof DashboardHomeImport
+    '/_dashboard/settings': {
+      id: '/_dashboard/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof DashboardSettingsImport
       parentRoute: typeof DashboardImport
     }
-    '/_dashboard/profile': {
-      id: '/_dashboard/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof DashboardProfileImport
+    '/_dashboard/tickets': {
+      id: '/_dashboard/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof DashboardTicketsImport
       parentRoute: typeof DashboardImport
     }
     '/_public/ticket': {
@@ -176,15 +176,15 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface DashboardRouteChildren {
-  DashboardCustomersRoute: typeof DashboardCustomersRoute
-  DashboardHomeRoute: typeof DashboardHomeRoute
-  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardPeopleRoute: typeof DashboardPeopleRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardTicketsRoute: typeof DashboardTicketsRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardCustomersRoute: DashboardCustomersRoute,
-  DashboardHomeRoute: DashboardHomeRoute,
-  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardPeopleRoute: DashboardPeopleRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardTicketsRoute: DashboardTicketsRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -211,9 +211,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/logout': typeof authLogoutRoute
   '/signup': typeof authSignupRoute
-  '/customers': typeof DashboardCustomersRoute
-  '/home': typeof DashboardHomeRoute
-  '/profile': typeof DashboardProfileRoute
+  '/people': typeof DashboardPeopleRoute
+  '/settings': typeof DashboardSettingsRoute
+  '/tickets': typeof DashboardTicketsRoute
   '/ticket': typeof PublicTicketRoute
   '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
@@ -224,9 +224,9 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/logout': typeof authLogoutRoute
   '/signup': typeof authSignupRoute
-  '/customers': typeof DashboardCustomersRoute
-  '/home': typeof DashboardHomeRoute
-  '/profile': typeof DashboardProfileRoute
+  '/people': typeof DashboardPeopleRoute
+  '/settings': typeof DashboardSettingsRoute
+  '/tickets': typeof DashboardTicketsRoute
   '/ticket': typeof PublicTicketRoute
   '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
@@ -239,9 +239,9 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/logout': typeof authLogoutRoute
   '/(auth)/signup': typeof authSignupRoute
-  '/_dashboard/customers': typeof DashboardCustomersRoute
-  '/_dashboard/home': typeof DashboardHomeRoute
-  '/_dashboard/profile': typeof DashboardProfileRoute
+  '/_dashboard/people': typeof DashboardPeopleRoute
+  '/_dashboard/settings': typeof DashboardSettingsRoute
+  '/_dashboard/tickets': typeof DashboardTicketsRoute
   '/_public/ticket': typeof PublicTicketRoute
   '/_public/verify-ticket': typeof PublicVerifyTicketRoute
   '/_public/': typeof PublicIndexRoute
@@ -254,9 +254,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/signup'
-    | '/customers'
-    | '/home'
-    | '/profile'
+    | '/people'
+    | '/settings'
+    | '/tickets'
     | '/ticket'
     | '/verify-ticket'
     | '/'
@@ -266,9 +266,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/signup'
-    | '/customers'
-    | '/home'
-    | '/profile'
+    | '/people'
+    | '/settings'
+    | '/tickets'
     | '/ticket'
     | '/verify-ticket'
     | '/'
@@ -279,9 +279,9 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/logout'
     | '/(auth)/signup'
-    | '/_dashboard/customers'
-    | '/_dashboard/home'
-    | '/_dashboard/profile'
+    | '/_dashboard/people'
+    | '/_dashboard/settings'
+    | '/_dashboard/tickets'
     | '/_public/ticket'
     | '/_public/verify-ticket'
     | '/_public/'
@@ -324,9 +324,9 @@ export const routeTree = rootRoute
     "/_dashboard": {
       "filePath": "_dashboard.tsx",
       "children": [
-        "/_dashboard/customers",
-        "/_dashboard/home",
-        "/_dashboard/profile"
+        "/_dashboard/people",
+        "/_dashboard/settings",
+        "/_dashboard/tickets"
       ]
     },
     "/_public": {
@@ -346,16 +346,16 @@ export const routeTree = rootRoute
     "/(auth)/signup": {
       "filePath": "(auth)/signup.tsx"
     },
-    "/_dashboard/customers": {
-      "filePath": "_dashboard/customers.tsx",
+    "/_dashboard/people": {
+      "filePath": "_dashboard/people.tsx",
       "parent": "/_dashboard"
     },
-    "/_dashboard/home": {
-      "filePath": "_dashboard/home.tsx",
+    "/_dashboard/settings": {
+      "filePath": "_dashboard/settings.tsx",
       "parent": "/_dashboard"
     },
-    "/_dashboard/profile": {
-      "filePath": "_dashboard/profile.tsx",
+    "/_dashboard/tickets": {
+      "filePath": "_dashboard/tickets.tsx",
       "parent": "/_dashboard"
     },
     "/_public/ticket": {

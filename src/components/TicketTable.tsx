@@ -13,7 +13,7 @@ import { Ticket } from '@/types/types'
 import { Pill } from './Pill'
 
 export function TicketTable({ filters }: { filters?: Filter[] }) {
-  const { currentOrg, members } = useOrgStore()
+  const { currentOrg, getMemberName } = useOrgStore()
   const [sorting, setSorting] = useState<SortingState>([])
   const { selectedView } = useViewStore()
   const navigate = useNavigate()
@@ -24,7 +24,7 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
       if (!currentOrg) return []
       return (await supabase
         .from('tickets')
-        .select('*')
+        .select('*, tickets_members(member_id, assigned_by)')
         .eq('org_id', currentOrg.id)
         .then(unwrap))
     }
@@ -42,34 +42,25 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
       cell: ({ row }) => <Pill text={row.getValue('priority')} />,
     },
     {
+      accessorKey: 'author_id',
+      header: ({ column }) => <SortableHeader column={column} label="Author" />,
+      cell: ({ row }) => getMemberName(row.original.author_id) ?? '-',
+    },
+    {
       accessorKey: 'subject',
       header: ({ column }) => <SortableHeader column={column} label="Subject" />,
       cell: ({ row }) => row.getValue('subject'),
     },
     {
-      accessorKey: 'tags',
-      header: ({ column }) => <SortableHeader column={column} label="Tags" />,
-      cell: ({ row }) => {
-        const tags = row.getValue<string[]>('tags')
-        return tags?.length ? tags.join(', ') : '-'
-      },
+      accessorKey: 'assignee',
+      header: ({ column }) => <SortableHeader column={column} label="Assignee" />,
+      // TODO: fix join types from supabase
+      cell: ({ row }) => getMemberName((row.original as any).tickets_members[0]?.member_id) ?? '-',
     },
     {
-      accessorKey: 'name',
-      header: ({ column }) => <SortableHeader column={column} label="Name" />,
-      cell: ({ row }) => {
-        const authorId = row.original.author_id
-        const memberName = members?.find(m => m.id === authorId)?.name
-        return memberName || row.getValue('name') || '-'
-      },
-    },
-    {
-      accessorKey: 'verified_at',
-      header: ({ column }) => <SortableHeader column={column} label="Submitted" />,
-      cell: ({ row }) => {
-        const date = row.getValue<string>('verified_at')
-        return date ? new Date(date).toLocaleDateString() : '-'
-      },
+      accessorKey: 'assigned_by',
+      header: ({ column }) => <SortableHeader column={column} label="Assigned By" />,
+      cell: ({ row }) => getMemberName((row.original as any).tickets_members[0]?.assigned_by) ?? '-',
     },
     {
       accessorKey: 'due_at',
@@ -80,9 +71,25 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
       },
     },
     {
+      accessorKey: 'tags',
+      header: ({ column }) => <SortableHeader column={column} label="Tags" />,
+      cell: ({ row }) => {
+        const tags = row.getValue<string[]>('tags')
+        return tags?.length ? tags.join(', ') : '-'
+      },
+    },
+    {
       accessorKey: 'channel',
       header: ({ column }) => <SortableHeader column={column} label="Channel" />,
       cell: ({ row }) => <Pill text={row.getValue('channel')} />,
+    },
+    {
+      accessorKey: 'verified_at',
+      header: ({ column }) => <SortableHeader column={column} label="Submitted" />,
+      cell: ({ row }) => {
+        const date = row.getValue<string>('verified_at')
+        return date ? new Date(date).toLocaleDateString() : '-'
+      },
     },
   ]
 
@@ -103,7 +110,7 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
   if (isLoading) return <div>Loading...</div>
   if (isError) return <div>Error loading tickets</div>
 
-  const handleRowClick = (id: string) => navigate({ search: { id } as any })
+  const handleRowClick = (id: string) => navigate({ to: "/tickets", search: { id } as any })
 
   return (
     <div className="rounded-md border">

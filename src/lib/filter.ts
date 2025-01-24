@@ -18,6 +18,7 @@ export type Filter = {
 export const statusEq = (value: Status): Filter => ({ type: 'TEXT', field: 'status', operator: 'EQ', value })
 export const channelEq = (value: Channel): Filter => ({ type: 'TEXT', field: 'channel', operator: 'EQ', value })
 export const priorityEq = (value: Priority): Filter => ({ type: 'TEXT', field: 'priority', operator: 'EQ', value })
+export const authorEq = (value: number): Filter => ({ type: 'INTEGER', field: 'author_id', operator: 'EQ', value: value.toString() })
 
 export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, filterValue: any, addMeta: (meta: any) => void): boolean {
   if (filterValue.length === 0) return true
@@ -56,7 +57,8 @@ export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, f
 
 // TODO: fully implement operators and add type checking (only EQ is used for now)
 function eqOp(rowVal: any, filter: Filter) {
-  return rowVal === filter.value
+  console.log(rowVal, filter.value)
+  return rowVal == filter.value
 }
 
 function containsOp(rowVal: any, filter: Filter) {

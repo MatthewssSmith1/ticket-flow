@@ -2,6 +2,7 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { TableCellContent } from './TableCell'
 import { SortableHeader } from './SortableHeader'
+import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
 import { useState } from 'react'
 import { Member } from '@/types/types'
@@ -10,6 +11,7 @@ import { Pill } from './Pill'
 export function MemberTable() {
   const { members } = useOrgStore()
   const [sorting, setSorting] = useState<SortingState>([])
+  const navigate = useNavigate()
 
   const table = useReactTable({
     data: members ?? [],
@@ -23,6 +25,8 @@ export function MemberTable() {
   })
 
   if (!members) return <div>Loading...</div>
+
+  const handleRowClick = (id: number) => navigate({ search: { id } as any })
 
   return (
     <div className="rounded-md border max-w-[500px] mx-auto">
@@ -46,7 +50,7 @@ export function MemberTable() {
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row.id} className="cursor-pointer" onClick={() => handleRowClick(row.original.id)}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     <TableCellContent columnId={cell.column.id}>

@@ -22,7 +22,7 @@ function PublicLayout() {
 const navLinks = linkOptions([
   { to: '/', label: 'Home' },
   { to: '/ticket', label: 'Submit ticket' },
-  { to: '/home', label: 'Dashboard' },
+  { to: '/tickets', label: 'Dashboard' },
 ])
 
 function NavLinks() {

@@ -2,13 +2,16 @@ import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { EnumInstance, EnumKey, Ticket } from '@/types/types';
 import { DatePickerWithPresets } from './DatePicker';
 import supabase, { unwrap } from '@/lib/supabase';
+import { MemberSelect } from './MemberSelect';
 import { useOrgStore } from '@/stores/orgStore';
 import { EnumSelect } from './EnumSelect';
 import { Separator } from './ui/separator';
 import { Textarea } from './ui/textarea';
+import { Link } from '@tanstack/react-router';
+import { ExternalLink } from 'lucide-react';
 
 export function EditTicket({ ticket }: { ticket: Ticket }) {
-  const { members } = useOrgStore();
+  const { getMemberName, authMember } = useOrgStore();
 
   function setEnum(field: EnumKey, value: EnumInstance) {
     supabase.from('tickets')
@@ -24,7 +27,20 @@ export function EditTicket({ ticket }: { ticket: Ticket }) {
       .then(unwrap)
   }
 
-  const memberName = members?.find(m => m.id === ticket.author_id)?.name ?? ticket.name ?? '-';
+  function setAssignee(member_id: number | null) {
+    supabase.from('tickets_members')
+      .delete()
+      .eq('ticket_id', ticket.id)
+      .then(unwrap)
+
+    if (!member_id) return;
+
+    supabase.from('tickets_members')
+      .insert({ ticket_id: ticket.id, member_id, assigned_by: authMember?.id })
+      .then(unwrap)
+  }
+
+  const memberName = getMemberName(ticket.author_id) ?? ticket.name ?? '-';
   const verifiedDate = ticket.verified_at ? new Date(ticket.verified_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
   
   return (
@@ -61,6 +77,10 @@ export function EditTicket({ ticket }: { ticket: Ticket }) {
           <div>
             <h2>Due Date</h2>
             <DatePickerWithPresets value={ticket.due_at} onValueChange={setDueDate} disabled={'past'} />
+          </div>
+          <div>
+            <h2>Assignee <Link to="/people" search={{ id: (ticket as any).tickets_members[0]?.member_id }}><ExternalLink className="mb-1 size-3 inline-block" /></Link></h2>
+            <MemberSelect memberId={(ticket as any).tickets_members[0]?.member_id} onValueChange={setAssignee} />
           </div>
           
           <Separator />

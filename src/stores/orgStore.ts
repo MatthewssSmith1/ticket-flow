@@ -1,19 +1,19 @@
 import { Organization, Member } from '@/types/types'
 import supabase, { unwrap } from '@/lib/supabase'
-import { create } from 'zustand'
 import { useEffect } from 'react'
+import { create } from 'zustand'
 
 interface State {
   orgs: Organization[]
   currentOrg: Organization | null
-  // fetch members for current org whenever currentOrg is set
   members: Member[] | null
   authMember: Member | null
   setCurrentOrg: (org: Organization | null, userId?: string) => Promise<void>
   loadOrgs: (userId: string) => Promise<void>
+  getMemberName: (id: number | null) => string | null
 }
 
-export const useOrgStore = create<State>((set) => ({
+export const useOrgStore = create<State>((set, get) => ({
   orgs: [],
   currentOrg: null,
   members: null,
@@ -45,6 +45,11 @@ export const useOrgStore = create<State>((set) => ({
       console.error('Error fetching organizations:', e);
     }
   },
+  getMemberName: (id: number | null) => {
+    if (!id) return null
+    const { members } = get()
+    return members?.find(m => m.id === id)?.name || null
+  }
 }))
 
 export function useOrganizations(userId?: string) {

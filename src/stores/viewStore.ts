@@ -29,6 +29,7 @@ const VIEWS: View[] = [
   { id: '16', name: 'API', filters: [channelEq('API')] },
   // Other
   { id: '17', name: 'New or Normal', filters: [statusEq('NEW'), priorityEq('NORMAL')] },
+  { id: '18', name: 'Reopened or Urgent', filters: [statusEq('REOPENED'), priorityEq('URGENT')] },
 ]
 
 interface State {

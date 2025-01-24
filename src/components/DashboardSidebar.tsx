@@ -3,7 +3,7 @@ import {
   Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroupLabel,
   SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton, SidebarMenu
 } from '@/components/ui/sidebar'
-import { Building, ChevronsUpDown, Home, Plus, Tags, UserIcon, Users, LogOutIcon, Ticket } from 'lucide-react'
+import { Building, ChevronsUpDown, Home, Plus, Tags, Users, LogOutIcon, Ticket, Settings } from 'lucide-react'
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useOrganizations } from '@/stores/orgStore'
@@ -26,9 +26,9 @@ export function DashboardSidebar() {
 }
 
 const pageLinks = linkOptions([
-  { to: '/home', label: 'Home', icon: Home },
   { to: '/tickets', label: 'Tickets', icon: Tags },
-  { to: '/customers', label: 'Customers', icon: Users },
+  { to: '/people', label: 'People', icon: Users },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ])
 
 function PagesGroup() {
@@ -99,7 +99,6 @@ function Header() {
 const footerLinks = linkOptions([
   { to: '/', label: 'Landing Page', separator: false, icon: Home },
   { to: '/ticket', label: 'Submit ticket', separator: false, icon: Ticket },
-  { to: '/profile', label: 'Profile', separator: false, icon: UserIcon },
   { to: '/logout', label: 'Logout', separator: true, icon: LogOutIcon },
 ])
 

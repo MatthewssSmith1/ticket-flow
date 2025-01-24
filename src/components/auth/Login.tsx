@@ -37,8 +37,7 @@ export default function Login() {
       if (error) throw error
 
       if (isPasswordLogin) {
-        // tanstack router redirect to /home
-        navigate({ to: '/home' })
+        navigate({ to: '/tickets' })
       } else {
         alert('Check your email for the login link!')
       }

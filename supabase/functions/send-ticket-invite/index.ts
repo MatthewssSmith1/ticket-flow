@@ -35,7 +35,6 @@ Deno.serve(async (req) => {
     )
 
   } catch (e) {
-    console.error(e)
     return new Response(
       JSON.stringify({ message: e.message }), 
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

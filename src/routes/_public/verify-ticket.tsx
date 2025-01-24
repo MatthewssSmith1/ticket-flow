@@ -38,7 +38,7 @@ function VerifyTicket() {
         .eq('id', ticketId)
         .then(unwrap)
 
-      navigate({ to: '/home' })
+      navigate({ to: '/tickets' })
     }
 
     try {
