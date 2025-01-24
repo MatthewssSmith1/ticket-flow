@@ -6,9 +6,8 @@ import {
 import { Building, ChevronsUpDown, Home, Plus, Tags, UserIcon, Users, LogOutIcon, Ticket } from 'lucide-react'
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useOrganizations } from '@/stores/orgStore'
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { useOrgStore } from '@/stores/orgStore'
-import { useEffect } from 'react'
 import { Fragment } from "react/jsx-runtime"
 import { Button } from '@/components/ui/button'
 
@@ -55,13 +54,8 @@ function PagesGroup() {
 }
 
 function Header() {
-  const dashboardRoute = getRouteApi('/_dashboard')
-  const { user } = dashboardRoute.useRouteContext()
-  const { orgs, currentOrg, setCurrentOrg, loadOrgs } = useOrgStore()
-
-  useEffect(() => {
-    if (user && orgs.length === 0) loadOrgs(user.id);
-  }, [user, orgs, loadOrgs]);
+  const { user } = getRouteApi('/_dashboard').useRouteContext()
+  const { orgs, currentOrg, setCurrentOrg } = useOrganizations(user?.id)
 
   if (!orgs?.length) {
     return (

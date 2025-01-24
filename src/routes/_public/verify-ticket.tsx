@@ -30,11 +30,12 @@ function VerifyTicket() {
         .single()
         .then(unwrap)
 
-      const authorId = await getOrCreateMember(user.id, ticket.org_id)
+      const author_id = await getOrCreateMember(user.id, ticket.org_id, ticket.name)
+      const verified_at = new Date().toISOString()
 
       await supabase
         .from('tickets')
-        .update({ author_id: authorId, email: null })
+        .update({ author_id, verified_at, email: null, name: null })
         .eq('id', ticketId)
         .then(unwrap)
 
@@ -56,7 +57,7 @@ function VerifyTicket() {
 }
 
 // TODO: share across backend and frontend
-async function getOrCreateMember(user_id: string, org_id: string) {
+async function getOrCreateMember(user_id: string, org_id: string, name: string | null) {
   const member = await supabase.from('members')
     .select()
     .eq('user_id', user_id)
@@ -65,9 +66,10 @@ async function getOrCreateMember(user_id: string, org_id: string) {
     .then(unwrap)
 
   if (member) return member.id
-
+  
+  name ??= 'Unnamed User'
   return await supabase.from('members')
-      .insert({ user_id, org_id, role: 'CUSTOMER' })
+      .insert({ user_id, org_id, role: 'CUSTOMER', name })
       .select()
       .single()
       .then(unwrap)
