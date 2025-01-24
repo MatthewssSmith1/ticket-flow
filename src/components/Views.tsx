@@ -5,12 +5,10 @@ import { Button } from '@/components/ui/button'
 export function Views() {
   return (
     <main className="grid grid-cols-[1fr_2fr]">
-      <section className="p-4 space-y-4">
-        <h1 className="text-2xl font-bold">Views</h1>
+      <section className="px-4 py-2 space-y-2">
         <ViewList />
       </section>
-      <section className="p-4 space-y-4">
-        <h1 className="text-2xl font-bold mb-2">Tickets</h1>
+      <section className="px-4 py-2 space-y-2">
         <TicketTable />
       </section>
     </main>
@@ -21,7 +19,8 @@ function ViewList() {
   const { views, selectedView, setSelectedView } = useViewStore()
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-[150px]">
+      <h1 className="text-2xl font-bold text-center mb-2">Views</h1>
       {views.map((view) => (
         <Button
           key={view.id}

@@ -1,72 +1,34 @@
-import { Ticket } from '@/types/types'
+import { Filter, statusEq, priorityEq, channelEq } from '@/lib/filter'
 import { create } from 'zustand'
-
-export interface ViewFilter {
-  id: keyof Ticket
-  value: string | boolean
-}
 
 export interface View {
   id: string
   name: string
-  filters: ViewFilter[]
+  filters: Filter[]
 }
 
 const VIEWS: View[] = [
-  {
-    id: '1',
-    name: 'All tickets',
-    filters: [],
-  },
-  {
-    id: '2',
-    name: 'New',
-    filters: [
-      { id: 'status', value: 'NEW' }
-    ]
-  },
-  {
-    id: '3',
-    name: 'Open',
-    filters: [
-      { id: 'status', value: 'OPEN' }
-    ]
-  },
-  {
-    id: '4',
-    name: 'Pending',
-    filters: [
-      { id: 'status', value: 'PENDING' }
-    ]
-  },
-  {
-    id: '5',
-    name: 'On Hold',
-    filters: [
-      { id: 'status', value: 'ON_HOLD' }
-    ]
-  },
-  {
-    id: '6',
-    name: 'Solved',
-    filters: [
-      { id: 'status', value: 'SOLVED' }
-    ]
-  },
-  {
-    id: '7',
-    name: 'Reopened',
-    filters: [
-      { id: 'status', value: 'REOPENED' }
-    ]
-  },
-  {
-    id: '8',
-    name: 'Closed',
-    filters: [
-      { id: 'status', value: 'CLOSED' }
-    ]
-  }
+  { id: '1', name: 'All tickets', filters: [] },
+  // Status
+  { id: '2', name: 'New', filters: [statusEq('NEW')] },
+  { id: '3', name: 'Open', filters: [statusEq('OPEN')] },
+  { id: '4', name: 'Closed', filters: [statusEq('CLOSED')] },
+  { id: '5', name: 'Solved', filters: [statusEq('SOLVED')] },
+  { id: '6', name: 'Pending', filters: [statusEq('PENDING')] },
+  { id: '7', name: 'On Hold', filters: [statusEq('ON_HOLD')] },
+  { id: '8', name: 'Reopened', filters: [statusEq('REOPENED')] },
+  // Priority
+  { id: '9', name: 'Urgent', filters: [priorityEq('URGENT')] },
+  { id: '10', name: 'High', filters: [priorityEq('HIGH')] },
+  { id: '11', name: 'Medium', filters: [priorityEq('NORMAL')] },
+  { id: '12', name: 'Low', filters: [priorityEq('LOW')] },
+  // Channel
+  { id: '13', name: 'Web', filters: [channelEq('WEB')] },
+  { id: '14', name: 'Email', filters: [channelEq('EMAIL')] },
+  { id: '15', name: 'Chat', filters: [channelEq('CHAT')] },
+  { id: '16', name: 'API', filters: [channelEq('API')] },
+  // Other
+  { id: '17', name: 'New or Normal', filters: [statusEq('NEW'), priorityEq('NORMAL')] },
 ]
 
 interface State {

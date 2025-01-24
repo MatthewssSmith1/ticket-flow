@@ -1,20 +1,20 @@
+import supabase, { unwrap } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
-import supabase from '@/lib/supabase';
-import { StatusBadge } from './StatusBadge';
+import { Pill } from './Pill';
+
+const getTicket = (id: string) => ({
+  queryKey: ['ticket', id],
+  queryFn: async () => (
+    await supabase.from('tickets')
+      .select('*')
+      .eq('id', id)
+      .single()
+      .then(unwrap)
+  )
+});
 
 export function Ticket({ id }: { id: string }) {
-  const { data: ticket, error, isLoading } = useQuery({
-    queryKey: ['ticket', id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tickets')
-        .select('*')
-        .eq('id', id)
-        .single();
-      if (error) throw error;
-      return data;
-    }
-  });
+  const { data: ticket, error, isLoading } = useQuery(getTicket(id));
 
   if (isLoading || !ticket) return <div>Loading...</div>;
   if (error) return <div>Error loading ticket</div>;
@@ -26,7 +26,7 @@ export function Ticket({ id }: { id: string }) {
       <section className="p-4 space-y-4">
         <h1 className="text-2xl font-bold flex items-center gap-3">
           <span className="mb-1">{subject}</span>
-          <StatusBadge status={status} /> 
+          <Pill text={status} /> 
         </h1>
         <div>{description}</div>
         

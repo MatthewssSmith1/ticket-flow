@@ -17,7 +17,7 @@ function DashboardIndex() {
   if (!user) return null
 
   return (
-    <SidebarProvider className="[&>main]:flex-1 [&>main]:overflow-y-auto [&>main]:p-8">
+    <SidebarProvider className="[&>main]:flex-1 [&>main]:overflow-y-auto [&>main]:p-6">
       <DashboardSidebar />
       <Outlet />
     </SidebarProvider>

@@ -34,6 +34,118 @@ export type Database = {
   }
   public: {
     Tables: {
+      fields: {
+        Row: {
+          created_at: string
+          description: string | null
+          field_type: Database["public"]["Enums"]["field_types"]
+          id: number
+          is_required: boolean
+          name: string
+          options: Json
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          field_type: Database["public"]["Enums"]["field_types"]
+          id?: never
+          is_required?: boolean
+          name: string
+          options?: Json
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          field_type?: Database["public"]["Enums"]["field_types"]
+          id?: never
+          is_required?: boolean
+          name?: string
+          options?: Json
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fields_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups_members: {
+        Row: {
+          created_at: string
+          group_id: string
+          member_id: number
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          member_id: number
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          member_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "groups_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       members: {
         Row: {
           created_at: string
@@ -66,6 +178,48 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          author_id: number | null
+          content: string
+          created_at: string
+          id: number
+          is_internal: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author_id?: number | null
+          content: string
+          created_at?: string
+          id?: never
+          is_internal?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author_id?: number | null
+          content?: string
+          created_at?: string
+          id?: never
+          is_internal?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           created_at: string
@@ -86,58 +240,60 @@ export type Database = {
       }
       tickets: {
         Row: {
-          assignee_id: number | null
           author_id: number | null
+          channel: Database["public"]["Enums"]["ticket_channel"]
           created_at: string
           description: string
+          due_at: string | null
           email: string | null
           id: string
-          metadata: Json
           name: string | null
           org_id: string
+          parent_id: string | null
+          priority: Database["public"]["Enums"]["ticket_priority"]
           status: Database["public"]["Enums"]["ticket_status"]
           subject: string
+          tags: string[] | null
           updated_at: string
           verified_at: string | null
         }
         Insert: {
-          assignee_id?: number | null
           author_id?: number | null
+          channel?: Database["public"]["Enums"]["ticket_channel"]
           created_at?: string
           description: string
+          due_at?: string | null
           email?: string | null
           id?: string
-          metadata?: Json
           name?: string | null
           org_id: string
+          parent_id?: string | null
+          priority?: Database["public"]["Enums"]["ticket_priority"]
           status?: Database["public"]["Enums"]["ticket_status"]
           subject: string
+          tags?: string[] | null
           updated_at?: string
           verified_at?: string | null
         }
         Update: {
-          assignee_id?: number | null
           author_id?: number | null
+          channel?: Database["public"]["Enums"]["ticket_channel"]
           created_at?: string
           description?: string
+          due_at?: string | null
           email?: string | null
           id?: string
-          metadata?: Json
           name?: string | null
           org_id?: string
+          parent_id?: string | null
+          priority?: Database["public"]["Enums"]["ticket_priority"]
           status?: Database["public"]["Enums"]["ticket_status"]
           subject?: string
+          tags?: string[] | null
           updated_at?: string
           verified_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "tickets_assignee_id_fkey"
-            columns: ["assignee_id"]
-            isOneToOne: false
-            referencedRelation: "members"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "tickets_author_id_fkey"
             columns: ["author_id"]
@@ -152,6 +308,138 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tickets_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets_fields: {
+        Row: {
+          created_at: string
+          field_id: number
+          ticket_id: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          field_id: number
+          ticket_id: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          field_id?: number
+          ticket_id?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_fields_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_fields_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets_groups: {
+        Row: {
+          assigned_at: string
+          assigned_by: number | null
+          group_id: string
+          ticket_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: number | null
+          group_id: string
+          ticket_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: number | null
+          group_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_groups_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_groups_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_groups_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets_members: {
+        Row: {
+          assigned_at: string
+          assigned_by: number | null
+          member_id: number
+          ticket_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: number | null
+          member_id: number
+          ticket_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: number | null
+          member_id?: number
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_members_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_members_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -162,7 +450,18 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      field_types:
+        | "TEXT"
+        | "REGEX"
+        | "INTEGER"
+        | "FLOAT"
+        | "DATE"
+        | "BOOLEAN"
+        | "SELECT"
+        | "MULTI_SELECT"
       member_role: "OWNER" | "ADMIN" | "AGENT" | "CUSTOMER"
+      ticket_channel: "EMAIL" | "WEB" | "CHAT" | "API"
+      ticket_priority: "URGENT" | "HIGH" | "NORMAL" | "LOW"
       ticket_status:
         | "NEW"
         | "OPEN"

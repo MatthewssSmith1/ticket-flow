@@ -1,24 +1,25 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, getFilteredRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { Filter, ticketFilter } from '@/lib/filter'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useViewStore } from '@/stores/viewStore'
 import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
-import { StatusBadge } from './StatusBadge'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Ticket } from '@/types/types'
 import { Button } from './ui/button'
+import { Pill } from './Pill'
 import { cn } from '@/lib/utils'
 
-export function TicketTable() {
+export function TicketTable({ filters }: { filters?: Filter[] }) {
   const { currentOrg } = useOrgStore()
   const [sorting, setSorting] = useState<SortingState>([])
   const { selectedView } = useViewStore()
   const navigate = useNavigate()
 
-  const { data: tickets = [], isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['tickets', currentOrg?.id],
     queryFn: async (): Promise<Ticket[]> => {
       if (!currentOrg) return []
@@ -30,10 +31,8 @@ export function TicketTable() {
     }
   })
 
-  const columnFilters = selectedView?.filters ?? []
-
   const table = useReactTable({
-    data: tickets,
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -41,14 +40,9 @@ export function TicketTable() {
     onSortingChange: setSorting,
     state: {
       sorting,
-      columnFilters,
+      globalFilter: filters ?? selectedView?.filters ?? [],
     },
-    filterFns: {
-      equals: (row, columnId, filterValue) => {
-        const value = row.getValue(columnId)
-        return value === filterValue
-      }
-    }
+    globalFilterFn: ticketFilter,
   })
 
   if (isLoading) return <div>Loading...</div>
@@ -60,10 +54,10 @@ export function TicketTable() {
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="p-[3px]">
+          {table.getHeaderGroups().map((headerGroup, index) => (
+            <TableRow key={index}>
+              {headerGroup.headers.map((header, index) => (
+                <TableHead key={index} className="p-[3px]">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -108,7 +102,12 @@ const columns: ColumnDef<Ticket>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => <SortableHeader column={column} label="Status" />,
-    cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
+    cell: ({ row }) => <Pill text={row.getValue('status')} />,
+  },
+  {
+    accessorKey: 'priority',
+    header: ({ column }) => <SortableHeader column={column} label="Priority" />,
+    cell: ({ row }) => <Pill text={row.getValue('priority')} />,
   },
   {
     accessorKey: 'name',
@@ -132,6 +131,11 @@ const columns: ColumnDef<Ticket>[] = [
       const date = new Date(row.getValue('created_at'))
       return date.toLocaleDateString()
     },
+  },
+  {
+    accessorKey: 'channel',
+    header: ({ column }) => <SortableHeader column={column} label="Channel" />,
+    cell: ({ row }) => <Pill text={row.getValue('channel')} />,
   },
 ]
 

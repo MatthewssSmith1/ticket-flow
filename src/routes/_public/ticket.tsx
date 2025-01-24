@@ -1,7 +1,7 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createTicketSchema, PRIORITIES } from '@shared/validation'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { createTicketSchema } from '@shared/validation'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { z } from 'zod'
+import { Select, SelectItem, SelectValue, SelectTrigger, SelectContent } from '@/components/ui/select'
 
 const ticketSchema = createTicketSchema(z)
 type TicketForm = z.infer<typeof ticketSchema>
@@ -30,6 +31,7 @@ function TicketForm() {
       email: user?.email ?? 'john@example.com',
       subject: 'Sign in issue',
       description: 'I cannot sign in to my account.',
+      priority: 'NORMAL',
     },
   })
 
@@ -131,6 +133,31 @@ function TicketForm() {
                       className="h-32"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Priority</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRIORITIES.map((priority) => (
+                          <SelectItem key={priority} value={priority}>
+                            {priority.charAt(0) + priority.slice(1).toLowerCase()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
