@@ -14,8 +14,8 @@ const colors: Record<Status | Priority | Channel | Role, string> = {
   // Priority
   URGENT: 'bg-red-500 text-black',
   HIGH: 'bg-orange-500 text-white',
-  NORMAL: 'bg-stone-400 text-black',
-  LOW: 'bg-slate-400 text-black',
+  NORMAL: 'bg-yellow-500 text-black',
+  LOW: 'bg-stone-400 text-black',
   // Channel
   EMAIL: 'bg-red-200 text-black',
   WEB: 'bg-blue-200 text-black',

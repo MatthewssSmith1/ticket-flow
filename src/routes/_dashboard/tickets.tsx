@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Ticket } from '@/components/Ticket'
+import { TicketView } from '@/components/Ticket'
 import { Views } from '@/components/Views'
 import { z } from 'zod'
 
@@ -17,7 +17,7 @@ export const Route = createFileRoute('/_dashboard/tickets')({
   },
   component: () => {
     const { id } = Route.useSearch()
-    if (id) return <Ticket id={id} />
+    if (id) return <TicketView id={id} />
     return <Views />
   },
 })
