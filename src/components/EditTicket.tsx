@@ -86,7 +86,7 @@ export function EditTicket() {
                 <ExternalLink className="mb-1 ml-1 size-3 inline-block" />
               </Link>}
             </h2>
-            <MemberSelect memberId={firstAssigneeId} onValueChange={setAssignee} />
+            <MemberSelect memberId={firstAssigneeId} onValueChange={setAssignee} filter={m => m.role !== 'CUSTOMER'}/>
           </div>
 
           <Separator />

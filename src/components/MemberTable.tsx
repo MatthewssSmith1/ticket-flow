@@ -1,76 +1,22 @@
-import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
-import { TableCellContent } from './TableCell'
+import { ColumnDef, Row } from '@tanstack/react-table'
 import { SortableHeader } from './SortableHeader'
+import { GenericTable } from './GenericTable'
 import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
-import { useState } from 'react'
 import { Member } from '@/types/types'
 import { Pill } from './Pill'
 
 export function MemberTable() {
-  const { members } = useOrgStore()
-  const [sorting, setSorting] = useState<SortingState>([])
+  const { openOrg } = useOrgStore()
   const navigate = useNavigate()
 
-  const table = useReactTable({
-    data: members ?? [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    state: {
-      sorting,
-    },
-  })
+  if (!openOrg) return <div>Loading...</div>
 
-  if (!members) return <div>Loading...</div>
+  function handleRowClick(row: Row<Member>) {
+    navigate({ to: '/member/$id', params: { id: row.original.id.toString() } })
+  }
 
-  const handleRowClick = (id: number) => navigate({ to: '/member/$id', params: { id: id.toString() } })
-
-  return (
-    <div className="rounded-md border max-w-[500px] mx-auto">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup, index) => (
-            <TableRow key={index}>
-              {headerGroup.headers.map((header, index) => (
-                <TableHead key={index} className="p-[3px]">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="cursor-pointer" onClick={() => handleRowClick(row.original.id)}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    <TableCellContent columnId={cell.column.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCellContent>
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No members found.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
-  )
+  return <GenericTable data={openOrg.members ?? []} columns={columns} onRowClick={handleRowClick} />
 }
 
 const columns: ColumnDef<Member>[] = [

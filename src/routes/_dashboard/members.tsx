@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createFileRoute } from '@tanstack/react-router'
 import { MemberTable } from '@/components/MemberTable'
+import { GroupTable } from '@/components/GroupTable'
 
 export const Route = createFileRoute('/_dashboard/members')({
   component: Members,
@@ -8,7 +9,15 @@ export const Route = createFileRoute('/_dashboard/members')({
 
 function Members() {
   return (
-    <main>
+    <main className="grid grid-cols-2 gap-4">
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle>Groups</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <GroupTable />
+        </CardContent>
+      </Card>
       <Card className="h-full">
         <CardHeader>
           <CardTitle>Organization Members</CardTitle>

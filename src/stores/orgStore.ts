@@ -1,68 +1,80 @@
-import { Organization, Member } from '@/types/types'
+import { Organization, Member, Group } from '@/types/types'
 import supabase, { unwrap } from '@/lib/supabase'
-import { useEffect } from 'react'
 import { create } from 'zustand'
+import { toast } from '@/hooks/use-toast'
 
-interface State {
-  orgs: Organization[]
-  currentOrg: Organization | null
-  members: Member[] | null
-  authMember: Member | null
-  setCurrentOrg: (org: Organization | null, userId?: string) => Promise<void>
-  loadOrgs: (userId: string) => Promise<void>
-  getMemberName: (id: number | null) => string | null
+type OrgState = Organization & {
+  members: Member[]
+  groups: Group[]
 }
 
-export const useOrgStore = create<State>((set, get) => ({
+type State = {
+  orgs: Organization[]
+  openOrg: OrgState | null
+  authMember: Member | null 
+  loadOrgs: (userId: string) => Promise<void>
+  setOpenOrg: (org: Organization, userId?: string) => Promise<void>
+}
+
+const _useOrgStore = create<State>((set, get) => ({
   orgs: [],
-  currentOrg: null,
-  members: null,
+  openOrg: null,
   authMember: null,
-  setCurrentOrg: async (org, userId) => {
-    const members = org 
-      ? await supabase.from('members')
-        .select('*')
-        .eq('org_id', org.id)
-        .then(unwrap) 
-      : null
 
-    const authMember = members?.find(m => m.user_id === userId) ?? null
-
-    set({ currentOrg: org, members, authMember })
-  },
-  loadOrgs: async (userId) => {
+  loadOrgs: async (userId: string) => {
     try {
       const orgs = await supabase
         .from('members')
         .select('organizations:organizations (*)')
         .eq('user_id', userId)
         .then(unwrap)
-        .then(members => members.map(m => m.organizations));
+        .then(members => members.map(m => m.organizations))
 
-      // TODO: add state in db to track most recent org instead of just using the first one
-      if (orgs.length > 0) set({ orgs })
+      set({ orgs })
+
+      if (orgs.length === 0) return
+
+      const lastOrgId = localStorage.getItem('lastOrgId')
+      const lastOrg = orgs.find(o => o.id === lastOrgId)
+      await get().setOpenOrg(lastOrg || orgs[0], userId)
     } catch (e) {
-      console.error('Error fetching organizations:', e);
+      toast({
+        title: 'Error fetching organizations',
+        description: 'Please try again later',
+        variant: 'destructive',
+      })
     }
   },
-  getMemberName: (id: number | null) => {
-    if (!id) return null
-    const { members } = get()
-    return members?.find(m => m.id === id)?.name || null
-  }
+
+  setOpenOrg: async (org: Organization, userId?: string) => {
+    localStorage.setItem('lastOrgId', org.id)
+
+    try {
+      const openOrg = await supabase
+        .from('organizations')
+        .select(`*, members:members(*), groups:groups(*)`)
+        .eq('id', org.id)
+        .single()
+        .then(unwrap)
+
+      const authMember = openOrg.members.find(m => m.user_id === userId) ?? null
+      set({ openOrg, authMember })
+    } catch (e) {
+      toast({
+        title: 'Error fetching organization',
+        description: 'Please try again later',
+        variant: 'destructive',
+      })
+    }
+  },
 }))
 
-export function useOrganizations(userId?: string) {
-  const store = useOrgStore()
-  const { orgs, currentOrg, setCurrentOrg, loadOrgs } = store
+export function useOrgStore() {
+  const store = _useOrgStore()
 
-  useEffect(() => {
-    if (userId && orgs.length === 0) loadOrgs(userId);
-  }, [userId, orgs, loadOrgs]);
+  const authId = store.authMember?.id
+  const getMemberName = (id: number | null) => id === authId ? 'You' 
+    : store.openOrg?.members.find(m => m.id === id)?.name || null
 
-  useEffect(() => {
-    if (!currentOrg && orgs.length > 0) setCurrentOrg(orgs[0], userId);
-  }, [orgs, setCurrentOrg, currentOrg, userId]);
-
-    return store
-} 
+  return { ...store, getMemberName }
+}
