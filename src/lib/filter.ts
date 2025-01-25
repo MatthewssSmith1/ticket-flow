@@ -57,7 +57,6 @@ export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, f
 
 // TODO: fully implement operators and add type checking (only EQ is used for now)
 function eqOp(rowVal: any, filter: Filter) {
-  console.log(rowVal, filter.value)
   return rowVal == filter.value
 }
 

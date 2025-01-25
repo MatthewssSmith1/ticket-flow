@@ -110,7 +110,7 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
   if (isLoading) return <div>Loading...</div>
   if (isError) return <div>Error loading tickets</div>
 
-  const handleRowClick = (id: string) => navigate({ to: "/tickets", search: { id } as any })
+  const handleRowClick = (id: string) => navigate({ to: '/ticket/$id', params: { id: id } })
 
   return (
     <div className="rounded-md border">

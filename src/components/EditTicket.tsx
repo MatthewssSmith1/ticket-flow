@@ -1,16 +1,17 @@
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
-import { EnumInstance, EnumKey, Ticket } from '@/types/types';
+import { EnumInstance, EnumKey } from '@/types/types';
 import { DatePickerWithPresets } from './DatePicker';
+import { getRouteApi, Link } from '@tanstack/react-router';
 import supabase, { unwrap } from '@/lib/supabase';
 import { MemberSelect } from './MemberSelect';
+import { ExternalLink } from 'lucide-react';
 import { useOrgStore } from '@/stores/orgStore';
 import { EnumSelect } from './EnumSelect';
 import { Separator } from './ui/separator';
 import { Textarea } from './ui/textarea';
-import { Link } from '@tanstack/react-router';
-import { ExternalLink } from 'lucide-react';
 
-export function EditTicket({ ticket }: { ticket: Ticket }) {
+export function EditTicket() {
+  const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()
   const { getMemberName, authMember } = useOrgStore();
 
   function setEnum(field: EnumKey, value: EnumInstance) {
@@ -40,9 +41,10 @@ export function EditTicket({ ticket }: { ticket: Ticket }) {
       .then(unwrap)
   }
 
+  const firstAssigneeId = ticket.tickets_members[0]?.member_id
   const memberName = getMemberName(ticket.author_id) ?? ticket.name ?? '-';
   const verifiedDate = ticket.verified_at ? new Date(ticket.verified_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
-  
+
   return (
     <Card className="min-w-[150px]">
       <CardHeader>
@@ -79,17 +81,21 @@ export function EditTicket({ ticket }: { ticket: Ticket }) {
             <DatePickerWithPresets value={ticket.due_at} onValueChange={setDueDate} disabled={'past'} />
           </div>
           <div>
-            <h2>Assignee <Link to="/people" search={{ id: (ticket as any).tickets_members[0]?.member_id }}><ExternalLink className="mb-1 size-3 inline-block" /></Link></h2>
-            <MemberSelect memberId={(ticket as any).tickets_members[0]?.member_id} onValueChange={setAssignee} />
+            <h2>Assignee
+              {firstAssigneeId && <Link to="/member/$id" params={{ id: firstAssigneeId?.toString() ?? '' }}>
+                <ExternalLink className="mb-1 ml-1 size-3 inline-block" />
+              </Link>}
+            </h2>
+            <MemberSelect memberId={firstAssigneeId} onValueChange={setAssignee} />
           </div>
-          
+
           <Separator />
           <div className="space-y-2">
             <h2>Description</h2>
-            <Textarea 
-              value={ticket.description} 
-              disabled 
-              className="resize-none bg-muted cursor-default" 
+            <Textarea
+              value={ticket.description}
+              disabled
+              className="resize-none bg-muted cursor-default"
               rows={5}
             />
           </div>

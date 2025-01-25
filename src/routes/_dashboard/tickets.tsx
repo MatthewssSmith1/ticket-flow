@@ -1,40 +1,37 @@
-import supabase, { unwrap } from '@/lib/supabase'
 import { createFileRoute } from '@tanstack/react-router'
-import { TicketMessages } from '@/components/TicketMessages'
-import { EditTicket } from '@/components/EditTicket'
-import { Views } from '@/components/Views'
-import { z } from 'zod'
-
-const ticketSearchSchema = z.object({
-  id: z.string().uuid().optional(),
-})
+import { useViewStore } from '@/stores/viewStore'
+import { TicketTable } from '@/components/TicketTable'
+import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/_dashboard/tickets')({
-  validateSearch: (search) => {
-    const result = ticketSearchSchema.safeParse(search)
-
-    if (!result.success) return { id: undefined }
-
-    return result.data
-  },
-  beforeLoad: async ({ search: { id } }) => {
-    if (!id) return { ticket: null }
-
-    return { 
-      ticket: await supabase.from('tickets').select('*, tickets_members(member_id)').eq('id', id).single().then(unwrap)
-    }
-  },
-  component: () => {
-    const { ticket } = Route.useRouteContext()
-
-    if (!ticket) return <Views />
-
-    return (
-      <main className="grid lg:grid-cols-[2fr_3fr] gap-6 overflow-y-auto">
-        <EditTicket ticket={ticket} />
-        <TicketMessages ticket={ticket} />
-      </main>
-    )
-  },
+  component: () => (
+    <main className="grid grid-cols-[1fr_2fr]">
+      <section className="px-4 py-2 space-y-2">
+        <ViewList />
+      </section>
+      <section className="px-4 py-2 space-y-2">
+        <TicketTable />
+      </section>
+    </main>
+  )
 })
 
+function ViewList() {
+  const { views, selectedView, setSelectedView } = useViewStore()
+
+  return (
+    <div className="space-y-2 w-[150px]">
+      <h1 className="text-2xl font-bold text-center mb-2">Views</h1>
+      {views.map((view) => (
+        <Button
+          key={view.id}
+          variant={selectedView?.id === view.id ? 'default' : 'ghost'}
+          className="w-full justify-start"
+          onClick={() => setSelectedView(view.id)}
+        >
+          {view.name}
+        </Button>
+      ))}
+    </div>
+  )
+} 

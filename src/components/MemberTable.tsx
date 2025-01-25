@@ -26,7 +26,7 @@ export function MemberTable() {
 
   if (!members) return <div>Loading...</div>
 
-  const handleRowClick = (id: number) => navigate({ search: { id } as any })
+  const handleRowClick = (id: number) => navigate({ to: '/member/$id', params: { id: id.toString() } })
 
   return (
     <div className="rounded-md border max-w-[500px] mx-auto">

@@ -18,10 +18,12 @@ import { Route as PublicVerifyTicketImport } from './routes/_public/verify-ticke
 import { Route as PublicTicketImport } from './routes/_public/ticket'
 import { Route as DashboardTicketsImport } from './routes/_dashboard/tickets'
 import { Route as DashboardSettingsImport } from './routes/_dashboard/settings'
-import { Route as DashboardPeopleImport } from './routes/_dashboard/people'
+import { Route as DashboardMembersImport } from './routes/_dashboard/members'
 import { Route as authSignupImport } from './routes/(auth)/signup'
 import { Route as authLogoutImport } from './routes/(auth)/logout'
 import { Route as authLoginImport } from './routes/(auth)/login'
+import { Route as DashboardTicketIdImport } from './routes/_dashboard/ticket.$id'
+import { Route as DashboardMemberIdImport } from './routes/_dashboard/member.$id'
 
 // Create/Update Routes
 
@@ -65,9 +67,9 @@ const DashboardSettingsRoute = DashboardSettingsImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardPeopleRoute = DashboardPeopleImport.update({
-  id: '/people',
-  path: '/people',
+const DashboardMembersRoute = DashboardMembersImport.update({
+  id: '/members',
+  path: '/members',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -87,6 +89,18 @@ const authLoginRoute = authLoginImport.update({
   id: '/(auth)/login',
   path: '/login',
   getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardTicketIdRoute = DashboardTicketIdImport.update({
+  id: '/ticket/$id',
+  path: '/ticket/$id',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardMemberIdRoute = DashboardMemberIdImport.update({
+  id: '/member/$id',
+  path: '/member/$id',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -128,11 +142,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignupImport
       parentRoute: typeof rootRoute
     }
-    '/_dashboard/people': {
-      id: '/_dashboard/people'
-      path: '/people'
-      fullPath: '/people'
-      preLoaderRoute: typeof DashboardPeopleImport
+    '/_dashboard/members': {
+      id: '/_dashboard/members'
+      path: '/members'
+      fullPath: '/members'
+      preLoaderRoute: typeof DashboardMembersImport
       parentRoute: typeof DashboardImport
     }
     '/_dashboard/settings': {
@@ -170,21 +184,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexImport
       parentRoute: typeof PublicImport
     }
+    '/_dashboard/member/$id': {
+      id: '/_dashboard/member/$id'
+      path: '/member/$id'
+      fullPath: '/member/$id'
+      preLoaderRoute: typeof DashboardMemberIdImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/ticket/$id': {
+      id: '/_dashboard/ticket/$id'
+      path: '/ticket/$id'
+      fullPath: '/ticket/$id'
+      preLoaderRoute: typeof DashboardTicketIdImport
+      parentRoute: typeof DashboardImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface DashboardRouteChildren {
-  DashboardPeopleRoute: typeof DashboardPeopleRoute
+  DashboardMembersRoute: typeof DashboardMembersRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTicketsRoute: typeof DashboardTicketsRoute
+  DashboardMemberIdRoute: typeof DashboardMemberIdRoute
+  DashboardTicketIdRoute: typeof DashboardTicketIdRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardPeopleRoute: DashboardPeopleRoute,
+  DashboardMembersRoute: DashboardMembersRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTicketsRoute: DashboardTicketsRoute,
+  DashboardMemberIdRoute: DashboardMemberIdRoute,
+  DashboardTicketIdRoute: DashboardTicketIdRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -211,12 +243,14 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/logout': typeof authLogoutRoute
   '/signup': typeof authSignupRoute
-  '/people': typeof DashboardPeopleRoute
+  '/members': typeof DashboardMembersRoute
   '/settings': typeof DashboardSettingsRoute
   '/tickets': typeof DashboardTicketsRoute
   '/ticket': typeof PublicTicketRoute
   '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
+  '/member/$id': typeof DashboardMemberIdRoute
+  '/ticket/$id': typeof DashboardTicketIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -224,12 +258,14 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/logout': typeof authLogoutRoute
   '/signup': typeof authSignupRoute
-  '/people': typeof DashboardPeopleRoute
+  '/members': typeof DashboardMembersRoute
   '/settings': typeof DashboardSettingsRoute
   '/tickets': typeof DashboardTicketsRoute
   '/ticket': typeof PublicTicketRoute
   '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
+  '/member/$id': typeof DashboardMemberIdRoute
+  '/ticket/$id': typeof DashboardTicketIdRoute
 }
 
 export interface FileRoutesById {
@@ -239,12 +275,14 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/logout': typeof authLogoutRoute
   '/(auth)/signup': typeof authSignupRoute
-  '/_dashboard/people': typeof DashboardPeopleRoute
+  '/_dashboard/members': typeof DashboardMembersRoute
   '/_dashboard/settings': typeof DashboardSettingsRoute
   '/_dashboard/tickets': typeof DashboardTicketsRoute
   '/_public/ticket': typeof PublicTicketRoute
   '/_public/verify-ticket': typeof PublicVerifyTicketRoute
   '/_public/': typeof PublicIndexRoute
+  '/_dashboard/member/$id': typeof DashboardMemberIdRoute
+  '/_dashboard/ticket/$id': typeof DashboardTicketIdRoute
 }
 
 export interface FileRouteTypes {
@@ -254,24 +292,28 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/signup'
-    | '/people'
+    | '/members'
     | '/settings'
     | '/tickets'
     | '/ticket'
     | '/verify-ticket'
     | '/'
+    | '/member/$id'
+    | '/ticket/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
     | '/login'
     | '/logout'
     | '/signup'
-    | '/people'
+    | '/members'
     | '/settings'
     | '/tickets'
     | '/ticket'
     | '/verify-ticket'
     | '/'
+    | '/member/$id'
+    | '/ticket/$id'
   id:
     | '__root__'
     | '/_dashboard'
@@ -279,12 +321,14 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/logout'
     | '/(auth)/signup'
-    | '/_dashboard/people'
+    | '/_dashboard/members'
     | '/_dashboard/settings'
     | '/_dashboard/tickets'
     | '/_public/ticket'
     | '/_public/verify-ticket'
     | '/_public/'
+    | '/_dashboard/member/$id'
+    | '/_dashboard/ticket/$id'
   fileRoutesById: FileRoutesById
 }
 
@@ -324,9 +368,11 @@ export const routeTree = rootRoute
     "/_dashboard": {
       "filePath": "_dashboard.tsx",
       "children": [
-        "/_dashboard/people",
+        "/_dashboard/members",
         "/_dashboard/settings",
-        "/_dashboard/tickets"
+        "/_dashboard/tickets",
+        "/_dashboard/member/$id",
+        "/_dashboard/ticket/$id"
       ]
     },
     "/_public": {
@@ -346,8 +392,8 @@ export const routeTree = rootRoute
     "/(auth)/signup": {
       "filePath": "(auth)/signup.tsx"
     },
-    "/_dashboard/people": {
-      "filePath": "_dashboard/people.tsx",
+    "/_dashboard/members": {
+      "filePath": "_dashboard/members.tsx",
       "parent": "/_dashboard"
     },
     "/_dashboard/settings": {
@@ -369,6 +415,14 @@ export const routeTree = rootRoute
     "/_public/": {
       "filePath": "_public/index.tsx",
       "parent": "/_public"
+    },
+    "/_dashboard/member/$id": {
+      "filePath": "_dashboard/member.$id.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/ticket/$id": {
+      "filePath": "_dashboard/ticket.$id.tsx",
+      "parent": "/_dashboard"
     }
   }
 }

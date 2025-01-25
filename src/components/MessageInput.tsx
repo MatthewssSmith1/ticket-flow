@@ -1,6 +1,7 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SendIcon, LockIcon, UnlockIcon } from 'lucide-react';
 import { useMessageStore } from '@/stores/messageStore';
+import { getRouteApi } from "@tanstack/react-router";
 import { useOrgStore } from '@/stores/orgStore';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
@@ -11,7 +12,8 @@ interface MessageForm {
   isInternal: boolean;
 }
 
-export function MessageInput({ ticketId }: { ticketId: string }) {
+export function MessageInput() {
+  const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()
   const form = useForm<MessageForm>({
     defaultValues: {
       content: '',
@@ -23,7 +25,7 @@ export function MessageInput({ ticketId }: { ticketId: string }) {
 
   const handleSubmit = (data: MessageForm) => {
     addMessage({
-      ticket_id: ticketId,
+      ticket_id: ticket.id,
       content: data.content,
       is_internal: data.isInternal,
       author_id: authMember?.id ?? null,
