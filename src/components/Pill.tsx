@@ -30,7 +30,7 @@ const colors: Record<Status | Priority | Channel | Role, string> = {
 
 export function Pill({ text }: { text: Status | Priority | Channel | Role }) {
   return (
-    <Badge variant="outline" className={cn(colors[text], 'rounded-full font-semibold select-none pb-[3px]')}>
+    <Badge variant="outline" className={cn(colors[text], 'rounded-full font-semibold select-none pb-[3px] border-none')}>
       {text.toLowerCase().replace('_', ' ')}
     </Badge>
   )

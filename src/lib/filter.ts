@@ -20,7 +20,7 @@ export const channelEq = (value: Channel): Filter => ({ type: 'TEXT', field: 'ch
 export const priorityEq = (value: Priority): Filter => ({ type: 'TEXT', field: 'priority', operator: 'EQ', value })
 export const authorEq = (value: number): Filter => ({ type: 'INTEGER', field: 'author_id', operator: 'EQ', value: value.toString() })
 
-export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, filterValue: any, addMeta: (meta: any) => void): boolean {
+export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, filterValue: any): boolean {
   if (filterValue.length === 0) return true
 
   const applicableFilters = filterValue.filter((f: Filter) => f.field === columnId)

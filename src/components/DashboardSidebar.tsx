@@ -25,11 +25,11 @@ export function DashboardSidebar() {
   )
 }
 
-const pageLinks = linkOptions([
+const pageLinks: Array<{ to: string, label: string, icon: React.ElementType }> = [
   { to: '/tickets', label: 'Tickets', icon: Tags },
   { to: '/people', label: 'People', icon: Users },
   { to: '/settings', label: 'Settings', icon: Settings },
-])
+]
 
 function PagesGroup() {
   return (

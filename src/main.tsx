@@ -11,7 +11,8 @@ const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   context: {
-    user: null
+    user: null,
+    ticket: null
   },
 })
 
