@@ -3,6 +3,7 @@ import { EnumInstance, EnumKey } from '@/types/types';
 import { DatePickerWithPresets } from './DatePicker';
 import { MemberMultiSelect } from './MemberMultiSelect';
 import { GroupMultiSelect } from './GroupMultiSelect';
+import { TagMultiSelect } from './TagMultiSelect';
 import supabase, { unwrap } from '@/lib/supabase';
 import { useOrgStore } from '@/stores/orgStore';
 import { getRouteApi } from '@tanstack/react-router';
@@ -66,6 +67,19 @@ export function EditTicket() {
       .then(unwrap)
   }
 
+  function setTags(tagIds: number[]) {
+    supabase.from('tags_tickets')
+      .delete()
+      .eq('ticket_id', ticket.id)
+      .then(unwrap)
+
+    if (tagIds.length === 0) return;
+
+    supabase.from('tags_tickets')
+      .insert(tagIds.map(tag_id => ({ ticket_id: ticket.id, tag_id })))
+      .then(unwrap)
+  }
+
   const memberIds = ticket.tickets_members.map(tm => tm.member_id);
   const groupIds = ticket.tickets_groups.map(tg => tg.group_id);
   const memberName = getMemberName(ticket.author_id) ?? ticket.name ?? '-';
@@ -99,7 +113,11 @@ export function EditTicket() {
             </div>
             <div>
               <h2>Tags</h2>
-              <p className="select-none">{ticket.tags?.length ? ticket.tags.join(', ') : '-'}</p>
+              <TagMultiSelect 
+                value={ticket.tags_tickets.map(tt => tt.tag_id)}
+                onValueChange={setTags}
+                placeholder="Select tags"
+              />
             </div>
           </section>
           <div>

@@ -1,4 +1,4 @@
-import { Organization, Member, Group } from '@/types/types'
+import { Organization, Member, Group, Tag } from '@/types/types'
 import supabase, { unwrap } from '@/lib/supabase'
 import { create } from 'zustand'
 import { toast } from '@/hooks/use-toast'
@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast'
 export type OrgState = Organization & {
   members: Member[]
   groups: Group[]
+  tags: Tag[]
 }
 
 type State = {
@@ -52,7 +53,7 @@ const _useOrgStore = create<State>((set, get) => ({
     try {
       const openOrg = await supabase
         .from('organizations')
-        .select(`*, members:members(*), groups:groups(*)`)
+        .select(`*, members:members(*), groups:groups(*), tags:tags(*)`)
         .eq('id', org.id)
         .single()
         .then(unwrap)
@@ -76,5 +77,7 @@ export function useOrgStore() {
   const getMemberName = (id: number | null) => id === authId ? 'You' 
     : store.openOrg?.members.find(m => m.id === id)?.name || null
 
-  return { ...store, getMemberName }
+  const getTag = (id: number) => store.openOrg?.tags.find(t => t.id === id) || null
+
+  return { ...store, getMemberName, getTag }
 }

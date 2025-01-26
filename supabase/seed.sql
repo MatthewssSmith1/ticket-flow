@@ -70,3 +70,24 @@ INSERT INTO public.tickets (org_id, author_id, subject, description, status, pri
 UPDATE public.tickets SET 
     verified_at = now() - (random() * interval '30 days'),
     due_at = now() + (random() * interval '30 days');
+
+INSERT INTO public.tags (org_id, name, color) VALUES
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'bug', '#EF4444'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'feature', '#3B82F6'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'documentation', '#10B981'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'security', '#F59E0B'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'performance', '#8B5CF6'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'UX', '#EC4899'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'mobile', '#14B8A6');
+
+INSERT INTO public.tags_tickets (tag_id, ticket_id) VALUES
+    (1, (SELECT id FROM tickets WHERE subject = 'Search function broken')),
+    (1, (SELECT id FROM tickets WHERE subject = 'Webhook failures')),
+    (3, (SELECT id FROM tickets WHERE subject = 'API Documentation Update')),
+    (3, (SELECT id FROM tickets WHERE subject = 'Customer Support Training Materials')),
+    (4, (SELECT id FROM tickets WHERE subject = 'Security Audit Results')),
+    (4, (SELECT id FROM tickets WHERE subject = 'Two-factor authentication issue')),
+    (5, (SELECT id FROM tickets WHERE subject = 'Slow dashboard loading')),
+    (5, (SELECT id FROM tickets WHERE subject = 'Performance Optimization Plan')),
+    (6, (SELECT id FROM tickets WHERE subject = 'UI glitch in dark mode')),
+    (7, (SELECT id FROM tickets WHERE subject = 'Mobile app crashing'));

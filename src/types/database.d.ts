@@ -241,6 +241,71 @@ export type Database = {
         }
         Relationships: []
       }
+      tags: {
+        Row: {
+          color: string
+          created_at: string
+          id: number
+          name: string
+          org_id: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          id?: never
+          name: string
+          org_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: never
+          name?: string
+          org_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags_tickets: {
+        Row: {
+          created_at: string
+          tag_id: number
+          ticket_id: string
+        }
+        Insert: {
+          created_at?: string
+          tag_id: number
+          ticket_id: string
+        }
+        Update: {
+          created_at?: string
+          tag_id?: number
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_tickets_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tags_tickets_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tickets: {
         Row: {
           author_id: number | null
@@ -256,7 +321,6 @@ export type Database = {
           priority: Database["public"]["Enums"]["ticket_priority"]
           status: Database["public"]["Enums"]["ticket_status"]
           subject: string
-          tags: string[] | null
           updated_at: string
           verified_at: string | null
         }
@@ -274,7 +338,6 @@ export type Database = {
           priority?: Database["public"]["Enums"]["ticket_priority"]
           status?: Database["public"]["Enums"]["ticket_status"]
           subject: string
-          tags?: string[] | null
           updated_at?: string
           verified_at?: string | null
         }
@@ -292,7 +355,6 @@ export type Database = {
           priority?: Database["public"]["Enums"]["ticket_priority"]
           status?: Database["public"]["Enums"]["ticket_status"]
           subject?: string
-          tags?: string[] | null
           updated_at?: string
           verified_at?: string | null
         }
