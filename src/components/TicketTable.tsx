@@ -101,12 +101,6 @@ export function TicketTable({ filters, hiddenColumns = [] }: Props) {
     },
   ]
 
-  if (isLoading) return <div>Loading...</div>
-  if (isError) return <div>Error loading tickets</div>
-
-  const handleRowClick = (row: Row<Ticket>) => 
-    navigate({ to: '/ticket/$id', params: { id: row.original.id } })
-
   const columnVisibility = useMemo(() => 
     COLUMN_IDS.reduce((acc, columnId) => {
       acc[columnId] = hiddenColumns?.includes(columnId)
@@ -114,6 +108,12 @@ export function TicketTable({ filters, hiddenColumns = [] }: Props) {
     }, {} as VisibilityState),
     [hiddenColumns]
   )
+
+  if (isLoading) return <div>Loading...</div>
+  if (isError) return <div>Error loading tickets</div>
+
+  const handleRowClick = (row: Row<Ticket>) => 
+    navigate({ to: '/ticket/$id', params: { id: row.original.id } })
 
   return (
     <GenericTable
