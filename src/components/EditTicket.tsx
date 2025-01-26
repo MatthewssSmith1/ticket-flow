@@ -132,7 +132,7 @@ export function EditTicket() {
           <Textarea
             value={ticket.description}
             disabled
-            className="resize-none bg-muted cursor-default"
+            className="resize-none bg-muted pointer-events-none"
             rows={5}
           />
           <Separator />

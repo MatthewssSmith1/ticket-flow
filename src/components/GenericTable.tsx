@@ -1,4 +1,4 @@
-import { flexRender, useReactTable, getCoreRowModel, getSortedRowModel, getFilteredRowModel } from '@tanstack/react-table'
+import { flexRender, useReactTable, getCoreRowModel, getSortedRowModel, getFilteredRowModel, VisibilityState } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { ColumnDef, FilterFnOption, Row, RowData, SortingState } from '@tanstack/react-table'
 import { useState } from 'react'
@@ -10,6 +10,7 @@ type Props<T, F> = {
   onRowClick: (row: Row<T>) => void
   globalFilter?: F
   globalFilterFn?: FilterFnOption<T>
+  columnVisibility?: VisibilityState
 }
 
 export function GenericTable<T extends RowData, F>(props: Props<T, F>) {
@@ -25,6 +26,7 @@ export function GenericTable<T extends RowData, F>(props: Props<T, F>) {
     state: {
       sorting,
       globalFilter: props.globalFilter,
+      columnVisibility: props.columnVisibility,
     },
     globalFilterFn: props.globalFilterFn,
   })

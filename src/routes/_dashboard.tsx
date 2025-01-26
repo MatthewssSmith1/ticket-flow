@@ -17,7 +17,7 @@ function DashboardIndex() {
   if (!user) return null
 
   return (
-    <SidebarProvider className="[&>main]:flex-1 [&>main]:overflow-y-auto [&>main]:p-6">
+    <SidebarProvider className="[&>main]:flex-1 [&>main]:overflow-y-auto [&>main]:py-6 [&>main]:px-8">
       <DashboardSidebar />
       <Outlet />
     </SidebarProvider>

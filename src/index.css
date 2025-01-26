@@ -77,6 +77,8 @@
 @layer base {
   * {
     @apply border-border;
+
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
   }
   body {
     @apply bg-background text-foreground;

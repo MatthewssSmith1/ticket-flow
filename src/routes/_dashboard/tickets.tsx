@@ -1,37 +1,54 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { TicketTable, COLUMN_IDS } from '@/components/TicketTable'
+import { Filter, Plus, Columns } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
-import { useViewStore } from '@/stores/viewStore'
-import { TicketTable } from '@/components/TicketTable'
+import { MultiSelect } from '@/components/ui/multi-select'
+import { ViewSelect } from '@/components/ViewSelect'
+import { useState } from "react"
 import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/_dashboard/tickets')({
-  component: () => (
-    <main className="grid grid-cols-[1fr_2fr]">
-      <section className="px-4 py-2 space-y-2">
-        <ViewList />
-      </section>
-      <section className="px-4 py-2 space-y-2">
-        <TicketTable />
-      </section>
-    </main>
-  )
+  component: () => {
+    const [columns, setColumns] = useState(COLUMN_IDS)
+
+    return (
+      <main className="flex flex-col gap-6">
+        <section className="flex items-center gap-3 [&_svg]:size-5">
+          <Filter className="text-muted-foreground mr-1" />
+          <ViewSelect />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={() => console.log('new filter')}>
+                <Plus aria-label="Create new filter" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Create new filter</p>
+            </TooltipContent>
+          </Tooltip>
+          <div className="flex items-center gap-2 ml-auto">
+            <Columns className="text-muted-foreground" />
+            <ColumnMultiSelect value={columns} onValueChange={setColumns} />
+          </div>
+        </section>
+        <TicketTable hiddenColumns={columns} />
+      </main>
+    )
+  }
 })
 
-function ViewList() {
-  const { views, selectedView, setSelectedView } = useViewStore()
+function ColumnMultiSelect({value, onValueChange}: {value: string[], onValueChange: (value: string[]) => void}) {
+  const columnOptions = COLUMN_IDS.map(id => ({
+    label: id.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+    value: id
+  }))
 
   return (
-    <div className="space-y-2 w-[150px]">
-      <h1 className="text-2xl font-bold text-center mb-2">Views</h1>
-      {views.map((view) => (
-        <Button
-          key={view.id}
-          variant={selectedView?.id === view.id ? 'default' : 'ghost'}
-          className="w-full justify-start"
-          onClick={() => setSelectedView(view.id)}
-        >
-          {view.name}
-        </Button>
-      ))}
-    </div>
+    <MultiSelect
+      options={columnOptions}
+      defaultValue={value}
+      onValueChange={onValueChange}
+      placeholder="Select columns"
+    />
   )
-} 
+}

@@ -1,14 +1,16 @@
 import { Ticket, MemberAssignment, GroupAssignment, Group, Member, TagInstance } from '@/types/types'
+import { ColumnDef, Row, VisibilityState } from '@tanstack/react-table'
 import { OrgState, useOrgStore } from '@/stores/orgStore'
 import { Filter, ticketFilter } from '@/lib/filter'
 import supabase, { unwrap } from '@/lib/supabase'
-import { ColumnDef, Row } from '@tanstack/react-table'
 import { SortableHeader } from './SortableHeader'
 import { useViewStore } from '@/stores/viewStore'
 import { GenericTable } from './GenericTable'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { Pill } from './Pill'
+
+export const COLUMN_IDS = ['status', 'priority', 'author_id', 'subject', 'assignee', 'assigned_by', 'due_at', 'tags', 'channel', 'verified_at']
 
 // TODO: infer type from query
 type TagWithRelationships = Ticket & { 
@@ -17,7 +19,12 @@ type TagWithRelationships = Ticket & {
   tags_tickets: TagInstance[]
 }
 
-export function TicketTable({ filters }: { filters?: Filter[] }) {
+type Props = {
+  filters?: Filter[]
+  hiddenColumns?: string[]
+}
+
+export function TicketTable({ filters, hiddenColumns = [] }: Props) {
   const { openOrg, getMemberName, getTag } = useOrgStore()
   const { selectedView } = useViewStore()
   const navigate = useNavigate()
@@ -76,7 +83,7 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
     {
       accessorKey: 'tags',
       header: ({ column }) => <SortableHeader column={column} label="Tags" />,
-      cell: ({ row }) => formatTags(row, getTag),
+      cell: ({ row }) => formatTags(row, getTag) ?? '-',
     },
     {
       accessorKey: 'channel',
@@ -99,6 +106,11 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
   const handleRowClick = (row: Row<Ticket>) => 
     navigate({ to: '/ticket/$id', params: { id: row.original.id } })
 
+  const columnVisibility = COLUMN_IDS.reduce((acc, columnId) => {
+    acc[columnId] = hiddenColumns?.includes(columnId)
+    return acc
+  }, {} as VisibilityState)
+
   return (
     <GenericTable
       data={data ?? []}
@@ -106,6 +118,7 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
       onRowClick={handleRowClick}
       globalFilterFn={ticketFilter}
       globalFilter={filters ?? selectedView?.filters ?? []}
+      columnVisibility={columnVisibility}
     />
   )
 } 
