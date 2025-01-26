@@ -1,15 +1,14 @@
 import { Ticket, MemberAssignment, GroupAssignment, Group, Member, TagInstance } from '@/types/types'
 import { ColumnDef, Row, VisibilityState } from '@tanstack/react-table'
+import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
 import { OrgState, useOrgStore } from '@/stores/orgStore'
 import { Filter, ticketFilter } from '@/lib/filter'
 import supabase, { unwrap } from '@/lib/supabase'
-import { SortableHeader } from './SortableHeader'
 import { useViewStore } from '@/stores/viewStore'
-import { GenericTable } from './GenericTable'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Pill } from './Pill'
 import { useMemo } from 'react'
+import { Pill } from '@/components/Pill'
 
 export const COLUMN_IDS = ['status', 'priority', 'author_id', 'subject', 'assignee', 'assigned_by', 'due_at', 'tags', 'channel', 'verified_at']
 

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createFileRoute } from '@tanstack/react-router'
-import { MemberTable } from '@/components/MemberTable'
-import { GroupTable } from '@/components/GroupTable'
+import { MemberTable } from '@/components/table/MemberTable'
+import { GroupTable } from '@/components/table/GroupTable'
 
 export const Route = createFileRoute('/_dashboard/members')({
   component: Members,

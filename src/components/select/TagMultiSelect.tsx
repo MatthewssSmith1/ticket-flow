@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Tag as TagType } from '@/types/types'
+import { MultiSelect } from '@/components/ui/multi-select'
 import { useOrgStore } from '@/stores/orgStore'
-import { MultiSelect } from './ui/multi-select'
 
 type Props = {
   value: number[]

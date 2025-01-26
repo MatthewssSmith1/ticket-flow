@@ -1,6 +1,7 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useViewStore } from '@/stores/viewStore'
 import { useState } from 'react'
+
 export function ViewSelect() {
   const { views, selectedView, setSelectedView } = useViewStore()
   const [value, setValue] = useState(selectedView?.id ?? '1')

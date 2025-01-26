@@ -1,10 +1,9 @@
+import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
 import { ColumnDef, Row } from '@tanstack/react-table'
-import { SortableHeader } from './SortableHeader'
-import { GenericTable } from './GenericTable'
 import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
 import { Member } from '@/types/types'
-import { Pill } from './Pill'
+import { Pill } from '@/components/Pill'
 
 export function MemberTable() {
   const { openOrg } = useOrgStore()

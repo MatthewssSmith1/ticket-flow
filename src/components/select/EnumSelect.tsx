@@ -1,7 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { EnumKey, EnumInstance } from '@/types/types'
 import { useState } from 'react';
-import { Pill } from './Pill'
+import { Pill } from '@/components/Pill'
 
 const ENUM_OPTIONS: Record<EnumKey, EnumInstance[]> = {
   status: ['NEW', 'OPEN', 'PENDING', 'ON_HOLD', 'SOLVED', 'REOPENED', 'CLOSED'],

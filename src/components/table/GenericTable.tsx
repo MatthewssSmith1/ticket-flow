@@ -1,7 +1,10 @@
 import { flexRender, useReactTable, getCoreRowModel, getSortedRowModel, getFilteredRowModel, VisibilityState } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ColumnDef, FilterFnOption, Row, RowData, SortingState } from '@tanstack/react-table'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
+import { Button } from '@ui/button'
+import { Column } from '@tanstack/react-table'
 import { cn } from "@/lib/utils"
 
 type Props<T, F> = {
@@ -75,13 +78,36 @@ export function GenericTable<T extends RowData, F>(props: Props<T, F>) {
   )
 } 
 
-const LEFT_ALIGNED = ['subject', 'name']
+export function SortableHeader({ column, label }: { column: Column<any, unknown>, label: string }) {
+  const sortDirection = column.getIsSorted()
+
+  const toggleSorting = () => {
+    if (!sortDirection) column.toggleSorting(false)
+    else if (sortDirection === 'asc') column.toggleSorting(true)
+    else column.clearSorting()
+  }
+
+  function SortIcon({ order }: { order: false | 'asc' | 'desc' }) {
+    if (order === 'asc') return <ChevronDown className="ml-1 size-4" />
+    if (order === 'desc') return <ChevronUp className="ml-1 size-4" />
+    return <div className="ml-1 size-4 opacity-0" />
+  }
+
+  return (
+    <Button onClick={toggleSorting} variant="ghost" className="w-full justify-center py-1.5 px-3">
+      <span className="ml-5">{label}</span>
+      <SortIcon order={sortDirection} />
+    </Button>
+  )
+} 
+
+const LEFT_ALIGNED_COLUMNS = ['subject', 'name']
 
 export function TableCellContent({ columnId, children }: { columnId: string, children: React.ReactNode }) {
   return (
     <div className={cn(
       "flex truncate overflow-ellipsis select-none",
-      !LEFT_ALIGNED.includes(columnId) && "justify-center",
+      !LEFT_ALIGNED_COLUMNS.includes(columnId) && "justify-center",
     )}>
       {children}
     </div>

@@ -1,4 +1,4 @@
-import { Select, SelectTrigger, SelectContent, SelectItem } from './ui/select';
+import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
 import { useMemo, useState } from 'react';
 import { useOrgStore } from '@/stores/orgStore';
 import { Member } from '@/types/types';
