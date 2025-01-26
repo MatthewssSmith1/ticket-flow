@@ -4,18 +4,18 @@ import { cn } from '@/lib/utils'
 
 const colors: Record<Status | Priority | Channel | Role, string> = {
   // Status
-  NEW: 'bg-stone-400 text-white',
+  NEW: 'bg-stone-500 text-white',
   OPEN: 'bg-teal-500 text-white',
   PENDING: 'bg-blue-500 text-white',
   ON_HOLD: 'bg-pink-500 text-white',
   SOLVED: 'bg-lime-500 text-white',
   REOPENED: 'bg-purple-500 text-white',
-  CLOSED: 'bg-emerald-700 text-white',
+  CLOSED: 'bg-emerald-600 text-white',
   // Priority
-  URGENT: 'bg-red-500 text-black',
-  HIGH: 'bg-orange-500 text-black',
-  NORMAL: 'bg-yellow-500 text-black',
-  LOW: 'bg-stone-400 text-black',
+  URGENT: 'bg-red-700 text-white',
+  HIGH: 'bg-orange-700 text-white',
+  NORMAL: 'bg-yellow-700 text-white',
+  LOW: 'bg-stone-700 text-white',
   // Channel
   EMAIL: 'bg-red-200 text-black',
   WEB: 'bg-blue-200 text-black',

@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_dashboard/tickets')({
     const [columns, setColumns] = useState(COLUMN_IDS)
 
     return (
-      <main className="flex flex-col gap-6">
+      <main className="grid grid-rows-[auto_1fr]">
         <section className="flex items-center gap-3 [&_svg]:size-5">
           <Filter className="text-muted-foreground mr-1" />
           <ViewSelect />
@@ -31,7 +31,9 @@ export const Route = createFileRoute('/_dashboard/tickets')({
             <ColumnMultiSelect value={columns} onValueChange={setColumns} />
           </div>
         </section>
-        <TicketTable hiddenColumns={columns} />
+        <section className="min-w-0 overflow-auto">
+          <TicketTable hiddenColumns={columns} />
+        </section>
       </main>
     )
   }

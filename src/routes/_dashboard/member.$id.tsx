@@ -38,7 +38,7 @@ function MemberView() {
   }
 
   return (
-    <main className="grid sm:grid-cols-[1fr_1fr] gap-6 overflow-y-auto">
+    <main className="grid sm:grid-cols-[1fr_1fr]">
       <Card>
         <CardHeader>
           <CardTitle>{member.name}</CardTitle>

@@ -9,6 +9,7 @@ import { GenericTable } from './GenericTable'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { Pill } from './Pill'
+import { useMemo } from 'react'
 
 export const COLUMN_IDS = ['status', 'priority', 'author_id', 'subject', 'assignee', 'assigned_by', 'due_at', 'tags', 'channel', 'verified_at']
 
@@ -106,10 +107,13 @@ export function TicketTable({ filters, hiddenColumns = [] }: Props) {
   const handleRowClick = (row: Row<Ticket>) => 
     navigate({ to: '/ticket/$id', params: { id: row.original.id } })
 
-  const columnVisibility = COLUMN_IDS.reduce((acc, columnId) => {
-    acc[columnId] = hiddenColumns?.includes(columnId)
-    return acc
-  }, {} as VisibilityState)
+  const columnVisibility = useMemo(() => 
+    COLUMN_IDS.reduce((acc, columnId) => {
+      acc[columnId] = hiddenColumns?.includes(columnId)
+      return acc
+    }, {} as VisibilityState),
+    [hiddenColumns]
+  )
 
   return (
     <GenericTable

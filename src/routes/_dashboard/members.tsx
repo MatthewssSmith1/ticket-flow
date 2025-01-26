@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_dashboard/members')({
 
 function Members() {
   return (
-    <main className="grid grid-cols-2 gap-4">
+    <main className="grid grid-cols-[3fr_2fr]">
       <Card className="h-full">
         <CardHeader>
           <CardTitle>Groups</CardTitle>

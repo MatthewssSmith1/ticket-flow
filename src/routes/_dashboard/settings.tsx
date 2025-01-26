@@ -1,4 +1,6 @@
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { createFileRoute } from '@tanstack/react-router'
+import { EditTags } from '@/components/EditTags'
 
 export const Route = createFileRoute('/_dashboard/settings')({
   component: Settings,
@@ -6,8 +8,16 @@ export const Route = createFileRoute('/_dashboard/settings')({
 
 function Settings() {
   return (
-    <main>
-      <div>Settings</div>
+    <main className="grid grid-cols-2 grid-rows-2 gap-6">
+      <EditTags />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Ticket Fields</CardTitle>
+        </CardHeader>
+        <CardContent>
+        </CardContent>
+      </Card>
     </main>
   )
 }
