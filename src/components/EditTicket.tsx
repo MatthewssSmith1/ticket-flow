@@ -1,11 +1,11 @@
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { EnumInstance, EnumKey } from '@/types/types';
 import { DatePickerWithPresets } from './DatePicker';
-import { getRouteApi, Link } from '@tanstack/react-router';
+import { MemberMultiSelect } from './MemberMultiSelect';
+import { GroupMultiSelect } from './GroupMultiSelect';
 import supabase, { unwrap } from '@/lib/supabase';
-import { MemberSelect } from './MemberSelect';
-import { ExternalLink } from 'lucide-react';
 import { useOrgStore } from '@/stores/orgStore';
+import { getRouteApi } from '@tanstack/react-router';
 import { EnumSelect } from './EnumSelect';
 import { Separator } from './ui/separator';
 import { Textarea } from './ui/textarea';
@@ -28,20 +28,46 @@ export function EditTicket() {
       .then(unwrap)
   }
 
-  function setAssignee(member_id: number | null) {
+  function assignMembers(memberIds: number[]) {
     supabase.from('tickets_members')
       .delete()
       .eq('ticket_id', ticket.id)
       .then(unwrap)
 
-    if (!member_id) return;
+    if (memberIds.length === 0) return;
+
+    const assignments = memberIds.map(member_id => ({
+      ticket_id: ticket.id,
+      member_id,
+      assigned_by: authMember?.id
+    }));
 
     supabase.from('tickets_members')
-      .insert({ ticket_id: ticket.id, member_id, assigned_by: authMember?.id })
+      .insert(assignments)
       .then(unwrap)
   }
 
-  const firstAssigneeId = ticket.tickets_members[0]?.member_id
+  function assignGroups(groupIds: string[]) {
+    supabase.from('tickets_groups')
+      .delete()
+      .eq('ticket_id', ticket.id)
+      .then(unwrap)
+
+    if (groupIds.length === 0) return;
+
+    const assignments = groupIds.map(group_id => ({
+      ticket_id: ticket.id,
+      group_id: group_id.toString(),
+      assigned_by: authMember?.id
+    }));
+
+    supabase.from('tickets_groups')
+      .insert(assignments)
+      .then(unwrap)
+  }
+
+  const memberIds = ticket.tickets_members.map(tm => tm.member_id);
+  const groupIds = ticket.tickets_groups.map(tg => tg.group_id);
   const memberName = getMemberName(ticket.author_id) ?? ticket.name ?? '-';
   const verifiedDate = ticket.verified_at ? new Date(ticket.verified_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
 
@@ -58,7 +84,7 @@ export function EditTicket() {
             </h2>
           </div>
           <Separator />
-          <div className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-2 gap-4 [&>div]:space-y-2 text-muted-foreground">
+          <section className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-2 gap-4 [&>div]:space-y-2 text-muted-foreground">
             <div>
               <h2>Status</h2>
               <EnumSelect enumKey="status" value={ticket.status} onValueChange={(value) => setEnum('status', value)} />
@@ -75,19 +101,30 @@ export function EditTicket() {
               <h2>Tags</h2>
               <p className="select-none">{ticket.tags?.length ? ticket.tags.join(', ') : '-'}</p>
             </div>
-          </div>
+          </section>
           <div>
             <h2>Due Date</h2>
             <DatePickerWithPresets value={ticket.due_at} onValueChange={setDueDate} disabled={'past'} />
           </div>
-          <div>
-            <h2>Assignee
-              {firstAssigneeId && <Link to="/member/$id" params={{ id: firstAssigneeId?.toString() ?? '' }}>
-                <ExternalLink className="mb-1 ml-1 size-3 inline-block" />
-              </Link>}
-            </h2>
-            <MemberSelect memberId={firstAssigneeId} onValueChange={setAssignee} filter={m => m.role !== 'CUSTOMER'}/>
-          </div>
+          <section className="space-y-6">
+            <div>
+              <h2>Assigned Individuals</h2>
+              <MemberMultiSelect 
+                value={memberIds}
+                onValueChange={assignMembers}
+                filter={m => m.role !== 'CUSTOMER'}
+                placeholder="Assign members"
+              />
+            </div>
+            <div>
+              <h2>Assigned Groups</h2>
+              <GroupMultiSelect 
+                value={groupIds}
+                onValueChange={assignGroups}
+                placeholder="Assign groups"
+              />
+            </div>
+          </section>
 
           <Separator />
           <div className="space-y-2">

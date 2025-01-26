@@ -1,3 +1,5 @@
+import { Ticket, MemberAssignment, GroupAssignment, Group, Member } from '@/types/types'
+import { OrgState, useOrgStore } from '@/stores/orgStore'
 import { Filter, ticketFilter } from '@/lib/filter'
 import supabase, { unwrap } from '@/lib/supabase'
 import { ColumnDef, Row } from '@tanstack/react-table'
@@ -5,12 +7,10 @@ import { SortableHeader } from './SortableHeader'
 import { useViewStore } from '@/stores/viewStore'
 import { GenericTable } from './GenericTable'
 import { useNavigate } from '@tanstack/react-router'
-import { useOrgStore } from '@/stores/orgStore'
 import { useQuery } from '@tanstack/react-query'
-import { Ticket, MemberAssignment } from '@/types/types'
 import { Pill } from './Pill'
 
-type TicketWithMembers = Ticket & { tickets_members: MemberAssignment[] }
+type TicketWithAssignments = Ticket & { tickets_members: MemberAssignment[], tickets_groups: GroupAssignment[] }
 
 export function TicketTable({ filters }: { filters?: Filter[] }) {
   const { openOrg, getMemberName } = useOrgStore()
@@ -23,7 +23,7 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
       if (!openOrg) return []
       return (await supabase
         .from('tickets')
-        .select('*, tickets_members(member_id, assigned_by)')
+        .select('*, tickets_members(member_id, assigned_by), tickets_groups(group_id, assigned_by)')
         .eq('org_id', openOrg.id)
         .then(unwrap))
     }
@@ -53,12 +53,12 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
     {
       accessorKey: 'assignee',
       header: ({ column }) => <SortableHeader column={column} label="Assignee" />,
-      cell: ({ row }) => getMemberName((row.original as TicketWithMembers).tickets_members[0]?.member_id) ?? '-',
+      cell: ({ row }) => formatAssignee(row, openOrg),
     },
     {
       accessorKey: 'assigned_by',
       header: ({ column }) => <SortableHeader column={column} label="Assigned By" />,
-      cell: ({ row }) => getMemberName((row.original as TicketWithMembers).tickets_members[0]?.assigned_by) ?? '-',
+      cell: ({ row }) => getMemberName(formatAssigner(row)) ?? '-',
     },
     {
       accessorKey: 'due_at',
@@ -108,3 +108,29 @@ export function TicketTable({ filters }: { filters?: Filter[] }) {
   )
 } 
 
+function formatAssignee(row: Row<Ticket>, openOrg: OrgState | null) {
+  const { tickets_groups, tickets_members } = row.original as TicketWithAssignments
+  if (!openOrg) return '-'
+
+  const groups = tickets_groups
+    .map(tg => openOrg.groups.find(g => g.id === tg.group_id)).filter(Boolean) as Group[]
+
+  if (groups.length === 1) return groups[0].name
+  if (groups.length > 1) return `${groups.length} groups`
+
+  const individuals = tickets_members
+    .map(tm => openOrg.members.find(m => m.id === tm.member_id)).filter(Boolean) as Member[]
+
+  if (individuals.length === 1) return individuals[0].name
+  if (individuals.length > 1) return `${individuals.length} people`
+
+  return '-'
+}
+
+function formatAssigner(row: Row<Ticket>) {
+  const ticket = row.original as TicketWithAssignments
+  
+  return [...ticket.tickets_groups, ...ticket.tickets_members]
+    .map(obj => (obj as any).assigned_by)
+    .filter(Boolean)[0] as number | null
+}

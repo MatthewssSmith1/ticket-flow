@@ -3,7 +3,7 @@ import supabase, { unwrap } from '@/lib/supabase'
 import { create } from 'zustand'
 import { toast } from '@/hooks/use-toast'
 
-type OrgState = Organization & {
+export type OrgState = Organization & {
   members: Member[]
   groups: Group[]
 }
