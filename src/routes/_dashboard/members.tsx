@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@ui/card'
 import { createFileRoute } from '@tanstack/react-router'
 import { MemberTable } from '@/components/table/MemberTable'
 import { GroupTable } from '@/components/table/GroupTable'

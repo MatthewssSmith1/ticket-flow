@@ -1,11 +1,11 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ui/tooltip"
 import { SendIcon, LockIcon, UnlockIcon } from 'lucide-react';
 import { useMessageStore } from '@/stores/messageStore';
 import { getRouteApi } from "@tanstack/react-router";
 import { useOrgStore } from '@/stores/orgStore';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@ui/textarea';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+import { Button } from '@ui/button';
 
 interface MessageForm {
   content: string;

@@ -1,5 +1,5 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ui/dialog'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@ui/form'
 import { useState, useEffect } from 'react'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useOrgStore } from '@/stores/orgStore'
@@ -7,8 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { DialogState } from './EditTags'
 import { useToast } from '@/hooks/use-toast'
 import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from '@ui/button'
+import { Input } from '@ui/input'
 import { z } from 'zod'
 
 const tagSchema = z.object({

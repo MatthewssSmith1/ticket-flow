@@ -1,10 +1,10 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover"
 import { addDays, format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar } from "@ui/calendar"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@ui/button"
 import { cn } from "@/lib/utils"
 
 type Props = {

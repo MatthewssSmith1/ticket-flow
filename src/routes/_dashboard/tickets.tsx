@@ -1,11 +1,11 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/tooltip"
 import { TicketTable, COLUMN_IDS } from '@/components/table/TicketTable'
 import { Filter, Plus, Columns } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
-import { MultiSelect } from '@/components/ui/multi-select'
+import { MultiSelect } from '@ui/multi-select'
 import { ViewSelect } from '@/components/select/ViewSelect'
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@ui/button'
 
 export const Route = createFileRoute('/_dashboard/tickets')({
   component: () => {

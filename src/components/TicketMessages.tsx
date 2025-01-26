@@ -1,13 +1,13 @@
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@ui/card';
 import { UserIcon, LockIcon, Trash2Icon } from 'lucide-react';
 import { useMessageStore } from '@/stores/messageStore';
 import { MessageInput } from './MessageInput';
 import { useOrgStore } from '@/stores/orgStore';
 import { getRouteApi } from '@tanstack/react-router';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from '@ui/scroll-area';
 import { useEffect } from 'react';
 import { Message } from '@/types/types';
-import { Button } from '@/components/ui/button';
+import { Button } from '@ui/button';
 
 export function TicketMessages() {
   const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()

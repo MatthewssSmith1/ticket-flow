@@ -1,4 +1,4 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select'
 import { EnumKey, EnumInstance } from '@/types/types'
 import { useState } from 'react';
 import { Pill } from '@/components/Pill'

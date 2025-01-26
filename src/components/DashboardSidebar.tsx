@@ -1,16 +1,16 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@ui/dropdown-menu"
 import {
   Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroupLabel,
   SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton, SidebarMenu
-} from '@/components/ui/sidebar'
+} from '@ui/sidebar'
 import { Building, ChevronsUpDown, Home, Plus, Tags, Users, LogOutIcon, Ticket, Settings } from 'lucide-react'
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@ui/avatar'
 import { useEffect, ElementType } from "react"
 import { useOrgStore } from '@/stores/orgStore'
-import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { ThemeToggle } from "@ui/theme-toggle"
 import { Fragment } from "react/jsx-runtime"
-import { Button } from '@/components/ui/button'
+import { Button } from '@ui/button'
 
 export function DashboardSidebar() {
   return (

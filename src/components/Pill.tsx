@@ -1,5 +1,5 @@
 import { Status, Priority, Channel, Role } from '@/types/types'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@ui/badge'
 import { cn } from '@/lib/utils'
 
 const colors: Record<Status | Priority | Channel | Role, string> = {

@@ -2,9 +2,9 @@ import Auth, { Divider, NavText, authSchema, Credentials } from "@/components/au
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@ui/button"
+import { Input } from "@ui/input"
+import { Label } from "@ui/label"
 import supabase from '@/lib/supabase'
 
 export default function Signup() {

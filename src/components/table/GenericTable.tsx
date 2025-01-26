@@ -1,5 +1,5 @@
 import { flexRender, useReactTable, getCoreRowModel, getSortedRowModel, getFilteredRowModel, VisibilityState } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table'
 import { ColumnDef, FilterFnOption, Row, RowData, SortingState } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'

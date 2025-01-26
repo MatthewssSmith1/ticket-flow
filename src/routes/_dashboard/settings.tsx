@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@ui/card'
 import { createFileRoute } from '@tanstack/react-router'
 import { EditTags } from '@/components/EditTags'
 

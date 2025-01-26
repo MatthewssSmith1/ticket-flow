@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { DashboardSidebar } from '@/components/DashboardSidebar'
-import { SidebarProvider } from '@/components/ui/sidebar'
+import { SidebarProvider } from '@ui/sidebar'
 import Login from '@/components/auth/Login'
 
 export const Route = createFileRoute('/_dashboard')({

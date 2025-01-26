@@ -1,6 +1,6 @@
 import { UserIcon, UserPen, UserCog } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { MultiSelect } from '@/components/ui/multi-select';
+import { MultiSelect } from '@ui/multi-select';
 import { useOrgStore } from '@/stores/orgStore';
 import { Member } from '@/types/types';
 

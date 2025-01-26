@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useOrgStore } from '@/stores/orgStore';
-import { MultiSelect } from '@/components/ui/multi-select';
+import { MultiSelect } from '@ui/multi-select';
 import { Group } from '@/types/types';
 
 type Props = {

@@ -1,8 +1,8 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@ui/card'
 import { useOrgStore } from '@/stores/orgStore'
 import { TagDialog } from './TagDialog'
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@ui/button'
 import { Plus } from 'lucide-react'
 import { Tag } from '@/types/types'
 
