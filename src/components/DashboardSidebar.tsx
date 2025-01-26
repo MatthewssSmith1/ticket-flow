@@ -1,8 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@ui/dropdown-menu"
-import {
-  Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroupLabel,
-  SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton, SidebarMenu
-} from '@ui/sidebar'
+import { SidebarGroupLabel, SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton, SidebarMenu } from '@ui/sidebar'
+import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarTrigger, useSidebar } from '@ui/sidebar'
 import { Building, ChevronsUpDown, Home, Plus, Tags, Users, LogOutIcon, Ticket, Settings } from 'lucide-react'
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@ui/avatar'
@@ -14,7 +12,7 @@ import { Button } from '@ui/button'
 
 export function DashboardSidebar() {
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <Header />
       <SidebarContent> 
         <PagesGroup /> 
@@ -38,7 +36,7 @@ function PagesGroup() {
         <SidebarMenu>
           {pageLinks.map(({ to, label, icon: Icon }, index) => (
             <SidebarMenuItem key={index}>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton asChild tooltip={label}>
                 <Link to={to} activeProps={{ className: 'bg-accent' }} className="transition-colors select-none">
                   <Icon className="mr-2 size-4" />
                   <span>{label}</span>
@@ -55,46 +53,48 @@ function PagesGroup() {
 function Header() {
   const { user } = getRouteApi('/_dashboard').useRouteContext()
   const { orgs, openOrg, setOpenOrg, loadOrgs } = useOrgStore()
+  const { state } = useSidebar()
 
   useEffect(() => {
     if (user && orgs.length === 0) loadOrgs(user.id)
   }, [user, orgs, loadOrgs])
 
-  if (!orgs?.length) {
-    return (
-      <SidebarHeader>
-        <Button variant="ghost" className="w-full justify-start" disabled>
-          <Building className="mr-2 h-4 w-4" />
-          <span className="flex-1 text-left">No Organizations</span>
-        </Button>
-      </SidebarHeader>
-    )
-  }
-
   return (
     <SidebarHeader>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-full justify-start">
-            <Building className="mr-2 h-4 w-4" />
-            <span className="flex-1 text-left">{openOrg?.name}</span>
-            <ChevronsUpDown className="h-4 w-4 opacity-50" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          {orgs.map((org) => (
-            <DropdownMenuItem key={org.id} onSelect={() => setOpenOrg(org, user?.id)}>
+      <div className="flex items-center gap-2">
+        {state !== "collapsed" && (
+          orgs.length === 0 ? (
+            <Button variant="ghost" className="flex-1 justify-start" disabled>
               <Building className="mr-2 h-4 w-4" />
-              {org.name}
-            </DropdownMenuItem>
-          ))}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
-            <Plus className="mr-2 h-4 w-4" />
-            New Organization
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              <span className="flex-1 text-left">No Organizations</span>
+            </Button>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex-1 justify-start">
+                  <Building className="mr-2 h-4 w-4" />
+                  <span className="flex-1 text-left">{openOrg?.name}</span>
+                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                {orgs.map((org) => (
+                  <DropdownMenuItem key={org.id} onSelect={() => setOpenOrg(org, user?.id)}>
+                    <Building className="mr-2 h-4 w-4" />
+                    {org.name}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Organization
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
+        )}
+        <SidebarTrigger className="size-8" />
+      </div>
     </SidebarHeader>
   )
 }
@@ -108,6 +108,7 @@ const footerLinks = linkOptions([
 function Footer() {
   const routeApi = getRouteApi('/_dashboard');
   const { user } = routeApi.useRouteContext();
+  const { state } = useSidebar();
 
   if (!user) return null
 
@@ -117,15 +118,15 @@ function Footer() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex-1 min-w-0 h-max py-1.5 px-3">
-              <Avatar className="shrink-0 mr-2 h-6 w-6">
+              <Avatar className="shrink-0 h-6 w-6">
                 <AvatarFallback>
                   {user.email?.[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col items-start text-sm min-w-0 mr-auto overflow-hidden [&>span]:truncate [&>span]:w-full [&>span]:text-left">
+              {state !== "collapsed" && <div className="flex flex-col items-start text-sm min-w-0 ml-2 mr-auto overflow-hidden [&>span]:truncate [&>span]:w-full [&>span]:text-left">
                 <span className="font-medium">{user.email?.split('@')[0]}</span>
                 <span className="text-xs text-muted-foreground">{user.email}</span>
-              </div>
+              </div>}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-40">
@@ -142,7 +143,7 @@ function Footer() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <ThemeToggle />
+        {state !== "collapsed" && <ThemeToggle />}
       </div>
     </SidebarFooter>
   )
