@@ -7,6 +7,7 @@ export type Ticket = Tables<"tickets">
 export type Member = Tables<"members">
 export type Message = Tables<"messages">
 export type Organization = Tables<"organizations">
+export type Field = Tables<"fields">
 
 // Relationships
 export type TagInstance = Tables<"tags_tickets">

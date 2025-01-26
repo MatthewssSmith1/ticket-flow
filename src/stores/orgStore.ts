@@ -1,4 +1,4 @@
-import { Organization, Member, Group, Tag } from '@/types/types'
+import { Organization, Member, Group, Tag, Field } from '@/types/types'
 import supabase, { unwrap } from '@/lib/supabase'
 import { create } from 'zustand'
 import { toast } from '@/hooks/use-toast'
@@ -7,6 +7,7 @@ export type OrgState = Organization & {
   members: Member[]
   groups: Group[]
   tags: Tag[]
+  fields: Field[]
 }
 
 type State = {
@@ -53,7 +54,7 @@ const _useOrgStore = create<State>((set, get) => ({
     try {
       const openOrg = await supabase
         .from('organizations')
-        .select(`*, members:members(*), groups:groups(*), tags:tags(*)`)
+        .select(`*, members:members(*), groups:groups(*), tags:tags(*), fields:fields(*)`)
         .eq('id', org.id)
         .single()
         .then(unwrap)
