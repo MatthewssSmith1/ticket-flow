@@ -82,5 +82,7 @@ export function useOrgStore() {
 
   const getTag = (id: number) => store.openOrg?.tags.find(t => t.id === id) || null
 
-  return { ...store, getMemberName, getTag }
+  const getField = (id: number) => store.openOrg?.fields.find(f => f.id === id) || null
+
+  return { ...store, getMemberName, getTag, getField }
 }

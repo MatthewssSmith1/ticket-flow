@@ -10,10 +10,13 @@ import { getRouteApi } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
 import { EnumSelect } from './select/EnumSelect'
 import { Separator } from './ui/separator'
+import { useToast } from '@/hooks/use-toast'
 import { Textarea } from './ui/textarea'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/hooks/use-toast'
 import { Button } from './ui/button'
+import { Switch } from './ui/switch'
+import { Input } from './ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 type Form = {
   status: Status
@@ -23,6 +26,7 @@ type Form = {
   tag_ids: number[]
   member_ids: number[]
   group_ids: string[]
+  field_values: Record<number, string | null>
 }
 type FormValue = Form[keyof Form]
 
@@ -41,6 +45,9 @@ export function EditTicket() {
       tag_ids: ticket.tags_tickets.map(tt => tt.tag_id),
       member_ids: ticket.tickets_members.map(tm => tm.member_id),
       group_ids: ticket.tickets_groups.map(tg => tg.group_id),
+      field_values: Object.fromEntries(
+        ticket.tickets_fields.map(tf => [tf.field_id, tf.value])
+      ),
     }
   })
   const setVal = (key: keyof Form, value: FormValue) => form.setValue(key, value, { shouldDirty: true })
@@ -101,6 +108,23 @@ export function EditTicket() {
           })))
           .then(unwrap)
       }
+
+      // TODO:
+      // await supabase.from('tickets_fields')
+      //   .delete()
+      //   .eq('ticket_id', ticket.id)
+      //   .then(unwrap)
+
+      // const fieldEntries = Object.entries(data.field_values)
+      // if (fieldEntries.length > 0) {
+      //   await supabase.from('tickets_fields')
+      //     .insert(fieldEntries.map(([field_id, value]) => ({
+      //       ticket_id: ticket.id,
+      //       field_id: parseInt(field_id),
+      //       value: value
+      //     })))
+      //     .then(unwrap)
+      // }
     },
     onSuccess: () => {
       toast({
@@ -214,7 +238,73 @@ export function EditTicket() {
             </div>
           </section>
 
-          <section className="mt-auto flex flex-col items-center">
+          <Separator />
+
+          <h1 className="text-xl text-center font-semibold select-none">Custom Fields</h1>
+          <section className="space-y-4">
+            {openOrg?.fields?.map(field => {
+              const fieldValues = form.watch('field_values')
+              const value = fieldValues[field.id]
+              const setValue = (val: string | null) => 
+                setVal('field_values', { ...fieldValues, [field.id]: val })
+
+              return (
+                <div key={field.id}>
+                  <h2>{field.name}</h2>
+                  {field.field_type === 'TEXT' && (
+                    <Textarea
+                      value={value ?? ''}
+                      onChange={e => setValue(e.target.value)}
+                      placeholder={field.description ?? undefined}
+                      className="resize-none"
+                    />
+                  )}
+                  {field.field_type === 'DATE' && (
+                    <DatePickerWithPresets
+                      value={value ?? null}
+                      onValueChange={(date?: Date) => setValue(date?.toISOString() ?? null)}
+                    />
+                  )}
+                  {field.field_type === 'BOOLEAN' && (
+                    <Switch
+                      checked={value === 'true'}
+                      onCheckedChange={checked => setValue(checked.toString())}
+                      aria-label={field.description ?? field.name}
+                    />
+                  )}
+                  {(field.field_type === 'INTEGER' || field.field_type === 'FLOAT') && (
+                    <Input
+                      type="number"
+                      value={value ?? ''}
+                      onChange={e => setValue(e.target.value)}
+                      placeholder={field.description ?? undefined}
+                      step={field.field_type === 'FLOAT' ? 'any' : '1'}
+                    />
+                  )}
+                  {field.field_type === 'SELECT' && (
+                    <Select
+                      value={value ?? ''}
+                      onValueChange={setValue}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={field.description ?? field.name} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {field.options?.map(option => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {/* TODO: support for MULTI_SELECT */}
+                </div>
+              )
+            })}
+          </section>
+
+          <section className="mt-auto flex flex-col items-center pt-6">
             <Button 
               type="submit" 
               onClick={form.handleSubmit(onSubmit)}
