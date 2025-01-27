@@ -11,9 +11,10 @@ type Props = {
   value: string | null
   onValueChange: (date?: Date) => void
   disabled?: 'past' | ((date: Date) => boolean)
+  className?: string
 }
 
-export function DatePickerWithPresets({ value, onValueChange, disabled }: Props) {
+export function DatePickerWithPresets({ value, onValueChange, disabled, className }: Props) {
   const [date, setDate] = useState<Date | undefined>(value ? new Date(value) : undefined)
 
   function handleChange(day: Date | undefined) {
@@ -30,7 +31,8 @@ export function DatePickerWithPresets({ value, onValueChange, disabled }: Props)
           variant={"outline"}
           className={cn(
             "w-[240px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            !date && "text-muted-foreground",
+            className
           )}
         >
           <CalendarIcon />

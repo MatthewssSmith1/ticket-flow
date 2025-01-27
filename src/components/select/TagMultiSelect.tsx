@@ -8,9 +8,10 @@ type Props = {
   onValueChange: (tagIds: number[]) => void
   filter?: (tag: TagType) => boolean
   placeholder?: string
+  className?: string
 }
 
-export function TagMultiSelect({ value, onValueChange, filter, placeholder }: Props) {
+export function TagMultiSelect({ value, onValueChange, filter, placeholder, className }: Props) {
   const { openOrg } = useOrgStore()
   const [selectedIds, setSelectedIds] = useState<string[]>(
     value.map(id => id.toString())
@@ -35,6 +36,7 @@ export function TagMultiSelect({ value, onValueChange, filter, placeholder }: Pr
 
   return (
     <MultiSelect
+      className={className}
       options={options}
       onValueChange={handleValueChange}
       defaultValue={selectedIds}

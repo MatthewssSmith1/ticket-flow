@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Status, Priority, Channel } from '@/types/types'
 import { DatePickerWithPresets } from './DatePicker'
 import { MemberMultiSelect } from './select/MemberMultiSelect'
@@ -10,10 +11,9 @@ import { useOrgStore } from '@/stores/orgStore'
 import { EnumSelect } from './select/EnumSelect'
 import { Separator } from './ui/separator'
 import { Textarea } from './ui/textarea'
-import { Button } from './ui/button'
 import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
-import { useState } from 'react'
+import { Button } from './ui/button'
 
 type Form = {
   status: Status
@@ -28,8 +28,9 @@ type FormValue = Form[keyof Form]
 
 export function EditTicket() {
   const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()
-  const { getMemberName, authMember } = useOrgStore()
+  const { openOrg, getMemberName, authMember } = useOrgStore()
   const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const form = useForm<Form>({
     defaultValues: {
@@ -44,10 +45,9 @@ export function EditTicket() {
   })
   const setVal = (key: keyof Form, value: FormValue) => form.setValue(key, value, { shouldDirty: true })
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  async function onSubmit(data: Form) {
-    setIsSubmitting(true)
-    try {
+  // TODO: move to postgres transaction in supabase function
+  const updateTicketMutation = useMutation({
+    mutationFn: async (data: Form) => {
       await supabase.from('tickets')
         .update({
           status: data.status,
@@ -101,33 +101,41 @@ export function EditTicket() {
           })))
           .then(unwrap)
       }
-
+    },
+    onSuccess: () => {
       toast({
         title: "Success",
         description: "Ticket updated successfully",
       })
-    } catch (error) {
-      console.log(error)
+      queryClient.invalidateQueries({ queryKey: ['tickets', openOrg?.id] })
+      queryClient.invalidateQueries({ queryKey: ['ticket', ticket.id] })
+    },
+    onError: (error) => {
+      console.error(error)
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to update ticket",
       })
-    } finally {
-      setIsSubmitting(false)
     }
+  })
+
+  async function onSubmit(data: Form) {
+    updateTicketMutation.mutate(data)
   }
 
   const memberName = getMemberName(ticket.author_id) ?? ticket.name ?? '-'
   const verifiedDate = ticket.verified_at ? new Date(ticket.verified_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'
 
   return (
-    <Card className="min-w-[150px]">
+    <Card className="min-w-[150px] overflow-y-auto">
       <CardHeader>
         <CardTitle>{ticket.subject}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 [&_h2]:text-sm [&_h2]:font-medium [&_h2]:text-muted-foreground [&_h2]:mb-2 [&_h2]:select-none">
+        <form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="@container space-y-6 [&_h2]:text-sm [&_h2]:font-medium [&_h2]:text-muted-foreground [&_h2]:mb-2 [&_h2]:select-none">
           <h2 className="text-center">
             Submitted by <span className="font-semibold">{memberName}</span> on <i>{verifiedDate}</i>
           </h2>
@@ -138,74 +146,81 @@ export function EditTicket() {
             rows={5}
           />
           <Separator />
-          <section className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-2 gap-4 [&>div]:space-y-2 text-muted-foreground">
-            <div>
-              <h2>Status</h2>
-              <EnumSelect 
-                enumKey="status" 
-                value={form.watch('status')} 
-                onValueChange={(value) => setVal('status', value as Status)} 
-              />
-            </div>
-            <div>
-              <h2>Priority</h2>
-              <EnumSelect 
-                enumKey="priority" 
-                value={form.watch('priority')} 
-                onValueChange={(value) => setVal('priority', value as Priority)} 
-              />
-            </div>
-            <div>
-              <h2>Channel</h2>
-              <EnumSelect 
-                enumKey="channel" 
-                value={form.watch('channel')} 
-                onValueChange={(value) => setVal('channel', value as Channel)} 
-              />
-            </div>
-            <div>
-              <h2>Tags</h2>
-              <TagMultiSelect
-                value={form.watch('tag_ids')}
-                onValueChange={(value) => setVal('tag_ids', value)}
-                placeholder="Select tags"
-              />
+          <section>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(0,175px))] gap-4 [&>div]:space-y-2 text-muted-foreground">
+              <div>
+                <h2>Status</h2>
+                <EnumSelect 
+                  enumKey="status" 
+                  value={form.watch('status')} 
+                  onValueChange={(value) => setVal('status', value as Status)} 
+                />
+              </div>
+              <div>
+                <h2>Priority</h2>
+                <EnumSelect 
+                  enumKey="priority" 
+                  value={form.watch('priority')} 
+                  onValueChange={(value) => setVal('priority', value as Priority)} 
+                />
+              </div>
+              <div>
+                <h2>Channel</h2>
+                <EnumSelect 
+                  enumKey="channel" 
+                  value={form.watch('channel')} 
+                  onValueChange={(value) => setVal('channel', value as Channel)} 
+                />
+              </div>
             </div>
           </section>
+
+          <section className="grid grid-cols-1 @xl:grid-cols-2 @xl:gap-x-4">
+            <h2 className="@xl:row-start-1">Due Date</h2>
+            <DatePickerWithPresets 
+              value={form.watch('due_at')?.toISOString() ?? null} 
+              onValueChange={(date) => setVal('due_at', date ? new Date(date) : null)} 
+              disabled={'past'}
+              className="@xl:row-start-2 my-auto"
+            />
+            <h2 className="@xl:row-start-1 mt-4 @xl:mt-0">Tags</h2>
+            <TagMultiSelect
+              value={form.watch('tag_ids')}
+              onValueChange={(value) => setVal('tag_ids', value)}
+              placeholder="Select tags"
+              className="@xl:row-start-2"
+            />
+          </section>
+
           <section className="space-y-6">
-            <div>
-              <h2>Due Date</h2>
-              <DatePickerWithPresets 
-                value={form.watch('due_at')?.toISOString() ?? null} 
-                onValueChange={(date) => setVal('due_at', date ? new Date(date) : null)} 
-                disabled={'past'} 
-              />
-            </div>
-            <div>
-              <h2>Assigned Groups</h2>
-              <GroupMultiSelect
-                value={form.watch('group_ids')}
-                onValueChange={(value) => setVal('group_ids', value)}
-                placeholder="Assign groups"
-              />
-            </div>
-            <div>
-              <h2>Assigned Individuals</h2>
-              <MemberMultiSelect
-                value={form.watch('member_ids')}
-                onValueChange={(value) => setVal('member_ids', value)}
-                filter={m => m.role !== 'CUSTOMER'}
-                placeholder="Assign members"
-              />
+            <div className="@xl:grid @xl:grid-cols-2 @xl:gap-4 space-y-6 @xl:space-y-0">
+              <div className="space-y-2">
+                <h2>Assigned Groups</h2>
+                <GroupMultiSelect
+                  value={form.watch('group_ids')}
+                  onValueChange={(value) => setVal('group_ids', value)}
+                  placeholder="Assign groups"
+                />
+              </div>
+              <div className="space-y-2">
+                <h2>Assigned Individuals</h2>
+                <MemberMultiSelect
+                  value={form.watch('member_ids')}
+                  onValueChange={(value) => setVal('member_ids', value)}
+                  filter={m => m.role !== 'CUSTOMER'}
+                  placeholder="Assign members"
+                />
+              </div>
             </div>
           </section>
+
           <section className="mt-auto flex flex-col items-center">
             <Button 
               type="submit" 
               onClick={form.handleSubmit(onSubmit)}
-              disabled={!form.formState.isDirty || isSubmitting}
+              disabled={!form.formState.isDirty || updateTicketMutation.isPending}
             >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {updateTicketMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </section>
         </form>
