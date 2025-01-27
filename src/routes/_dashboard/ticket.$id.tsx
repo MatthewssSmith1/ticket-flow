@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_dashboard/ticket/$id')({
   loader: async ({ params }) => ({
     ticket: await supabase
       .from('tickets')
-      .select('*, tickets_members(member_id), tickets_groups(group_id), tags_tickets(tag_id)')
+      .select('*, tickets_members(member_id), tickets_groups(group_id), tags_tickets(tag_id), tickets_fields(field_id, value)')
       .eq('id', params.id)
       .single()
       .then(unwrap),

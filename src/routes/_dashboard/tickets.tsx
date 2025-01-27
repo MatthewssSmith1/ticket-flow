@@ -2,6 +2,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/tooltip"
 import { Filter, Plus, Columns } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { TicketTable } from '@/components/table/TicketTable'
+import { useOrgStore } from '@/stores/orgStore'
 import { MultiSelect } from '@ui/multi-select'
 import { ViewSelect } from '@/components/select/ViewSelect'
 import { COLUMN_IDS } from '@/lib/filter'
@@ -13,7 +14,10 @@ export const Route = createFileRoute('/_dashboard/tickets')({
 })
 
 function TicketsPage() {
-  const [columns, setColumns] = useState(COLUMN_IDS)
+  const { openOrg } = useOrgStore()
+  const customColumns = openOrg?.fields?.map(field => field.name) || []
+  const initColumns = [...COLUMN_IDS, ...customColumns]
+  const [columns, setColumns] = useState(initColumns)
 
   return (
     <main className="grid grid-rows-[auto_1fr]">
@@ -32,7 +36,7 @@ function TicketsPage() {
         </Tooltip>
         <div className="flex items-center gap-2 ml-auto">
           <Columns className="text-muted-foreground" />
-          <ColumnMultiSelect value={columns} onValueChange={setColumns} />
+          <ColumnMultiSelect options={initColumns} value={columns} onValueChange={setColumns} />
         </div>
       </section>
       <section className="min-w-0 overflow-auto">
@@ -42,11 +46,17 @@ function TicketsPage() {
   )
 }
 
-function ColumnMultiSelect({value, onValueChange}: {value: string[], onValueChange: (value: string[]) => void}) {
-  const columnOptions = COLUMN_IDS.map(id => ({
+type ColumnMultiSelectProps = {
+  options: string[]
+  value: string[]
+  onValueChange: (value: string[]) => void
+}
+
+function ColumnMultiSelect({value, onValueChange, options}: ColumnMultiSelectProps) {
+  const columnOptions = options.map(id => ({
     label: id.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     value: id
-  }))
+  })) 
 
   return (
     <MultiSelect

@@ -1,6 +1,7 @@
 import { formatAssignee, formatAssigner, formatTags } from '@/lib/string'
-import { ColumnDef, Row, VisibilityState } from '@tanstack/react-table'
 import { Filter, ticketFilter, COLUMN_IDS } from '@/lib/filter'
+import { ColumnDef, Row, VisibilityState } from '@tanstack/react-table'
+import { Ticket, Field, TicketWithRefs } from '@/types/types'
 import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useViewStore } from '@/stores/viewStore'
@@ -8,7 +9,6 @@ import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { Ticket } from '@/types/types'
 import { Pill } from '@/components/Pill'
 
 type Props = {
@@ -90,6 +90,7 @@ export function TicketTable({ filters, hiddenColumns = [] }: Props) {
         return date ? new Date(date).toLocaleDateString() : '-'
       },
     },
+    ...getCustomColumns(openOrg?.fields),
   ]
 
   const columnVisibility = useMemo(() => 
@@ -117,3 +118,24 @@ export function TicketTable({ filters, hiddenColumns = [] }: Props) {
     />
   )
 } 
+
+function getCustomColumns(fields?: Field[]): ColumnDef<Ticket>[] {
+  return fields?.map(field => ({
+    accessorKey: `field_${field.id}`,
+    header: ({ column }) => <SortableHeader column={column} label={field.name} />,
+    cell: ({ row }) => {
+      const fields = (row.original as TicketWithRefs).tickets_fields
+      const fieldValue = fields?.find(tf => tf.field_id === field.id)?.value
+
+      if (!fieldValue) return '-'
+
+      switch (field.field_type) {
+        case 'BOOLEAN': return fieldValue === 'true' ? 'Yes' : 'No'
+        case 'DATE': return new Date(fieldValue).toLocaleDateString()
+        case 'SELECT':
+        case 'MULTI_SELECT': return (JSON.parse(fieldValue) as string[]).join(', ')
+        default: return fieldValue
+      }
+    },
+  })) ?? []
+}

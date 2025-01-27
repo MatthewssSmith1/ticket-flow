@@ -1,9 +1,9 @@
-import { Ticket, Group, Member, TagWithRelationships } from '@/types/types'
+import { Ticket, Group, Member, TicketWithRefs } from '@/types/types'
 import { Row } from '@tanstack/react-table'
 import { OrgState } from '@/stores/orgStore'
 
 export function formatAssignee(row: Row<Ticket>, openOrg: OrgState | null) {
-  const { tickets_groups, tickets_members } = row.original as TagWithRelationships
+  const { tickets_groups, tickets_members } = row.original as TicketWithRefs
   if (!openOrg) return '-'
 
   const groups = tickets_groups
@@ -22,7 +22,7 @@ export function formatAssignee(row: Row<Ticket>, openOrg: OrgState | null) {
 }
 
 export function formatAssigner(row: Row<Ticket>) {
-  const ticket = row.original as TagWithRelationships
+  const ticket = row.original as TicketWithRefs
   
   return [...ticket.tickets_groups, ...ticket.tickets_members]
     .map((obj) => obj.assigned_by as number | null)
@@ -30,7 +30,7 @@ export function formatAssigner(row: Row<Ticket>) {
 }
 
 export function formatTags(row: Row<Ticket>, getTag: (id: number) => { name: string } | null) {
-  const { tags_tickets } = row.original as TagWithRelationships
+  const { tags_tickets } = row.original as TicketWithRefs
 
   if (tags_tickets.length === 0) return null
 
