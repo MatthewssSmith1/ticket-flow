@@ -1,8 +1,8 @@
 import { formatAssignee, formatAssigner, formatTags } from '../../lib/string'
+import { Field, Ticket, TicketWithRefs } from '@/types/types'
 import { SortableHeader } from '@/components/table/GenericTable'
 import { useOrgStore } from '@/stores/orgStore'
 import { ColumnDef } from '@tanstack/react-table'
-import { Ticket } from '@/types/types'
 import { Pill } from '@/components/Pill'
 
 export const COLUMN_IDS = [
@@ -17,6 +17,8 @@ export const COLUMN_IDS = [
   'channel',
   'verified_at'
 ] as const
+
+export const getCustomColumnId = (field: Field) => `field_${field.id}`
 
 export const createTicketColumns = (store: ReturnType<typeof useOrgStore>): ColumnDef<Ticket>[] => [
   {
@@ -75,9 +77,26 @@ export const createTicketColumns = (store: ReturnType<typeof useOrgStore>): Colu
       return date ? new Date(date).toLocaleDateString() : '-'
     },
   },
-  // ...(fields?.map(field => ({
-  //   accessorKey: `fields.${field.id}`,
-  //   header: ({ column }: {column: Column<unknown, unknown>}) => <SortableHeader column={column} label={field.name} />,
-  //   cell: ({ row }) => row.getValue(`fields.${field.id}`) ?? '-',
-  // })) ?? [])
+  ...getCustomColumns(store.openOrg?.fields),
 ]
+
+function getCustomColumns(fields?: Field[]): ColumnDef<Ticket>[] {
+  return fields?.map(field => ({
+    accessorKey: `field_${field.id}`,
+    header: ({ column }) => <SortableHeader column={column} label={field.name} />,
+    cell: ({ row }) => {
+      const fields = (row.original as TicketWithRefs).tickets_fields
+      const fieldValue = fields?.find(tf => tf.field_id === field.id)?.value
+
+      if (!fieldValue) return '-'
+
+      switch (field.field_type) {
+        case 'BOOLEAN': return fieldValue === 'true' ? 'Yes' : 'No'
+        case 'DATE': return new Date(fieldValue).toLocaleDateString()
+        case 'SELECT':
+        case 'MULTI_SELECT': return (JSON.parse(fieldValue) as string[]).join(', ')
+        default: return fieldValue
+      }
+    },
+  })) ?? []
+}

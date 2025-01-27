@@ -16,8 +16,8 @@ export const Route = createFileRoute('/_dashboard/tickets')({
 function TicketsPage() {
   const { openOrg } = useOrgStore()
   const customColumns = openOrg?.fields?.map(field => field.name) || []
-  const initColumns = [...COLUMN_IDS, ...customColumns]
-  const [columns, setColumns] = useState(initColumns)
+  const allColumns = [...COLUMN_IDS, ...customColumns]
+  const [visibleColumns, setVisibleColumns] = useState(allColumns)
 
   return (
     <main className="grid grid-rows-[auto_1fr]">
@@ -36,11 +36,15 @@ function TicketsPage() {
         </Tooltip>
         <div className="flex items-center gap-2 ml-auto">
           <Columns className="text-muted-foreground" />
-          <ColumnMultiSelect options={initColumns} value={columns} onValueChange={setColumns} />
+          <ColumnMultiSelect 
+            options={allColumns} 
+            value={visibleColumns} 
+            onValueChange={setVisibleColumns} 
+          />
         </div>
       </section>
       <section className="min-w-0 overflow-auto">
-        <TicketTable hiddenColumns={columns} />
+        <TicketTable visibleColumns={visibleColumns} />
       </section>
     </main>
   )
