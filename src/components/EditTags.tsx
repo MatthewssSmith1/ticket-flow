@@ -17,6 +17,9 @@ export function EditTags() {
     <Card>
       <CardHeader>
         <CardTitle>Tags</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Custom tags that can be added to tickets in your organization.
+        </p>
       </CardHeader>
       <CardContent className="grid grid-cols-[repeat(auto-fill,minmax(125px,1fr))] grid-rows-[repeat(auto-fill,36px)] gap-3">
         {openOrg?.tags?.map(tag => (

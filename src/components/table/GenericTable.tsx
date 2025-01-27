@@ -78,7 +78,7 @@ export function GenericTable<T extends RowData, F>(props: Props<T, F>) {
   )
 } 
 
-export function SortableHeader({ column, label }: { column: Column<any, unknown>, label: string }) {
+export function SortableHeader<T>({ column, label }: { column: Column<T, unknown>, label: string }) {
   const sortDirection = column.getIsSorted()
 
   const toggleSorting = () => {

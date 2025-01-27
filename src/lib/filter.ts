@@ -1,6 +1,8 @@
 import { Channel, FieldType, Priority, Status, Ticket } from "@/types/types"
 import { Row, RowData } from "@tanstack/react-table"
 
+export const COLUMN_IDS = ['status', 'priority', 'author_id', 'subject', 'assignee', 'assigned_by', 'due_at', 'tags', 'channel', 'verified_at']
+
 // TODO: consider composable/nested filters (AND/OR/NOT operators)
 export type Operator =
   | 'EQ' | 'NOT_EQ' 
@@ -20,10 +22,11 @@ export const channelEq = (value: Channel): Filter => ({ type: 'TEXT', field: 'ch
 export const priorityEq = (value: Priority): Filter => ({ type: 'TEXT', field: 'priority', operator: 'EQ', value })
 export const authorEq = (value: number): Filter => ({ type: 'INTEGER', field: 'author_id', operator: 'EQ', value: value.toString() })
 
-export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, filterValue: any): boolean {
-  if (filterValue.length === 0) return true
+export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, filterValue: unknown): boolean {
+  const filters = filterValue as Filter[]
+  if (filters.length === 0) return true
 
-  const applicableFilters = filterValue.filter((f: Filter) => f.field === columnId)
+  const applicableFilters = filters.filter((f: Filter) => f.field === columnId)
   if (applicableFilters.length === 0) return false
 
   const rowVal = row.getValue(columnId)
@@ -56,21 +59,22 @@ export function ticketFilter<T extends RowData>(row: Row<T>, columnId: string, f
 }
 
 // TODO: fully implement operators and add type checking (only EQ is used for now)
-function eqOp(rowVal: any, filter: Filter) {
+function eqOp(rowVal: unknown, filter: Filter) {
   return rowVal == filter.value
 }
 
-function containsOp(rowVal: any, filter: Filter) {
+function containsOp(rowVal: unknown, filter: Filter) {
+  if (typeof rowVal !== 'string') return false
   return rowVal.toLowerCase().includes(filter.value.toLowerCase())
 }
 
-function inOp(rowVal: any, filter: Filter) {
+function inOp(rowVal: unknown, filter: Filter) {
   if (!Array.isArray(filter.value)) return false
   return filter.value.includes(rowVal)
 }
 
-function cmpOp(rowVal: any, filter: Filter, compareFn: (a: any, b: any) => boolean) {
-  const filterVal = Number(filter.value)
-  if (isNaN(filterVal)) return false
-  return compareFn(rowVal, filterVal)
+function cmpOp(rowVal: unknown, filter: Filter, compareFn: (a: number, b: number) => boolean) {
+  const [rowNum, filterNum] = [rowVal, filter.value].map(Number)
+  if (isNaN(rowNum) || isNaN(filterNum)) return false
+  return compareFn(rowNum, filterNum)
 }

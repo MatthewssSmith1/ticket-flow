@@ -43,10 +43,11 @@ function VerifyTicket() {
 
     try {
       verifyTicket()
-    } catch (e: any) {
+    } catch (e) {
+      console.error(e)
       toast({
         title: 'Error',
-        description: e.message || 'Something went wrong. Please try again.',
+        description: 'Something went wrong. Please try again.',
         variant: 'destructive'
       })
     }

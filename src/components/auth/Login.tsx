@@ -41,8 +41,8 @@ export default function Login() {
       } else {
         alert('Check your email for the login link!')
       }
-    } catch (error: any) {
-      alert(error?.message || 'An error occurred')
+    } catch (error) {
+      console.log(error)
     } finally {
       setLoading(false)
     }

@@ -1,11 +1,11 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { useOrgStore } from '@/stores/orgStore'
+import { FieldDialog } from './FieldDialog'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Field } from '@/types/types'
 import { Badge } from '@/components/ui/badge'
 import { Plus } from 'lucide-react'
-import { useState } from 'react'
-import { FieldDialog } from './FieldDialog'
 
 export type DialogState = null | 'create' | Field
 
@@ -18,9 +18,6 @@ export function EditFields() {
     <Card>
       <CardHeader>
         <CardTitle>Ticket Fields</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Custom fields that can be added to tickets in your organization.
-        </p>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {openOrg?.fields?.map(field => (
@@ -64,11 +61,18 @@ function FieldItem({ field, onClick }: { field: Field; onClick: () => void }) {
         <h3 className="font-medium">{field.name}</h3>
         <Badge variant="outline">{field.field_type}</Badge>
         {field.is_required && (
-          <Badge variant="secondary">Required</Badge>
+          <Badge variant="secondary" className="pointer-events-none">
+            Required
+          </Badge>
         )}
       </div>
       {field.description && (
         <p className="text-sm text-muted-foreground">{field.description}</p>
+      )}
+      {['SELECT', 'MULTI_SELECT'].includes(field.field_type) && field.options && (
+        <p className="text-sm text-muted-foreground">
+          Options: {field.options.join(', ')}
+        </p>
       )}
     </button>
   )

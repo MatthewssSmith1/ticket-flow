@@ -41,7 +41,7 @@ export function EditTicket() {
       group_ids: ticket.tickets_groups.map(tg => tg.group_id),
     }
   })
-  const setVal = (key: keyof FormValues, value: any) => form.setValue(key, value, { shouldDirty: true })
+  const setVal = (key: keyof FormValues, value) => form.setValue(key, value, { shouldDirty: true })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   async function onSubmit(data: FormValues) {
@@ -106,6 +106,7 @@ export function EditTicket() {
         description: "Ticket updated successfully",
       })
     } catch (error) {
+      console.log(error)
       toast({
         variant: "destructive",
         title: "Error",

@@ -42,7 +42,7 @@ export type Database = {
           id: number
           is_required: boolean
           name: string
-          options: Json
+          options: string[] | null
           org_id: string
           updated_at: string
         }
@@ -53,7 +53,7 @@ export type Database = {
           id?: never
           is_required?: boolean
           name: string
-          options?: Json
+          options?: string[] | null
           org_id: string
           updated_at?: string
         }
@@ -64,7 +64,7 @@ export type Database = {
           id?: never
           is_required?: boolean
           name?: string
-          options?: Json
+          options?: string[] | null
           org_id?: string
           updated_at?: string
         }

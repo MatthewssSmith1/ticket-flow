@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public.fields (
     name text NOT NULL,
     field_type public.field_types NOT NULL,
     description text,
-    options jsonb NOT NULL DEFAULT '{}',
+    options text[],
     is_required boolean NOT NULL DEFAULT false,
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),

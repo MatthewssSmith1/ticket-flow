@@ -6,11 +6,10 @@ import { Filter, ticketFilter } from '@/lib/filter'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useViewStore } from '@/stores/viewStore'
 import { useNavigate } from '@tanstack/react-router'
+import { COLUMN_IDS } from '@/lib/filter'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Pill } from '@/components/Pill'
-
-export const COLUMN_IDS = ['status', 'priority', 'author_id', 'subject', 'assignee', 'assigned_by', 'due_at', 'tags', 'channel', 'verified_at']
 
 // TODO: infer type from query
 type TagWithRelationships = Ticket & { 
@@ -149,8 +148,8 @@ function formatAssigner(row: Row<Ticket>) {
   const ticket = row.original as TagWithRelationships
   
   return [...ticket.tickets_groups, ...ticket.tickets_members]
-    .map(obj => (obj as any).assigned_by)
-    .filter(Boolean)[0] as number | null
+    .map(obj => obj['assigned_by'] as number | null)
+    .filter(Boolean)[0]
 }
 
 function formatTags(row: Row<Ticket>, getTag: (id: number) => { name: string } | null) {

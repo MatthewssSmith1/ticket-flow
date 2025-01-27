@@ -1,20 +1,21 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select'
+import { SelectOptionsBuilder } from '@/components/SelectOptionsBuilder'
 import { useState, useEffect } from 'react'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useOrgStore } from '@/stores/orgStore'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { DialogState } from './EditFields'
+import { FieldType } from '@/types/types'
 import { useToast } from '@/hooks/use-toast'
 import { useForm } from 'react-hook-form'
-import { FieldType } from '@/types/types'
+import { Switch } from '@ui/switch'
 import { Button } from '@ui/button'
 import { Input } from '@ui/input'
-import { Switch } from '@ui/switch'
 import { z } from 'zod'
 
-const FIELD_TYPES: FieldType[] = ['TEXT', 'INTEGER', 'FLOAT', 'DATE', 'SELECT']
+const FIELD_TYPES: FieldType[] = ['TEXT', 'INTEGER', 'FLOAT', 'DATE', 'BOOLEAN', 'SELECT', 'MULTI_SELECT']
 
 const fieldSchema = z.object({
   name: z.string().min(1, 'Name is required').max(50, 'Name must be less than 50 characters'),
@@ -23,7 +24,7 @@ const fieldSchema = z.object({
     message: 'Invalid field type'
   }),
   is_required: z.boolean(),
-  options: z.string().nullable()
+  options: z.string().array().nullable()
 })
 
 type FieldFormValues = z.infer<typeof fieldSchema>
@@ -49,11 +50,12 @@ export function FieldDialog({ open, state, onOpenChange }: Props) {
       description: field?.description ?? null,
       field_type: (field?.field_type ?? 'TEXT') as FieldType,
       is_required: field?.is_required ?? false,
-      options: typeof field?.options === 'string' ? field.options : null
+      options: Array.isArray(field?.options) ? field.options : null
     }
   })
 
   const selectedFieldType = form.watch('field_type')
+  const isSelectType = ['SELECT', 'MULTI_SELECT'].includes(selectedFieldType);
 
   useEffect(() => {
     if (state === 'create') {
@@ -66,18 +68,23 @@ export function FieldDialog({ open, state, onOpenChange }: Props) {
       })
     } else if (state) {
       const fieldType = FIELD_TYPES.includes(state.field_type as FieldType) 
-        ? (state.field_type as FieldType)
-        : 'TEXT'
+        ? (state.field_type as FieldType) : 'TEXT'
 
       form.reset({
         name: state.name,
         description: state.description ?? null,
         field_type: fieldType,
         is_required: state.is_required,
-        options: typeof state.options === 'string' ? state.options : null
+        options: Array.isArray(state.options) ? state.options : null
       })
     }
   }, [state, form])
+
+  useEffect(() => {
+    if (!isSelectType) {
+      form.setValue('options', null)
+    }
+  }, [isSelectType, form])
 
   const onSubmit = async (data: FieldFormValues) => {
     if (!openOrg) return
@@ -90,6 +97,7 @@ export function FieldDialog({ open, state, onOpenChange }: Props) {
           .then(unwrap)
         toast({ title: "Success", description: "Field created successfully" })
       } else if (field) {
+        // TODO: changing the type of a field should remove all of its instances (to avoid invalid values)
         await supabase.from('fields')
           .update({ ...data, field_type: data.field_type as FieldType })
           .eq('id', field.id)
@@ -100,6 +108,7 @@ export function FieldDialog({ open, state, onOpenChange }: Props) {
       await setOpenOrg(openOrg, authMember?.user_id ?? undefined)
       onOpenChange(false)
     } catch (error) {
+      console.log(error)
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : `Failed to ${mode} field`,
@@ -184,7 +193,7 @@ export function FieldDialog({ open, state, onOpenChange }: Props) {
               
               <Select
                 disabled={isLoading}
-                onValueChange={field => form.setValue('field_type', field)}
+                onValueChange={field => form.setValue('field_type', field, { shouldDirty: true })}
                 value={form.watch('field_type')}
               >
                 <FormControl>
@@ -208,26 +217,19 @@ export function FieldDialog({ open, state, onOpenChange }: Props) {
                   className="my-auto"
                   disabled={isLoading}
                   checked={form.watch('is_required')}
-                  onCheckedChange={checked => form.setValue('is_required', checked)}
+                  onCheckedChange={checked => form.setValue('is_required', checked, { shouldDirty: true })}
                 />
               </FormControl>
             </div>
 
-            {selectedFieldType === 'SELECT' && (
+            {isSelectType && (
               <FormField
                 control={form.control}
                 name="options"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Options</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter options separated by commas"
-                        disabled={isLoading}
-                        value={field.value ?? ''}
-                        onChange={e => field.onChange(e.target.value || null)}
-                      />
-                    </FormControl>
+                    <SelectOptionsBuilder value={field.value} onChange={field.onChange} disabled={isLoading} />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -253,7 +255,7 @@ export function FieldDialog({ open, state, onOpenChange }: Props) {
                   {isLoading ? "Deleting..." : "Delete"}
                 </Button>
               )}
-              <Button type="submit" disabled={!form.formState.isValid || isLoading}>
+              <Button type="submit" disabled={!form.formState.isValid || !form.formState.isDirty || isLoading}>
                 {isLoading
                   ? (mode === 'create' ? "Creating..." : "Saving...")
                   : (mode === 'create' ? "Create" : "Save Changes")}

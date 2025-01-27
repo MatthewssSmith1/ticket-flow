@@ -36,8 +36,8 @@ export default function Signup() {
       alert(isPasswordSignup 
         ? 'Check your email to confirm your account!' 
         : 'Check your email for the magic link!')
-    } catch (error: any) {
-      alert(error?.message || 'An error occurred')
+    } catch (error) {
+      console.log(error)
     } finally {
       setLoading(false)
     }
