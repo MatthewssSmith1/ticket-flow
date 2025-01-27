@@ -1,22 +1,15 @@
-import { Ticket, MemberAssignment, GroupAssignment, Group, Member, TagInstance } from '@/types/types'
+import { formatAssignee, formatAssigner, formatTags } from '@/lib/string'
 import { ColumnDef, Row, VisibilityState } from '@tanstack/react-table'
+import { Filter, ticketFilter, COLUMN_IDS } from '@/lib/filter'
 import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
-import { OrgState, useOrgStore } from '@/stores/orgStore'
-import { Filter, ticketFilter } from '@/lib/filter'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useViewStore } from '@/stores/viewStore'
 import { useNavigate } from '@tanstack/react-router'
-import { COLUMN_IDS } from '@/lib/filter'
+import { useOrgStore } from '@/stores/orgStore'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import { Ticket } from '@/types/types'
 import { Pill } from '@/components/Pill'
-
-// TODO: infer type from query
-type TagWithRelationships = Ticket & { 
-  tickets_members: MemberAssignment[], 
-  tickets_groups: GroupAssignment[],
-  tags_tickets: TagInstance[]
-}
 
 type Props = {
   filters?: Filter[]
@@ -64,7 +57,7 @@ export function TicketTable({ filters, hiddenColumns = [] }: Props) {
     {
       accessorKey: 'assignee',
       header: ({ column }) => <SortableHeader column={column} label="Assignee" />,
-      cell: ({ row }) => formatAssignee(row, openOrg),
+      cell: ({ row }) => formatAssignee(row, openOrg) ?? '-',
     },
     {
       accessorKey: 'assigned_by',
@@ -124,41 +117,3 @@ export function TicketTable({ filters, hiddenColumns = [] }: Props) {
     />
   )
 } 
-
-function formatAssignee(row: Row<Ticket>, openOrg: OrgState | null) {
-  const { tickets_groups, tickets_members } = row.original as TagWithRelationships
-  if (!openOrg) return '-'
-
-  const groups = tickets_groups
-    .map(tg => openOrg.groups.find(g => g.id === tg.group_id)).filter(Boolean) as Group[]
-
-  if (groups.length === 1) return groups[0].name
-  if (groups.length > 1) return `${groups.length} groups`
-
-  const individuals = tickets_members
-    .map(tm => openOrg.members.find(m => m.id === tm.member_id)).filter(Boolean) as Member[]
-
-  if (individuals.length === 1) return individuals[0].name
-  if (individuals.length > 1) return `${individuals.length} people`
-
-  return '-'
-}
-
-function formatAssigner(row: Row<Ticket>) {
-  const ticket = row.original as TagWithRelationships
-  
-  return [...ticket.tickets_groups, ...ticket.tickets_members]
-    .map(obj => obj['assigned_by'] as number | null)
-    .filter(Boolean)[0]
-}
-
-function formatTags(row: Row<Ticket>, getTag: (id: number) => { name: string } | null) {
-  const { tags_tickets } = row.original as TagWithRelationships
-
-  if (tags_tickets.length === 0) return null
-
-  const str = tags_tickets.map(tt => getTag(tt.tag_id)?.name).filter(Boolean).join(', ') 
-  
-  const MAX_LEN = 20
-  return str.length > MAX_LEN ? `${str.slice(0, MAX_LEN)}...` : str
-}

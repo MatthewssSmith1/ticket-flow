@@ -1,6 +1,5 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@ui/form'
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card'
-import { createTicketSchema, PRIORITIES } from '@shared/validation'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import supabase, { unwrap } from '@/lib/supabase'
 import { useMutation } from '@tanstack/react-query'
@@ -13,7 +12,16 @@ import { Input } from '@ui/input'
 import { z } from 'zod'
 import { Select, SelectItem, SelectValue, SelectTrigger, SelectContent } from '@ui/select'
 
-const ticketSchema = createTicketSchema(z)
+const PRIORITIES = ['URGENT', 'HIGH', 'NORMAL', 'LOW'] as const;
+
+const ticketSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  subject: z.string().min(2, 'Subject must be at least 2 characters'),
+  description: z.string().min(5, 'Please provide more details'),
+  priority: z.enum(PRIORITIES).default('NORMAL'),
+  org_id: z.string().uuid().optional(),
+})
 type TicketForm = z.infer<typeof ticketSchema>
 
 export const Route = createFileRoute('/_public/ticket')({

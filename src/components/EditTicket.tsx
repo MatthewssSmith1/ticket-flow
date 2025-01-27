@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 import { useState } from 'react'
 
-type FormValues = {
+type Form = {
   status: Status
   priority: Priority
   channel: Channel
@@ -24,13 +24,14 @@ type FormValues = {
   member_ids: number[]
   group_ids: string[]
 }
+type FormValue = Form[keyof Form]
 
 export function EditTicket() {
   const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()
   const { getMemberName, authMember } = useOrgStore()
   const { toast } = useToast()
 
-  const form = useForm<FormValues>({
+  const form = useForm<Form>({
     defaultValues: {
       status: ticket.status,
       priority: ticket.priority,
@@ -41,10 +42,10 @@ export function EditTicket() {
       group_ids: ticket.tickets_groups.map(tg => tg.group_id),
     }
   })
-  const setVal = (key: keyof FormValues, value) => form.setValue(key, value, { shouldDirty: true })
+  const setVal = (key: keyof Form, value: FormValue) => form.setValue(key, value, { shouldDirty: true })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  async function onSubmit(data: FormValues) {
+  async function onSubmit(data: Form) {
     setIsSubmitting(true)
     try {
       await supabase.from('tickets')

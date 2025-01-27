@@ -40,6 +40,7 @@ const _useOrgStore = create<State>((set, get) => ({
       const lastOrg = orgs.find(o => o.id === lastOrgId)
       await get().setOpenOrg(lastOrg || orgs[0], userId)
     } catch (e) {
+      console.log(e)
       toast({
         title: 'Error fetching organizations',
         description: 'Please try again later',
@@ -62,6 +63,7 @@ const _useOrgStore = create<State>((set, get) => ({
       const authMember = openOrg.members.find(m => m.user_id === userId) ?? null
       set({ openOrg, authMember })
     } catch (e) {
+      console.log(e)
       toast({
         title: 'Error fetching organization',
         description: 'Please try again later',

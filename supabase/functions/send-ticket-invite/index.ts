@@ -1,7 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
 import { corsHeaders, unwrap } from '../_shared/utils.ts'
-import { createTicketSchema } from '../_shared/validation.ts'
 import { createClient } from 'npm:@supabase/supabase-js'
 import { z } from 'npm:zod'
 
@@ -10,7 +9,15 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 )
 
-const ticketSchema = createTicketSchema(z)
+const PRIORITIES = ['URGENT', 'HIGH', 'NORMAL', 'LOW'] as const;
+const ticketSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  subject: z.string().min(2, 'Subject must be at least 2 characters'),
+  description: z.string().min(5, 'Please provide more details'),
+  priority: z.enum(PRIORITIES).default('NORMAL'),
+  org_id: z.string().uuid().optional(),
+})
 type TicketForm = z.infer<typeof ticketSchema>
 
 Deno.serve(async (req) => {
@@ -25,9 +32,8 @@ Deno.serve(async (req) => {
     const formData = ticketSchema.parse(await req.json())
     const userId = await emailToUserId(formData.email)
 
-    userId 
-      ? await handleExistingUser(formData, userId!, req)
-      : await handleNewUser(formData)
+    if (userId) await handleExistingUser(formData, userId!, req)
+    else await handleNewUser(formData)
 
     return new Response(
       JSON.stringify({ shouldRedirect: Boolean(userId) }),
