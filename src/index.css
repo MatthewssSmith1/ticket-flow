@@ -83,7 +83,4 @@
   body {
     @apply bg-background text-foreground;
   }
-  .sidebar-container > main {
-    @apply gap-6 flex-1 h-[100dvh] p-6 lg:p-8 overflow-y-auto;
-  }
 }

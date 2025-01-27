@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_dashboard/ticket/$id')({
       .then(unwrap),
   }),
   component: () => (
-    <main className="grid lg:grid-cols-[2fr_3fr]">
+    <main className="grid grid-cols-1 @4xl:grid-cols-[2fr_3fr] @4xl:h-full">
       <EditTicket />
       <TicketMessages />
     </main>

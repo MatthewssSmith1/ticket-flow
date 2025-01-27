@@ -6,10 +6,12 @@ import { Button } from "@ui/button"
 import { Input } from "@ui/input"
 import { Label } from "@ui/label"
 import supabase from '@/lib/supabase'
+import { useToast } from "@/hooks/use-toast"
 
 export default function Signup() {
   const [loading, setLoading] = useState(false)
   const [isPasswordSignup, setIsPasswordSignup] = useState(true)
+  const { toast } = useToast()
   
   const form = useForm<Credentials>({
     resolver: zodResolver(authSchema),
@@ -33,11 +35,19 @@ export default function Signup() {
           })
 
       if (error) throw error
-      alert(isPasswordSignup 
-        ? 'Check your email to confirm your account!' 
-        : 'Check your email for the magic link!')
+      toast({
+        title: "Success",
+        description: isPasswordSignup 
+          ? 'Check your email to confirm your account!' 
+          : 'Check your email for the magic link!'
+      })
     } catch (error) {
       console.log(error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Something went wrong",
+        variant: "destructive"
+      })
     } finally {
       setLoading(false)
     }

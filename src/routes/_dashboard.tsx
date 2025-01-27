@@ -19,7 +19,9 @@ function DashboardIndex() {
   return (
     <SidebarProvider className="sidebar-container">
       <DashboardSidebar />
-      <Outlet />
+      <div className="@container flex-1 h-[100dvh] p-6 lg:p-8 [&>main]:gap-6 overflow-y-auto">
+        <Outlet />
+      </div>
     </SidebarProvider>
   )
 }

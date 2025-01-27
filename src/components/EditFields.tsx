@@ -1,6 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { useOrgStore } from '@/stores/orgStore'
 import { FieldDialog } from './FieldDialog'
+import { InfoHint } from './InfoHint'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Field } from '@/types/types'
@@ -19,6 +20,7 @@ export function EditFields() {
       <CardHeader>
         <CardTitle>Ticket Fields</CardTitle>
       </CardHeader>
+      <InfoHint text="Custom fields that every ticket can provide a value for." className="absolute top-7 right-7" />
       <CardContent className="flex flex-col gap-3">
         {openOrg?.fields?.map(field => (
           <FieldItem 

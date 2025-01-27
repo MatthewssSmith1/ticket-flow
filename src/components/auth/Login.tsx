@@ -7,12 +7,14 @@ import { Button } from "@ui/button"
 import { Input } from "@ui/input"
 import { Label } from "@ui/label"
 import supabase from '@/lib/supabase'
+import { useToast } from "@/hooks/use-toast"
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
   const [isPasswordLogin, setIsPasswordLogin] = useState(true)
   const navigate = useNavigate()  
-  
+  const { toast } = useToast()
+
   const form = useForm<Credentials>({
     resolver: zodResolver(authSchema),
     defaultValues: {
@@ -39,10 +41,18 @@ export default function Login() {
       if (isPasswordLogin) {
         navigate({ to: '/tickets' })
       } else {
-        alert('Check your email for the login link!')
+        toast({
+          title: "Success",
+          description: 'Check your email for the login link!'
+        })
       }
     } catch (error) {
       console.log(error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Something went wrong",
+        variant: "destructive"
+      })
     } finally {
       setLoading(false)
     }

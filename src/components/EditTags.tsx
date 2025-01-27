@@ -1,6 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@ui/card'
 import { useOrgStore } from '@/stores/orgStore'
 import { TagDialog } from './TagDialog'
+import { InfoHint } from './InfoHint'
 import { useState } from 'react'
 import { Button } from '@ui/button'
 import { Plus } from 'lucide-react'
@@ -17,10 +18,8 @@ export function EditTags() {
     <Card>
       <CardHeader>
         <CardTitle>Tags</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Custom tags that can be added to tickets in your organization.
-        </p>
       </CardHeader>
+      <InfoHint text="Tags are used to group tickets together." className="absolute top-7 right-7" />
       <CardContent className="grid grid-cols-[repeat(auto-fill,minmax(125px,1fr))] grid-rows-[repeat(auto-fill,36px)] gap-3">
         {openOrg?.tags?.map(tag => (
           <TagButton 

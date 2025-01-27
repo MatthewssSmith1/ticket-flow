@@ -7,7 +7,7 @@ export const InfoHint = ({ text, className }: { text: string, className?: string
     <TooltipProvider>
     <Tooltip>
       <TooltipTrigger asChild>
-        <Info className={cn("size-4", className)} />
+        <Info className={cn("size-4 cursor-help", className)} />
       </TooltipTrigger>
       <TooltipContent>
         <p>{text}</p>

@@ -1,3 +1,4 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Status, Priority, Channel } from '@/types/types'
@@ -17,7 +18,6 @@ import { useForm } from 'react-hook-form'
 import { Button } from './ui/button'
 import { Switch } from './ui/switch'
 import { Input } from './ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 type Form = {
   status: Status
@@ -152,14 +152,14 @@ export function EditTicket() {
   const verifiedDate = ticket.verified_at ? new Date(ticket.verified_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'
 
   return (
-    <Card className="min-w-[150px] overflow-y-auto">
+    <Card className="@container min-w-[150px] overflow-y-auto">
       <CardHeader>
         <CardTitle>{ticket.subject}</CardTitle>
       </CardHeader>
       <CardContent>
         <form 
           onSubmit={form.handleSubmit(onSubmit)} 
-          className="@container space-y-6 [&_h2]:text-sm [&_h2]:font-medium [&_h2]:text-muted-foreground [&_h2]:mb-2 [&_h2]:select-none">
+          className="space-y-6 [&_h2]:text-sm [&_h2]:font-medium [&_h2]:text-muted-foreground [&_h2]:mb-2 [&_h2]:select-none">
           <h2 className="text-center">
             Submitted by <span className="font-semibold">{memberName}</span> on <i>{verifiedDate}</i>
           </h2>
@@ -169,7 +169,9 @@ export function EditTicket() {
             className="resize-none bg-muted pointer-events-none"
             rows={5}
           />
+
           <Separator />
+
           <section>
             <div className="grid grid-cols-[repeat(auto-fit,minmax(0,175px))] gap-4 [&>div]:space-y-2 text-muted-foreground">
               <div>

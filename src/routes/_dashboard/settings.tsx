@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_dashboard/settings')({
 
 function Settings() {
   return (
-    <main className="grid grid-cols-2 grid-rows-2 gap-6">
+    <main className="grid @3xl:grid-cols-2 grid-rows-2 gap-6">
       <EditTags />
       <EditFields />
     </main>
