@@ -10,7 +10,7 @@ export type OrgState = Organization & {
   fields: Field[]
 }
 
-type State = {
+export type State = {
   orgs: Organization[]
   openOrg: OrgState | null
   authMember: Member | null 

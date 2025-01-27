@@ -1,8 +1,6 @@
 import { Channel, FieldType, Priority, Status, Ticket } from "@/types/types"
 import { Row, RowData } from "@tanstack/react-table"
 
-export const COLUMN_IDS = ['status', 'priority', 'author_id', 'subject', 'assignee', 'assigned_by', 'due_at', 'tags', 'channel', 'verified_at']
-
 // TODO: consider composable/nested filters (AND/OR/NOT operators)
 export type Operator =
   | 'EQ' | 'NOT_EQ' 

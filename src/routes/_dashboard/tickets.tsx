@@ -5,7 +5,7 @@ import { TicketTable } from '@/components/table/TicketTable'
 import { useOrgStore } from '@/stores/orgStore'
 import { MultiSelect } from '@ui/multi-select'
 import { ViewSelect } from '@/components/select/ViewSelect'
-import { COLUMN_IDS } from '@/lib/filter'
+import { COLUMN_IDS } from '@/components/table/ticketColumns'
 import { useState } from 'react'
 import { Button } from '@ui/button'
 
