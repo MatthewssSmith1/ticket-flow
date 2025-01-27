@@ -12,6 +12,7 @@ import { EnumSelect } from './select/EnumSelect'
 import { Separator } from './ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { Textarea } from './ui/textarea'
+import { InfoHint } from './InfoHint'
 import { useForm } from 'react-hook-form'
 import { Button } from './ui/button'
 import { Switch } from './ui/switch'
@@ -109,22 +110,21 @@ export function EditTicket() {
           .then(unwrap)
       }
 
-      // TODO:
-      // await supabase.from('tickets_fields')
-      //   .delete()
-      //   .eq('ticket_id', ticket.id)
-      //   .then(unwrap)
+      await supabase.from('tickets_fields')
+        .delete()
+        .eq('ticket_id', ticket.id)
+        .then(unwrap)
 
-      // const fieldEntries = Object.entries(data.field_values)
-      // if (fieldEntries.length > 0) {
-      //   await supabase.from('tickets_fields')
-      //     .insert(fieldEntries.map(([field_id, value]) => ({
-      //       ticket_id: ticket.id,
-      //       field_id: parseInt(field_id),
-      //       value: value
-      //     })))
-      //     .then(unwrap)
-      // }
+      const fieldEntries = Object.entries(data.field_values)
+      if (fieldEntries.length > 0) {
+        await supabase.from('tickets_fields')
+          .insert(fieldEntries.map(([field_id, value]) => ({
+            ticket_id: ticket.id,
+            field_id: parseInt(field_id),
+            value: value
+          })))
+          .then(unwrap)
+      }
     },
     onSuccess: () => {
       toast({
@@ -249,13 +249,16 @@ export function EditTicket() {
                 setVal('field_values', { ...fieldValues, [field.id]: val })
 
               return (
-                <div key={field.id}>
-                  <h2>{field.name}</h2>
+                <div key={field.id} className="max-w-[300px]">
+                  <h2 className="flex items-center gap-2">
+                    <span>{field.name}</span>
+                    <InfoHint text={field.description ?? ''} />
+                  </h2>
                   {field.field_type === 'TEXT' && (
                     <Textarea
                       value={value ?? ''}
                       onChange={e => setValue(e.target.value)}
-                      placeholder={field.description ?? undefined}
+                      placeholder="Enter value"
                       className="resize-none"
                     />
                   )}
@@ -272,12 +275,12 @@ export function EditTicket() {
                       aria-label={field.description ?? field.name}
                     />
                   )}
-                  {(field.field_type === 'INTEGER' || field.field_type === 'FLOAT') && (
+                  {(['INTEGER', 'FLOAT'].includes(field.field_type)) && (
                     <Input
                       type="number"
                       value={value ?? ''}
                       onChange={e => setValue(e.target.value)}
-                      placeholder={field.description ?? undefined}
+                      placeholder="Enter value"
                       step={field.field_type === 'FLOAT' ? 'any' : '1'}
                     />
                   )}
@@ -287,7 +290,7 @@ export function EditTicket() {
                       onValueChange={setValue}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder={field.description ?? field.name} />
+                        <SelectValue placeholder={field.name} />
                       </SelectTrigger>
                       <SelectContent>
                         {field.options?.map(option => (

@@ -18,7 +18,7 @@ export const COLUMN_IDS = [
   'verified_at'
 ] as const
 
-export const getCustomColumnId = (field: Field) => `field_${field.id}`
+export const fieldAccessorKey = (field: Field) => `field_${field.id}`
 
 export const createTicketColumns = (store: ReturnType<typeof useOrgStore>): ColumnDef<Ticket>[] => [
   {
@@ -82,7 +82,7 @@ export const createTicketColumns = (store: ReturnType<typeof useOrgStore>): Colu
 
 function getCustomColumns(fields?: Field[]): ColumnDef<Ticket>[] {
   return fields?.map(field => ({
-    accessorKey: `field_${field.id}`,
+    accessorKey: fieldAccessorKey(field),
     header: ({ column }) => <SortableHeader column={column} label={field.name} />,
     cell: ({ row }) => {
       const fields = (row.original as TicketWithRefs).tickets_fields
@@ -93,8 +93,6 @@ function getCustomColumns(fields?: Field[]): ColumnDef<Ticket>[] {
       switch (field.field_type) {
         case 'BOOLEAN': return fieldValue === 'true' ? 'Yes' : 'No'
         case 'DATE': return new Date(fieldValue).toLocaleDateString()
-        case 'SELECT':
-        case 'MULTI_SELECT': return (JSON.parse(fieldValue) as string[]).join(', ')
         default: return fieldValue
       }
     },

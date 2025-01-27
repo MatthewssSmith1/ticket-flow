@@ -38,13 +38,13 @@ function TicketsPage() {
           <Columns className="text-muted-foreground" />
           <ColumnMultiSelect 
             options={allColumns} 
-            value={visibleColumns} 
+            defaultValue={visibleColumns} 
             onValueChange={setVisibleColumns} 
           />
         </div>
       </section>
       <section className="min-w-0 overflow-auto">
-        <TicketTable visibleColumns={visibleColumns} />
+        <TicketTable visibleColumns={visibleColumns.length > 0 ? visibleColumns : ["subject"]} />
       </section>
     </main>
   )
@@ -52,11 +52,11 @@ function TicketsPage() {
 
 type ColumnMultiSelectProps = {
   options: string[]
-  value: string[]
+  defaultValue: string[]
   onValueChange: (value: string[]) => void
 }
 
-function ColumnMultiSelect({value, onValueChange, options}: ColumnMultiSelectProps) {
+function ColumnMultiSelect({onValueChange, options, defaultValue }: ColumnMultiSelectProps) {
   const columnOptions = options.map(id => ({
     label: id.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     value: id
@@ -65,7 +65,7 @@ function ColumnMultiSelect({value, onValueChange, options}: ColumnMultiSelectPro
   return (
     <MultiSelect
       options={columnOptions}
-      defaultValue={value}
+      defaultValue={defaultValue}
       onValueChange={onValueChange}
       placeholder="Select columns"
     />
