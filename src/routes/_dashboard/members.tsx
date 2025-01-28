@@ -1,31 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card'
 import { createFileRoute } from '@tanstack/react-router'
 import { MemberTable } from '@/components/table/MemberTable'
 import { GroupTable } from '@/components/table/GroupTable'
 
 export const Route = createFileRoute('/_dashboard/members')({
-  component: Members,
-})
-
-function Members() {
-  return (
+  component: () => (
     <main className="grid grid-cols-1 @7xl:grid-cols-[3fr_2fr] @7xl:h-full">
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle>Groups</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <GroupTable />
-        </CardContent>
-      </Card>
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle>Organization Members</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <MemberTable />
-        </CardContent>
-      </Card>
+      <section className="h-full">
+        <h1 className="w-full text-center text-xl font-semibold mb-4 select-none">Groups</h1>
+        <GroupTable />
+      </section>
+      <section className="h-full mt-4 @7xl:mt-0">
+        <h1 className="w-full text-center text-xl font-semibold mb-4 select-none">Organization Members</h1>
+        <MemberTable />
+      </section>
     </main>
-  )
-}
+  ),
+})

@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@ui/tooltip"
 import { Filter, Plus, Columns } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { TicketTable } from '@/components/table/TicketTable'
@@ -24,16 +24,18 @@ function TicketsPage() {
       <section className="flex items-center gap-3">
         <Filter className="text-muted-foreground mr-1 flex-shrink-0 size-[22px]" />
         <ViewSelect />
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={() => console.log('new filter')}>
-              <Plus aria-label="Create new filter" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Create new filter</p>
-          </TooltipContent>
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={() => console.log('new filter')}>
+                <Plus aria-label="Create new filter" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Create new filter</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </section>
       <section className="flex items-center gap-3 mr-auto @3xl:mr-0 @3xl:ml-auto">
         <Columns className="text-muted-foreground" />

@@ -1,6 +1,6 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@ui/dropdown-menu"
+import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarTrigger, useSidebar, SidebarProvider, SidebarRail } from '@ui/sidebar'
 import { SidebarGroupLabel, SidebarGroupContent, SidebarGroup, SidebarMenuItem, SidebarMenuButton, SidebarMenu } from '@ui/sidebar'
-import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarTrigger, useSidebar } from '@ui/sidebar'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@ui/dropdown-menu"
 import { Building, ChevronsUpDown, Home, Plus, Tags, Users, LogOutIcon, Ticket, Settings } from 'lucide-react'
 import { Link, getRouteApi, linkOptions } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@ui/avatar'
@@ -10,15 +10,18 @@ import { ThemeToggle } from "@ui/theme-toggle"
 import { Fragment } from "react/jsx-runtime"
 import { Button } from '@ui/button'
 
-export function DashboardSidebar() {
+export function NavSidebar() {
   return (
-    <Sidebar collapsible="icon">
-      <Header />
-      <SidebarContent> 
-        <PagesGroup /> 
-      </SidebarContent>
-      <Footer />
-    </Sidebar>
+    <SidebarProvider style={{"--sidebar-width": "14rem", "--sidebar-width-mobile": "14rem"} as React.CSSProperties}>
+      <Sidebar collapsible="icon" side="left">
+        <Header />
+        <SidebarContent> 
+          <PagesGroup /> 
+        </SidebarContent>
+        <Footer />
+        <SidebarRail />
+      </Sidebar>
+    </SidebarProvider>
   )
 }
 

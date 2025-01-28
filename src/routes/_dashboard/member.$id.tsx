@@ -1,13 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card'
 import supabase, { unwrap } from '@/lib/supabase'
 import { createFileRoute } from '@tanstack/react-router'
 import { EnumInstance } from '@/types/types'
 import { TicketTable } from '@/components/table/TicketTable'
 import { EnumSelect } from '@/components/select/EnumSelect'
-import { Separator } from '@ui/separator'
 import { authorEq } from '@/lib/filter'
-import { Role } from '@/types/types'
 import { toast } from '@/hooks/use-toast'
+import { Role } from '@/types/types'
 
 export const Route = createFileRoute('/_dashboard/member/$id')({
   loader: async ({ params }) => ({
@@ -38,32 +36,17 @@ function MemberView() {
   }
 
   return (
-    <main className="grid sm:grid-cols-[1fr_1fr]">
-      <Card>
-        <CardHeader>
-          <CardTitle>{member.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="min-w-[300px] space-y-6 [&_h2]:text-sm [&_h2]:font-medium [&_h2]:text-muted-foreground [&_h2]:mb-2 [&_h2]:select-none">
-            <div>
-              <h2>Joined on {formatDate(member.created_at)}</h2>
-            </div>
-            <Separator />
-            <div>
-              <h2>Role</h2>
-              <EnumSelect enumKey="role" value={member.role} onValueChange={setRole} />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Authored Tickets</CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <TicketTable filters={[authorEq(member.id)]} />
-        </CardContent>
-      </Card>
+    <main className="grid grid-rows-[auto_1fr] h-full">
+      <section className="flex items-center gap-6">
+        <div>
+          <h1 className="text-xl font-semibold">{member.name}</h1>
+          <h2 className="text-muted-foreground text-xs mt-0.5">Joined {formatDate(member.created_at)}</h2>
+        </div>
+        <EnumSelect enumKey="role" value={member.role} onValueChange={setRole} />
+      </section>
+      <section className="shadow rounded-md border overflow-auto [&>*]:border-0 [&_table]:h-full">
+        <TicketTable filters={[authorEq(member.id)]} />
+      </section>
     </main>
   )
 }
