@@ -6,20 +6,45 @@ import { HumanMessage } from "npm:@langchain/core/messages"
 import { corsHeaders } from "../_shared/cors.ts"
 import { llm } from "../_shared/openai.ts"
 
-// TODO: derive this from the request once frontend supports it
-const ORG_ID = "7e7a9db6-d2bc-44a4-95b1-21df9400b7a7"
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders })
 
-  const { query } = await req.json()
+  const { query, orgId } = await req.json()
 
-  const agent = createReactAgent({ llm, tools: [buildSearchTool(ORG_ID)] })
+  const agent = createReactAgent({ llm, tools: [buildSearchTool(orgId)] })
 
   const agentFinalState = await agent.invoke({ messages: [new HumanMessage(query)] })
-  const reply = agentFinalState.messages[agentFinalState.messages.length - 1].content
+  // console.log(agentFinalState.messages)
+  const messages: any[] = []
+  
+  // Process messages to find ticket tool messages
+  for (let i = 0; i < agentFinalState.messages.length - 1; i++) {
+    const { name, content } = agentFinalState.messages[i]
+    if (name !== 'findTickets') continue
 
-  return new Response(reply as string, {
-    headers: { ...corsHeaders, "Content-Type": "text/plain" },
+    const tickets = JSON.parse(content)
+    if (!Array.isArray(tickets)) continue
+    
+    tickets.forEach(ticket => {
+      messages.push({
+        type: 'ticket',
+        content: ticket,
+        role: 'assistant'
+      })
+    })
+  }
+
+  // Add final response message
+  const finalMessage = agentFinalState.messages[agentFinalState.messages.length - 1]
+  if (finalMessage.content) {
+    messages.push({
+      type: 'text',
+      content: finalMessage.content,
+      role: 'assistant'
+    })
+  }
+
+  return new Response(JSON.stringify(messages), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   })
 })

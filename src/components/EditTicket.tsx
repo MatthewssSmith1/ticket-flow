@@ -163,12 +163,11 @@ export function EditTicket() {
           <h2 className="text-center">
             Submitted by <span className="font-semibold">{memberName}</span> on <i>{verifiedDate}</i>
           </h2>
-          <Textarea
-            value={ticket.description}
-            disabled
-            className="resize-none bg-muted pointer-events-none"
-            rows={5}
-          />
+          <p
+            className="min-h-[75px] w-full rounded-md bg-muted border px-3 py-2 text-base shadow-sm"
+          >
+            {ticket.description}
+          </p>
 
           <Separator />
 
