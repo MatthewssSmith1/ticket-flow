@@ -8,7 +8,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { Ticket } from '@/types/types'
+import { Ticket } from '@shared/types'
 
 export function TicketTable(props: { filters?: Filter[], visibleColumns?: string[] }) {
   const { selectedView } = useViewStore()

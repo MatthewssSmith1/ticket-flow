@@ -1,4 +1,4 @@
-import { Organization, Member, Group, Tag, Field } from '@/types/types'
+import { Organization, Member, Group, Tag, Field } from '@shared/types'
 import supabase, { unwrap } from '@/lib/supabase'
 import { create } from 'zustand'
 import { toast } from '@/hooks/use-toast'

@@ -6,7 +6,7 @@ import { useOrgStore } from '@/stores/orgStore';
 import { getRouteApi } from '@tanstack/react-router';
 import { ScrollArea } from '@ui/scroll-area';
 import { useEffect } from 'react';
-import { Message } from '@/types/types';
+import { Message } from '@shared/types';
 import { Button } from '@ui/button';
 
 export function TicketMessages() {

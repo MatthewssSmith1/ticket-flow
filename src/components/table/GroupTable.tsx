@@ -2,7 +2,7 @@ import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
 import { ColumnDef, Row } from '@tanstack/react-table'
 // import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
-import { Group } from '@/types/types'
+import { Group } from '@shared/types'
 
 export function GroupTable() {
   const { openOrg } = useOrgStore()

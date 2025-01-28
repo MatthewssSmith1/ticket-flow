@@ -1,8 +1,8 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ui/tooltip"
 import { SendIcon, LockIcon, UnlockIcon } from 'lucide-react';
-import { useMessageStore } from '@/stores/messageStore';
-import { getRouteApi } from "@tanstack/react-router";
-import { useOrgStore } from '@/stores/orgStore';
+// import { useMessageStore } from '@/stores/messageStore';
+// import { getRouteApi } from "@tanstack/react-router";
+// import { useOrgStore } from '@/stores/orgStore';
 import { Textarea } from '@ui/textarea';
 import { useForm } from 'react-hook-form';
 import { Button } from '@ui/button';
@@ -12,24 +12,25 @@ interface MessageForm {
   isInternal: boolean;
 }
 
+// TODO: rework messages and consider using a single table for chat sidebar messages and those associated with a ticket 
 export function MessageInput() {
-  const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()
+  // const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()
   const form = useForm<MessageForm>({
     defaultValues: {
       content: '',
       isInternal: false
     }
   });
-  const { addMessage } = useMessageStore();
-  const { authMember } = useOrgStore();
+  // const { addMessage } = useMessageStore();
+  // const { authMember } = useOrgStore();
 
   const handleSubmit = (data: MessageForm) => {
-    addMessage({
-      ticket_id: ticket.id,
-      content: data.content,
-      is_internal: data.isInternal,
-      author_id: authMember?.id ?? null,
-    });
+    // addMessage({
+    //   ticket_id: ticket.id,
+    //   content: data.content,
+    //   is_internal: data.isInternal,
+    //   author_id: authMember?.id ?? null,
+    // });
     form.reset();
   };
 

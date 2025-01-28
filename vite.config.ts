@@ -13,7 +13,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@ui": path.resolve(__dirname, "./src/components/ui"),
-      "@shared": path.resolve(__dirname, "./supabase/functions/_shared"),
+      "@shared": path.resolve(__dirname, "./supabase/functions/_shared/global"),
     },
   },
 })

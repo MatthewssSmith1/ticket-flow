@@ -1,11 +1,11 @@
 import supabase, { unwrap } from '@/lib/supabase'
 import { createFileRoute } from '@tanstack/react-router'
-import { EnumInstance } from '@/types/types'
+import { EnumInstance } from '@shared/types'
 import { TicketTable } from '@/components/table/TicketTable'
 import { EnumSelect } from '@/components/select/EnumSelect'
 import { authorEq } from '@/lib/filter'
 import { toast } from '@/hooks/use-toast'
-import { Role } from '@/types/types'
+import { Role } from '@shared/types'
 
 export const Route = createFileRoute('/_dashboard/member/$id')({
   loader: async ({ params }) => ({

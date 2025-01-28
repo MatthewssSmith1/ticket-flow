@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Tag as TagType } from '@/types/types'
+import { Tag as TagType } from '@shared/types'
 import { MultiSelect } from '@ui/multi-select'
 import { useOrgStore } from '@/stores/orgStore'
 

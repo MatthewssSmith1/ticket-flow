@@ -1,7 +1,7 @@
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@ui/select';
 import { useMemo, useState } from 'react';
 import { useOrgStore } from '@/stores/orgStore';
-import { Member } from '@/types/types';
+import { Member } from '@shared/types';
 
 interface MemberSelectProps {
   memberId: number | null;

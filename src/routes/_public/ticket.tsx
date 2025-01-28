@@ -35,7 +35,7 @@ function TicketForm() {
   const form = useForm<TicketForm>({
     resolver: zodResolver(ticketSchema),
     defaultValues: {
-      name: user ? '' : 'John Doe',
+      name: '',
       email: user?.email ?? 'john@example.com',
       subject: 'Sign in issue',
       description: 'I cannot sign in to my account.',

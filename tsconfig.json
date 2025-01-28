@@ -9,7 +9,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@ui/*": ["./src/components/ui/*"],
-      "@shared/*": ["./supabase/functions/_shared/*"]
+      "@shared/*": ["./supabase/functions/_shared/global/*"]
     }
   }
 }

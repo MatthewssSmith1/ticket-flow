@@ -1,4 +1,4 @@
-import { Tables, Enums } from "./database";
+import { Tables, Enums } from "./database.d.ts";
 
 // Entities
 export type Tag = Tables<"tags">

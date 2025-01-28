@@ -5,7 +5,7 @@ import { InfoHint } from './InfoHint'
 import { useState } from 'react'
 import { Button } from '@ui/button'
 import { Plus } from 'lucide-react'
-import { Tag } from '@/types/types'
+import { Tag } from '@shared/types'
 
 export type DialogState = null | 'create' | Tag
 

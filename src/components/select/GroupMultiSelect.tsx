@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useOrgStore } from '@/stores/orgStore';
 import { MultiSelect } from '@ui/multi-select';
-import { Group } from '@/types/types';
+import { Group } from '@shared/types';
 
 type Props = {
   value: string[];

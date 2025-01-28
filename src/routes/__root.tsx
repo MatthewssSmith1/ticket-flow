@@ -3,7 +3,7 @@ import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { Toaster } from '@ui/toaster'
 import { getUser } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
-import { Ticket } from '@/types/types'
+import { Ticket } from '@shared/types'
 
 export type Context = {
   user: User | null

@@ -2,7 +2,7 @@ import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
 import { ColumnDef, Row } from '@tanstack/react-table'
 import { useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
-import { Member } from '@/types/types'
+import { Member } from '@shared/types'
 import { Pill } from '@/components/Pill'
 
 export function MemberTable() {

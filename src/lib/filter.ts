@@ -1,4 +1,4 @@
-import { Channel, FieldType, Priority, Status, Ticket } from "@/types/types"
+import { Channel, FieldType, Priority, Status, Ticket } from "@shared/types"
 import { Row, RowData } from "@tanstack/react-table"
 
 // TODO: consider composable/nested filters (AND/OR/NOT operators)

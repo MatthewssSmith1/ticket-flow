@@ -1,5 +1,3 @@
-ALTER TABLE public.tickets DROP COLUMN IF EXISTS tags;
-
 CREATE TABLE IF NOT EXISTS public.tags (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     org_id uuid NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,

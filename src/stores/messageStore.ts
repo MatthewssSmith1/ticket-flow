@@ -1,5 +1,5 @@
 import supabase, { unwrap } from '@/lib/supabase';
-import { Message } from '@/types/types';
+import { Message } from '@shared/types';
 import { create } from 'zustand';
 
 interface MessagesState {

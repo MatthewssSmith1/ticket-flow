@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select'
-import { EnumKey, EnumInstance } from '@/types/types'
+import { EnumKey, EnumInstance } from '@shared/types'
 import { useState } from 'react';
 import { Pill } from '@/components/Pill'
 

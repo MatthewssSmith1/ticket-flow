@@ -1,4 +1,4 @@
-import { Ticket, Group, Member, TicketWithRefs } from '@/types/types'
+import { Ticket, Group, Member, TicketWithRefs } from '@shared/types'
 import { Row } from '@tanstack/react-table'
 import { OrgState } from '@/stores/orgStore'
 

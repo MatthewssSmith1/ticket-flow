@@ -34,11 +34,11 @@ CREATE TABLE IF NOT EXISTS public.tickets (
     description text NOT NULL,
     email text,
     name text,
-    tags text[] DEFAULT '{}',
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     verified_at timestamptz,
-    due_at timestamptz
+    due_at timestamptz,
+    embedding vector(1536)
 );
 
 CREATE TABLE IF NOT EXISTS public.messages (
@@ -47,5 +47,7 @@ CREATE TABLE IF NOT EXISTS public.messages (
     author_id bigint REFERENCES public.members(id) ON DELETE SET NULL,
     content text NOT NULL,
     is_internal boolean NOT NULL DEFAULT false,
-    created_at timestamptz NOT NULL DEFAULT now()
+    created_at timestamptz NOT NULL DEFAULT now(),
+    embedding vector(1536)
 );
+

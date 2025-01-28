@@ -1,5 +1,5 @@
 import { formatAssignee, formatAssigner, formatTags } from '../../lib/string'
-import { Field, Ticket, TicketWithRefs } from '@/types/types'
+import { Field, Ticket, TicketWithRefs } from '@shared/types'
 import { SortableHeader } from '@/components/table/GenericTable'
 import { useOrgStore } from '@/stores/orgStore'
 import { ColumnDef } from '@tanstack/react-table'

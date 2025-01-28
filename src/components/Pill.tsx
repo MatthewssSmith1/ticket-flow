@@ -1,4 +1,4 @@
-import { Status, Priority, Channel, Role } from '@/types/types'
+import { Status, Priority, Channel, Role } from '@shared/types'
 import { Badge } from '@ui/badge'
 import { cn } from '@/lib/utils'
 

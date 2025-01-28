@@ -186,6 +186,7 @@ export type Database = {
           author_id: number | null
           content: string
           created_at: string
+          embedding: string | null
           id: number
           is_internal: boolean
           ticket_id: string
@@ -194,6 +195,7 @@ export type Database = {
           author_id?: number | null
           content: string
           created_at?: string
+          embedding?: string | null
           id?: never
           is_internal?: boolean
           ticket_id: string
@@ -202,6 +204,7 @@ export type Database = {
           author_id?: number | null
           content?: string
           created_at?: string
+          embedding?: string | null
           id?: never
           is_internal?: boolean
           ticket_id?: string
@@ -314,6 +317,7 @@ export type Database = {
           description: string
           due_at: string | null
           email: string | null
+          embedding: string | null
           id: string
           name: string | null
           org_id: string
@@ -331,6 +335,7 @@ export type Database = {
           description: string
           due_at?: string | null
           email?: string | null
+          embedding?: string | null
           id?: string
           name?: string | null
           org_id: string
@@ -348,6 +353,7 @@ export type Database = {
           description?: string
           due_at?: string | null
           email?: string | null
+          embedding?: string | null
           id?: string
           name?: string | null
           org_id?: string
@@ -512,7 +518,199 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      binary_quantize:
+        | {
+            Args: {
+              "": string
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              "": unknown
+            }
+            Returns: unknown
+          }
+      halfvec_avg: {
+        Args: {
+          "": number[]
+        }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: {
+          "": unknown[]
+        }
+        Returns: number
+      }
+      hnsw_bit_support: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      ivfflat_bit_support: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      l2_norm:
+        | {
+            Args: {
+              "": unknown
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              "": unknown
+            }
+            Returns: number
+          }
+      l2_normalize:
+        | {
+            Args: {
+              "": string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              "": unknown
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              "": unknown
+            }
+            Returns: unknown
+          }
+      match_tickets: {
+        Args: {
+          query_embedding: string
+          org_id: string
+          match_count?: number
+        }
+        Returns: {
+          id: string
+          parent_id: string
+          status: Database["public"]["Enums"]["ticket_status"]
+          priority: Database["public"]["Enums"]["ticket_priority"]
+          subject: string
+          description: string
+          email: string
+          name: string
+          created_at: string
+          updated_at: string
+          due_at: string
+          similarity: number
+        }[]
+      }
+      sparsevec_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: {
+          "": unknown[]
+        }
+        Returns: number
+      }
+      vector_avg: {
+        Args: {
+          "": number[]
+        }
+        Returns: string
+      }
+      vector_dims:
+        | {
+            Args: {
+              "": string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              "": unknown
+            }
+            Returns: number
+          }
+      vector_norm: {
+        Args: {
+          "": string
+        }
+        Returns: number
+      }
+      vector_out: {
+        Args: {
+          "": string
+        }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: {
+          "": string
+        }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: {
+          "": unknown[]
+        }
+        Returns: number
+      }
     }
     Enums: {
       field_types:

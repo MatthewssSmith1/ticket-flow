@@ -4,7 +4,7 @@ import { FieldDialog } from './FieldDialog'
 import { InfoHint } from './InfoHint'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Field } from '@/types/types'
+import { Field } from '@shared/types'
 import { Badge } from '@/components/ui/badge'
 import { Plus } from 'lucide-react'
 

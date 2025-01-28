@@ -1,7 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Status, Priority, Channel } from '@/types/types'
+import { Status, Priority, Channel } from '@shared/types'
 import { DatePickerWithPresets } from './DatePicker'
 import { MemberMultiSelect } from './select/MemberMultiSelect'
 import { GroupMultiSelect } from './select/GroupMultiSelect'
