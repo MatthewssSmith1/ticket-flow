@@ -8,7 +8,6 @@ import { buildSearchTool } from "../_shared/tools/searchTool.ts"
 import { corsHeaders } from "../_shared/cors.ts"
 import { ToolNode } from "npm:@langchain/langgraph/prebuilt";
 import { Database } from "../_shared/global/database.d.ts"
-import { Message } from "../_shared/global/types.d.ts"
 import { llm } from "../_shared/openai.ts"
 
 type MessageInsertion = Database["public"]["Tables"]["messages"]["Insert"]
@@ -28,11 +27,7 @@ Deno.serve(async (req) => {
     const app = createWorkflow(orgId);
     
     const finalState = await app.invoke({ messages });
-    const processedMessages = await processAgentResponse(finalState.messages, query, authorId)
-
-    return new Response(JSON.stringify(processedMessages), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    })
+    return await processAgentResponse(finalState.messages, authorId, query)
   } catch (error) {
     console.error("Error handling agent request:", error)
     return new Response(JSON.stringify({ error: "Internal server error" }), {
@@ -92,13 +87,11 @@ async function initMessages(authorId: number, query: string) {
     return new AIMessage(msg.content ?? '');
   });
 
-  console.log(history)
-
   return [new SystemMessage(SYSTEM_PROMPT), ...history, new HumanMessage(query)];
 }
 
-// TODO: from each invocatoin of the editTicket tool, we need to derive the ticket ids that need to have their client side tanstrack query invalidated/refetched
-async function processAgentResponse(finalMessages: BaseMessage[], query: string, authorId: number): Promise<Message[]> {
+async function processAgentResponse(finalMessages: BaseMessage[], authorId: number, query: string): Promise<Response> {
+  const cacheInvalidationIds: string[] = []
   const messagesToInsert: MessageInsertion[] = [{
     message_type: "USER",
     content: query,
@@ -106,18 +99,23 @@ async function processAgentResponse(finalMessages: BaseMessage[], query: string,
   }]
 
   for (let i = 0; i < finalMessages.length - 1; i++) {
-    const { name, content } = finalMessages[i]
-    if (name !== "findTickets") continue
-
-    const tickets = JSON.parse(content as string)
-    if (!Array.isArray(tickets)) continue
+    const message = finalMessages[i]
+    const { name, content } = message
     
-    for (const ticket of tickets) {
-      messagesToInsert.push({
-        message_type: "AGENT",
-        ticket_id: ticket.id,
-        author_id: authorId
-      })
+    if (name === "findTickets") {
+      const tickets = JSON.parse(content as string)
+      if (!Array.isArray(tickets)) continue
+      
+      for (const ticket of tickets) {
+        messagesToInsert.push({
+          message_type: "AGENT",
+          ticket_id: ticket.id,
+          author_id: authorId
+        })
+      }
+    } else if (name === "editTicket") {
+      const ticket = JSON.parse(message.content as string)
+      cacheInvalidationIds.push(ticket.id)
     }
   }
 
@@ -130,11 +128,13 @@ async function processAgentResponse(finalMessages: BaseMessage[], query: string,
     })
   }
 
-  const messages = await supabase
+  const processedMessages = await supabase
     .from("messages")
     .insert(messagesToInsert)
     .select()
-    .then(unwrap);
+    .then(unwrap)
 
-  return messages
+  return new Response(JSON.stringify({ messages: processedMessages, cacheInvalidationIds }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  })
 }

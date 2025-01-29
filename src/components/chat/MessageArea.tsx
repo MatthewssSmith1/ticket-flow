@@ -2,8 +2,8 @@ import { useTicketMessageStore, useAgentMessageStore, Variant, LoadParams } from
 import { MessageView } from './Message';
 import { ScrollArea } from '@ui/scroll-area';
 import { useEffect } from 'react';
-import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type Props = {
   type: Variant;
@@ -29,9 +29,12 @@ export function MessageArea({ type, params, className }: Props) {
             onDelete={removeMessage}
           />
         ))}
+        {isLoading && messages.length > 0 && (
+          <div className="w-[80%] h-12 mr-auto rounded-lg bg-muted/50 animate-pulse mb-4" />
+        )}
       </ScrollArea>
-      {isLoading && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+      {isLoading && messages.length === 0 && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
           <Loader2 className="size-8 animate-spin text-muted-foreground" />
         </div>
       )}

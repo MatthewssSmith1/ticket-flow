@@ -28,10 +28,10 @@ export function MessageView({ message, onDelete }: {
 
   return (
     <div className={cn(
-      'group/message relative flex items-center gap-3 px-3 py-2 mb-2 rounded-lg transition-colors',
+      'group/message relative flex items-center gap-3 px-3 py-2 mb-3 rounded-lg transition-colors',
       ['AGENT', 'USER'].includes(message.message_type) ? 'max-w-[80%]' : 'w-full',
       message.message_type === 'AGENT' ? 'mr-auto' : 'ml-auto',
-      isTicketRef ? 'bg-muted/50 hover:bg-muted/70' : 'hover:bg-muted'
+      'bg-muted/50 hover:bg-muted',
     )}>
       {['INTERNAL', 'EXTERNAL'].includes(message.message_type) && (
         <div className="mx-2">
@@ -39,8 +39,8 @@ export function MessageView({ message, onDelete }: {
         </div>
       )}
       <div className="flex-1">
-        { !isTicketRef && <div className="flex items-center gap-2 mb-0.5">
-          <span className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+        { !isTicketRef && <div className="flex items-center gap-2 mb-[3px]">
+          <span className="font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
             {message.message_type === 'AGENT' ? 'Agent' : getMemberName(message.author_id) ?? ''}
           </span>
           <span className="text-xs mt-[1px] text-muted-foreground select-none whitespace-nowrap">
@@ -52,7 +52,10 @@ export function MessageView({ message, onDelete }: {
       </div>
 
       {isAuthor && onDelete && (
-        <div className="absolute right-1 top-1 opacity-0 group-hover/message:opacity-100 transition-opacity">
+        <div className={cn(
+          "absolute opacity-0 group-hover/message:opacity-100 transition-opacity",
+          isTicketRef ? "top-0 -right-1 translate-x-full" : "top-1 right-1"
+        )}>
           <Button
             variant="ghost"
             size="icon"
@@ -130,7 +133,6 @@ function TicketContent({ ticketId }: { ticketId: string }) {
 }
 
 function TimestampLine({ verb, name, date }: { verb: string, name: string | null, date: string | null }) {
-  if (verb === 'Due') console.log({ name, date })
   if (!name && !date) return null;
 
   let message = verb;

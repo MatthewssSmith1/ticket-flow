@@ -238,75 +238,77 @@ export function EditTicket() {
               </div>
             </div>
           </section>
+          {Boolean(openOrg?.fields?.length) && (
+            <>
+              <Separator />
+              <h1 className="text-xl text-center font-semibold select-none">Custom Fields</h1>
+              <section className="space-y-4">
+                {openOrg?.fields.map(field => {
+                  const fieldValues = form.watch('field_values')
+                  const value = fieldValues[field.id]
+                  const setValue = (val: string | null) => 
+                    setVal('field_values', { ...fieldValues, [field.id]: val })
 
-          <Separator />
-
-          <h1 className="text-xl text-center font-semibold select-none">Custom Fields</h1>
-          <section className="space-y-4">
-            {openOrg?.fields?.map(field => {
-              const fieldValues = form.watch('field_values')
-              const value = fieldValues[field.id]
-              const setValue = (val: string | null) => 
-                setVal('field_values', { ...fieldValues, [field.id]: val })
-
-              return (
-                <div key={field.id} className="max-w-[300px]">
-                  <h2 className="flex items-center gap-2">
-                    <span>{field.name}</span>
-                    <InfoHint text={field.description ?? ''} />
-                  </h2>
-                  {field.field_type === 'TEXT' && (
-                    <Textarea
-                      value={value ?? ''}
-                      onChange={e => setValue(e.target.value)}
-                      placeholder="Enter value"
-                      className="resize-none"
-                    />
-                  )}
-                  {field.field_type === 'DATE' && (
-                    <DatePickerWithPresets
-                      value={value ?? null}
-                      onValueChange={(date?: Date) => setValue(date?.toISOString() ?? null)}
-                    />
-                  )}
-                  {field.field_type === 'BOOLEAN' && (
-                    <Switch
-                      checked={value === 'true'}
-                      onCheckedChange={checked => setValue(checked.toString())}
-                      aria-label={field.description ?? field.name}
-                    />
-                  )}
-                  {(['INTEGER', 'FLOAT'].includes(field.field_type)) && (
-                    <Input
-                      type="number"
-                      value={value ?? ''}
-                      onChange={e => setValue(e.target.value)}
-                      placeholder="Enter value"
-                      step={field.field_type === 'FLOAT' ? 'any' : '1'}
-                    />
-                  )}
-                  {field.field_type === 'SELECT' && (
-                    <Select
-                      value={value ?? ''}
-                      onValueChange={setValue}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder={field.name} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {field.options?.map(option => (
-                          <SelectItem key={option} value={option}>
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                  {/* TODO: support for MULTI_SELECT */}
-                </div>
-              )
-            })}
-          </section>
+                  return (
+                    <div key={field.id} className="max-w-[300px]">
+                      <h2 className="flex items-center gap-2">
+                        <span>{field.name}</span>
+                        {Boolean(field.description?.length) && <InfoHint text={field.description ?? ''} />}
+                      </h2>
+                      {field.field_type === 'TEXT' && (
+                        <Textarea
+                          value={value ?? ''}
+                          onChange={e => setValue(e.target.value)}
+                          placeholder="Enter value"
+                          className="resize-none"
+                        />
+                      )}
+                      {field.field_type === 'DATE' && (
+                        <DatePickerWithPresets
+                          value={value ?? null}
+                          onValueChange={(date?: Date) => setValue(date?.toISOString() ?? null)}
+                        />
+                      )}
+                      {field.field_type === 'BOOLEAN' && (
+                        <Switch
+                          checked={value === 'true'}
+                          onCheckedChange={checked => setValue(checked.toString())}
+                          aria-label={field.description ?? field.name}
+                        />
+                      )}
+                      {(['INTEGER', 'FLOAT'].includes(field.field_type)) && (
+                        <Input
+                          type="number"
+                          value={value ?? ''}
+                          onChange={e => setValue(e.target.value)}
+                          placeholder="Enter value"
+                          step={field.field_type === 'FLOAT' ? 'any' : '1'}
+                        />
+                      )}
+                      {field.field_type === 'SELECT' && (
+                        <Select
+                          value={value ?? ''}
+                          onValueChange={setValue}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder={field.name} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {field.options?.map(option => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                      {/* TODO: support for MULTI_SELECT */}
+                    </div>
+                  )
+                })}
+              </section>
+            </>
+          )}
 
           <section className="mt-auto flex flex-col items-center pt-6">
             <Button 

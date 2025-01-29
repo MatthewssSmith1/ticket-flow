@@ -39,7 +39,7 @@ export const createMessageStore = (type: Variant) => create<MessagesState>()((se
     try {
       set({ 
         messages: await query.order('id', { ascending: true }).then(unwrap),
-        isLoading: false 
+        isLoading: false
       }) 
     } catch (error) {
       console.error('Failed to load messages', error) 
@@ -48,22 +48,18 @@ export const createMessageStore = (type: Variant) => create<MessagesState>()((se
   },
   addMessages: async (messages) => {
     if (!messages) return 
-    set({ isLoading: true })
+    
+    // removes optimistic insertions with filter
+    set(state => ({ messages: [...state.messages.filter(m => m.id !== -1), ...messages] })) 
+
     const ticketIds = [...new Set(messages
       .map(m => m.ticket_id)
       .filter((id): id is string => id !== null)
     )] 
-    
-    if (ticketIds.length > 0) {
-      await supabase.functions.invoke('batch-embeddings', {
-        body: { ticketIds }
-      }) 
-    }
-      
-    set((state) => ({ 
-      messages: [...state.messages, ...messages],
-      isLoading: false
-    })) 
+
+    if (ticketIds.length > 0) supabase.functions.invoke('batch-embeddings', {
+      body: { ticketIds }
+    }) 
   },
   removeMessage: async (id: number) => {
     set({ isLoading: true })

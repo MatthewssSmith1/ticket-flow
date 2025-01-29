@@ -3,6 +3,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ui/to
 import { useAgentMessageStore } from "@/stores/messageStore"
 import { MessageArea } from "@/components/chat/MessageArea"
 import { useOrgStore } from "@/stores/orgStore"
+import { queryClient } from "@/main"
 import { ChatInput } from "@/components/chat/ChatInput"
 import { Separator } from "@ui/separator"
 import { RefreshCw } from "lucide-react"
@@ -19,6 +20,16 @@ export function ChatSidebar() {
 
   const handleSubmit = async (message: string) => {
     setIsLoading(true)
+    addMessages([{
+      id: -1,
+      message_type: "USER" as const,
+      content: message,
+      author_id: authMember.id,
+      created_at: new Date().toISOString(),
+      embedding: null,
+      ticket_id: null
+    }])
+
     try {
       const { data, error } = await supabase.functions.invoke('handle-agent-request', {
         body: { 
@@ -28,8 +39,15 @@ export function ChatSidebar() {
         }
       })
 
+      // Invalidate queries for each affected ticket
+      console.log(data.cacheInvalidationIds)
+      // queryClient.invalidateQueries({ queryKey: ['tickets', openOrg.id] })
+      data.cacheInvalidationIds.forEach((ticketId: string) => {
+        queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] })
+      })
+
       if (error) throw error
-      addMessages(data)
+      addMessages(data.messages)
     } catch (error) {
       toast({
         variant: "destructive",

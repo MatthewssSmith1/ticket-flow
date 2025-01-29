@@ -30,7 +30,7 @@ export const buildEditTicketTool = (orgId: string) => tool(
       .update(updateData)
       .eq('org_id', orgId)
       .eq('id', id)
-      .select()
+      .select('id, parent_id, status, priority, subject, description, created_at, updated_at, due_at')
       .single()
       .then(unwrap)
 
