@@ -2,6 +2,7 @@ import "edge-runtime"
 
 import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from "npm:@langchain/core/messages"
 import { StateGraph, MessagesAnnotation } from "npm:@langchain/langgraph";
+import { buildEditTicketTool } from "../_shared/tools/editTicketTool.ts"
 import { supabase, unwrap } from "../_shared/supabase.ts"
 import { buildSearchTool } from "../_shared/tools/searchTool.ts"
 import { corsHeaders } from "../_shared/cors.ts"
@@ -27,7 +28,6 @@ Deno.serve(async (req) => {
     const app = createWorkflow(orgId);
     
     const finalState = await app.invoke({ messages });
-    console.log(finalState)
     const processedMessages = await processAgentResponse(finalState.messages, query, authorId)
 
     return new Response(JSON.stringify(processedMessages), {
@@ -43,7 +43,8 @@ Deno.serve(async (req) => {
 })
 
 function createWorkflow(orgId: string) {
-  const tools = [buildSearchTool(orgId)];
+  // TODO: consider adding a 'time' tool because the agent operates in utc and doesn't know the current date
+  const tools = [buildSearchTool(orgId), buildEditTicketTool(orgId)];
   const toolNode = new ToolNode(tools);
   
   const modelWithTools = llm.bind({ tools });
@@ -66,7 +67,8 @@ function createWorkflow(orgId: string) {
 function shouldContinue({ messages }: typeof MessagesAnnotation.State) {
   const lastMessage = messages[messages.length - 1];
   
-  if ((lastMessage as AIMessage).tool_calls) return "tools";
+  if (lastMessage.additional_kwargs.tool_calls) 
+    return "tools";
 
   return "__end__";
 }
@@ -74,22 +76,28 @@ function shouldContinue({ messages }: typeof MessagesAnnotation.State) {
 async function initMessages(authorId: number, query: string) {
   const messages = await supabase
     .from('messages')
-    .select('*')
+    .select('*, tickets(id, parent_id, status, priority, subject, description, created_at, updated_at, due_at)')
     .eq('author_id', authorId)
     .in('message_type', ['USER', 'AGENT'])
-    .order('created_at', { ascending: true })
+    .order('id', { ascending: true })
     .then(unwrap)
 
   const history = messages.map(msg => {
-    if (msg.message_type === 'USER') {
+    if (msg.message_type === 'USER') 
       return new HumanMessage(msg.content ?? '');
-    }
+
+    if (msg.tickets) 
+      return new AIMessage({ content: "Here is a ticket that may be relevant:" + JSON.stringify(msg.tickets) });
+
     return new AIMessage(msg.content ?? '');
   });
+
+  console.log(history)
 
   return [new SystemMessage(SYSTEM_PROMPT), ...history, new HumanMessage(query)];
 }
 
+// TODO: from each invocatoin of the editTicket tool, we need to derive the ticket ids that need to have their client side tanstrack query invalidated/refetched
 async function processAgentResponse(finalMessages: BaseMessage[], query: string, authorId: number): Promise<Message[]> {
   const messagesToInsert: MessageInsertion[] = [{
     message_type: "USER",

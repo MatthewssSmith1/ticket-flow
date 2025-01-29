@@ -38,8 +38,8 @@ export const createMessageStore = (type: Variant) => create<MessagesState>()((se
 
     try {
       set({ 
-        messages: await query.order('created_at', { ascending: true }).then(unwrap),
-        isLoading: false
+        messages: await query.order('id', { ascending: true }).then(unwrap),
+        isLoading: false 
       }) 
     } catch (error) {
       console.error('Failed to load messages', error) 

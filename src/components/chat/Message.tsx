@@ -1,28 +1,30 @@
-import { UserIcon, LockIcon, Trash2Icon } from 'lucide-react';
-import { useOrgStore } from '@/stores/orgStore';
-import { Message, Ticket } from '@shared/types';
-import { Button } from '@ui/button';
-import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
-import supabase from '@/lib/supabase';
-import { Pill } from '@/components/Pill';
+import { TICKET_WITH_REFS_QUERY, TicketWithRefs } from '@/components/table/ticketColumns'
+import { UserIcon, LockIcon, Trash2Icon } from 'lucide-react' 
+import { formatAssignee } from '@/lib/string'
+import { useNavigate } from '@tanstack/react-router' 
+import { useOrgStore } from '@/stores/orgStore' 
+import { useQuery } from '@tanstack/react-query' 
+import { Message } from '@shared/types' 
+import { Button } from '@ui/button' 
+import supabase from '@/lib/supabase' 
+import { Pill } from '@/components/Pill' 
+import { cn } from '@/lib/utils' 
 
 export function MessageView({ message, onDelete }: {
-  message: Message;
-  onDelete?: (id: number) => Promise<void>;
+  message: Message 
+  onDelete?: (id: number) => Promise<void> 
 }) {
-  const { getMemberName, authMember } = useOrgStore();
-  const isAuthor = message.author_id === authMember?.id;
-  const isTicketRef = message.content === null;
+  const { getMemberName, authMember } = useOrgStore() 
+  const isAuthor = message.author_id === authMember?.id 
+  const isTicketRef = message.content === null 
   const time = new Date(message.created_at).toLocaleTimeString([], { 
     hour: 'numeric', 
     minute: '2-digit' 
-  });
+  }) 
 
   const handleDelete = async () => {
-    if (onDelete) await onDelete(message.id);
-  };
+    if (onDelete) await onDelete(message.id) 
+  } 
 
   return (
     <div className={cn(
@@ -62,44 +64,43 @@ export function MessageView({ message, onDelete }: {
         </div>
       )}
     </div>
-  );
+  ) 
 }
 
 function Content({ message }: { message: Message }) {
   if (message.content) {
-    return <p className="text-sm text-foreground">{message.content}</p>;
+    return <p className="text-sm text-foreground">{message.content}</p> 
   }
 
-  if (!message.ticket_id || message.message_type !== 'AGENT') return null;
+  if (!message.ticket_id || message.message_type !== 'AGENT') return null 
 
-  return <TicketContent ticketId={message.ticket_id} />;
+  return <TicketContent ticketId={message.ticket_id} /> 
 }
 
 function TicketContent({ ticketId }: { ticketId: string }) {
-  const navigate = useNavigate();
+  const { openOrg, getMemberName } = useOrgStore() 
+  const navigate = useNavigate() 
+
   const { data: ticket, isLoading } = useQuery({
     queryKey: ['ticket', ticketId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tickets')
-        .select('*')
+        .select(TICKET_WITH_REFS_QUERY)
         .eq('id', ticketId)
-        .single();
+        .single() 
       
-      if (error) throw error;
-      return data as Ticket;
+      if (error) throw error 
+      return data as TicketWithRefs 
     }
-  });
+  }) 
 
-  if (isLoading) {
-    return <div className="animate-pulse bg-muted h-24 rounded-lg" />;
-  }
-
-  if (!ticket) return null;
+  if (isLoading) return <div className="animate-pulse bg-muted h-24 rounded-lg" /> 
+  if (!ticket) return null 
 
   const handleClick = () => {
-    navigate({ to: '/ticket/$id', params: { id: ticket.id } });
-  };
+    navigate({ to: '/ticket/$id', params: { id: ticket.id } }) 
+  } 
 
   return (
     <div 
@@ -107,17 +108,42 @@ function TicketContent({ ticketId }: { ticketId: string }) {
       onClick={handleClick}
     >
       <div className="flex justify-between items-start mb-2">
-        <h3 className="font-medium">{ticket.subject}</h3>
+        <h2 className="font-medium">{ticket.subject}</h2>
         <div className="flex gap-2 pt-0.5">
           <Pill text={ticket.priority} />
           <Pill text={ticket.status} />
         </div>
       </div>
       <p className="text-sm text-muted-foreground mb-2 line-clamp-4">{ticket.description}</p>
-      <div className="text-xs text-muted-foreground">
-        {ticket.name && <span>By: {ticket.name} • </span>}
-        <span>Created: {new Date(ticket.created_at).toLocaleDateString()}</span>
-      </div>
+      <TimestampLine 
+        verb="Created"
+        name={ticket.author_id ? getMemberName(ticket.author_id) : null} 
+        date={new Date(ticket.verified_at ?? ticket.created_at).toLocaleDateString()}
+      />
+      <TimestampLine 
+        verb="Due"
+        name={formatAssignee(ticket, openOrg)} 
+        date={ticket.due_at ? new Date(ticket.due_at).toLocaleDateString() : null}
+      />
     </div>
+  ) 
+}
+
+function TimestampLine({ verb, name, date }: { verb: string, name: string | null, date: string | null }) {
+  if (verb === 'Due') console.log({ name, date })
+  if (!name && !date) return null;
+
+  let message = verb;
+  if (name) {
+    message += ` by ${name}`;
+  }
+  if (date) {
+    message += ` on ${date}`;
+  }
+
+  return (
+    <h3 className="text-xs text-muted-foreground mt-1">
+      {message}
+    </h3>
   );
 }

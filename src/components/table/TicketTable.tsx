@@ -1,4 +1,4 @@
-import { createTicketColumns, COLUMN_IDS, fieldAccessorKey } from '@/components/table/ticketColumns'
+import { createTicketColumns, COLUMN_IDS, fieldAccessorKey, TICKET_WITH_REFS_QUERY } from '@/components/table/ticketColumns'
 import { Filter, ticketFilter } from '@/lib/filter'
 import { Row, VisibilityState } from '@tanstack/react-table'
 import supabase, { unwrap } from '@/lib/supabase'
@@ -23,7 +23,7 @@ export function TicketTable(props: { filters?: Filter[], visibleColumns?: string
       if (!openOrg) return []
       return (await supabase
         .from('tickets')
-        .select('*, tags_tickets(tag_id), tickets_members(member_id, assigned_by), tickets_groups(group_id, assigned_by), tickets_fields(field_id, value)')
+        .select(TICKET_WITH_REFS_QUERY)
         .eq('org_id', openOrg.id)
         .then(unwrap))
     }

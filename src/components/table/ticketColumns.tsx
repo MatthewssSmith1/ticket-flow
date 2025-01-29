@@ -1,9 +1,18 @@
-import { formatAssignee, formatAssigner, formatTags } from '../../lib/string'
-import { Field, Ticket, TicketWithRefs } from '@shared/types'
+import { Field, Ticket, TagInstance, MemberAssignment, GroupAssignment, FieldInstance } from '@shared/types'
+import { formatAssignee, formatAssigner, formatTags } from '@/lib/string'
 import { SortableHeader } from '@/components/table/GenericTable'
 import { useOrgStore } from '@/stores/orgStore'
 import { ColumnDef } from '@tanstack/react-table'
 import { Pill } from '@/components/Pill'
+
+export const TICKET_WITH_REFS_QUERY = '*, tags_tickets(tag_id), tickets_members(member_id, assigned_by), tickets_groups(group_id, assigned_by), tickets_fields(field_id, value)'
+
+export type TicketWithRefs = Ticket & { 
+  tickets_members: MemberAssignment[], 
+  tickets_groups: GroupAssignment[],
+  tags_tickets: TagInstance[],
+  tickets_fields: FieldInstance[]
+}
 
 export const COLUMN_IDS = [
   'status',
@@ -44,7 +53,7 @@ export const createTicketColumns = (store: ReturnType<typeof useOrgStore>): Colu
   {
     accessorKey: 'assignee',
     header: ({ column }) => <SortableHeader column={column} label="Assignee" />,
-    cell: ({ row }) => formatAssignee(row, store.openOrg) ?? '-',
+    cell: ({ row }) => formatAssignee(row.original, store.openOrg) ?? '-',
   },
   {
     accessorKey: 'assigned_by',

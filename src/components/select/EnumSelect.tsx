@@ -1,7 +1,10 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select'
-import { EnumKey, EnumInstance } from '@shared/types'
+import { Status, Priority, Channel, Role } from '@shared/types'
 import { useState } from 'react';
 import { Pill } from '@/components/Pill'
+
+export type EnumKey = 'status' | 'priority' | 'channel' | 'role'
+export type EnumInstance = Status | Priority | Channel | Role
 
 const ENUM_OPTIONS: Record<EnumKey, EnumInstance[]> = {
   status: ['NEW', 'OPEN', 'PENDING', 'ON_HOLD', 'SOLVED', 'REOPENED', 'CLOSED'],

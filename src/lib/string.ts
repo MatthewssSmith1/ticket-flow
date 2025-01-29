@@ -1,9 +1,10 @@
-import { Ticket, Group, Member, TicketWithRefs } from '@shared/types'
-import { Row } from '@tanstack/react-table'
+import { Ticket, Group, Member } from '@shared/types'
+import { TicketWithRefs } from '@/components/table/ticketColumns'
 import { OrgState } from '@/stores/orgStore'
+import { Row } from '@tanstack/react-table'
 
-export function formatAssignee(row: Row<Ticket>, openOrg: OrgState | null) {
-  const { tickets_groups, tickets_members } = row.original as TicketWithRefs
+export function formatAssignee(ticket: Ticket, openOrg: OrgState | null) {
+  const { tickets_groups, tickets_members } = ticket as TicketWithRefs
   if (!openOrg) return '-'
 
   const groups = tickets_groups
