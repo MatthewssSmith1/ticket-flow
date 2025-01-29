@@ -38,7 +38,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
-          field_type: Database["public"]["Enums"]["field_types"]
+          field_type: Database["public"]["Enums"]["field_type"]
           id: number
           is_required: boolean
           name: string
@@ -49,7 +49,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
-          field_type: Database["public"]["Enums"]["field_types"]
+          field_type: Database["public"]["Enums"]["field_type"]
           id?: never
           is_required?: boolean
           name: string
@@ -60,7 +60,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
-          field_type?: Database["public"]["Enums"]["field_types"]
+          field_type?: Database["public"]["Enums"]["field_type"]
           id?: never
           is_required?: boolean
           name?: string
@@ -184,30 +184,30 @@ export type Database = {
       messages: {
         Row: {
           author_id: number | null
-          content: string
+          content: string | null
           created_at: string
           embedding: string | null
           id: number
-          is_internal: boolean
-          ticket_id: string
+          message_type: Database["public"]["Enums"]["message_type"]
+          ticket_id: string | null
         }
         Insert: {
           author_id?: number | null
-          content: string
+          content?: string | null
           created_at?: string
           embedding?: string | null
           id?: never
-          is_internal?: boolean
-          ticket_id: string
+          message_type: Database["public"]["Enums"]["message_type"]
+          ticket_id?: string | null
         }
         Update: {
           author_id?: number | null
-          content?: string
+          content?: string | null
           created_at?: string
           embedding?: string | null
           id?: never
-          is_internal?: boolean
-          ticket_id?: string
+          message_type?: Database["public"]["Enums"]["message_type"]
+          ticket_id?: string | null
         }
         Relationships: [
           {
@@ -634,6 +634,9 @@ export type Database = {
           query_embedding: string
           org_id: string
           match_count?: number
+          status_filter?: Database["public"]["Enums"]["ticket_status"][]
+          priority_filter?: Database["public"]["Enums"]["ticket_priority"][]
+          channel_filter?: Database["public"]["Enums"]["ticket_channel"][]
         }
         Returns: {
           id: string
@@ -713,7 +716,7 @@ export type Database = {
       }
     }
     Enums: {
-      field_types:
+      field_type:
         | "TEXT"
         | "REGEX"
         | "INTEGER"
@@ -723,6 +726,7 @@ export type Database = {
         | "SELECT"
         | "MULTI_SELECT"
       member_role: "OWNER" | "ADMIN" | "AGENT" | "CUSTOMER"
+      message_type: "EXTERNAL" | "INTERNAL" | "AGENT" | "USER"
       ticket_channel: "EMAIL" | "WEB" | "CHAT" | "API"
       ticket_priority: "URGENT" | "HIGH" | "NORMAL" | "LOW"
       ticket_status:

@@ -22,6 +22,8 @@ CREATE TYPE public.ticket_channel AS ENUM (
     'API'
 );
 
+create extension vector;
+
 CREATE TABLE IF NOT EXISTS public.tickets (
     id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     parent_id uuid REFERENCES public.tickets(id) ON DELETE SET NULL,
@@ -40,14 +42,3 @@ CREATE TABLE IF NOT EXISTS public.tickets (
     due_at timestamptz,
     embedding vector(1536)
 );
-
-CREATE TABLE IF NOT EXISTS public.messages (
-    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    ticket_id uuid NOT NULL REFERENCES public.tickets(id) ON DELETE CASCADE,
-    author_id bigint REFERENCES public.members(id) ON DELETE SET NULL,
-    content text NOT NULL,
-    is_internal boolean NOT NULL DEFAULT false,
-    created_at timestamptz NOT NULL DEFAULT now(),
-    embedding vector(1536)
-);
-

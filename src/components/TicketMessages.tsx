@@ -1,21 +1,64 @@
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@ui/card';
-import { UserIcon, LockIcon, Trash2Icon } from 'lucide-react';
-import { useMessageStore } from '@/stores/messageStore';
-import { MessageInput } from './MessageInput';
-import { useOrgStore } from '@/stores/orgStore';
-import { getRouteApi } from '@tanstack/react-router';
-import { ScrollArea } from '@ui/scroll-area';
-import { useEffect } from 'react';
-import { Message } from '@shared/types';
-import { Button } from '@ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@ui/tooltip";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@ui/card";
+import { useTicketMessageStore } from "@/stores/messageStore";
+import { LockIcon, UnlockIcon } from "lucide-react";
+import supabase, { unwrap } from "@/lib/supabase";
+import { useOrgStore } from "@/stores/orgStore";
+import { getRouteApi } from "@tanstack/react-router";
+import { MessageArea } from "./chat/MessageArea";
+import { MessageType } from "@shared/types";
+import { ChatInput } from "./chat/ChatInput";
+import { useState } from "react";
+import { Button } from "@ui/button";
 
 export function TicketMessages() {
-  const { ticket } = getRouteApi('/_dashboard/ticket/$id').useLoaderData()
-  const { messages, loadMessages } = useMessageStore();
+  const { ticket } = getRouteApi("/_dashboard/ticket/$id").useLoaderData()
+  const { addMessages } = useTicketMessageStore();
+  const { authMember } = useOrgStore();
+  const [isInternal, setIsInternal] = useState(false);
 
-  useEffect(() => {
-    loadMessages(ticket.id);
-  }, [ticket.id]);
+  // TODO: optimistic updates
+  const handleSubmit = async (content: string) => {
+    const rawMessages = [{
+      ticket_id: ticket.id,
+      content,
+      author_id: authMember?.id ?? null,
+      message_type: (isInternal ? "INTERNAL" : "EXTERNAL") as MessageType,
+      embedding: null
+    }]
+
+    const messages = await supabase
+      .from("messages")
+      .insert(rawMessages)
+      .select()
+      .then(unwrap)
+
+    addMessages(messages);
+  };
+
+  const InternalToggleButton = () => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8"
+            onClick={() => setIsInternal(!isInternal)}
+          >
+            {isInternal ? (
+              <LockIcon className="size-4" />
+            ) : (
+              <UnlockIcon className="size-4" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{isInternal ? "Internal Message" : "External Message"}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 
   return (
     <Card className="flex flex-col h-full min-h-[50vh] max-h-[95vh]">
@@ -23,52 +66,17 @@ export function TicketMessages() {
         <CardTitle>Messages</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 min-h-0">
-        <ScrollArea className="h-full pr-4 space-y-1">
-          {messages.map((message) => <MessageView key={message.id} message={message} />)}
-        </ScrollArea>
+        <MessageArea 
+          type="ticket"
+          params={{ ticketId: ticket.id }}
+        />
       </CardContent>
       <CardFooter>
-        <MessageInput/>
+        <ChatInput
+          onSubmit={handleSubmit}
+          additionalButtons={<InternalToggleButton />}
+        />
       </CardFooter>
     </Card>
-  );
-}
-
-function MessageView({ message }: { message: Message }) {
-  const { removeMessage } = useMessageStore();
-  const { getMemberName, authMember } = useOrgStore();
-
-  const isAuthor = message.author_id === authMember?.id;
-
-  const time = new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-
-  const handleDelete = async () => await removeMessage(message.id);
-
-  return (
-    <div className="group relative flex items-center gap-3 px-2 py-1 hover:bg-muted rounded-sm transition-colors">
-      <div className="mx-2">
-        <UserIcon className="size-4 text-muted-foreground" />
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">{getMemberName(message.author_id) ?? ''}</span>
-          <span className="text-xs mt-[1px] text-muted-foreground select-none whitespace-nowrap">{time}</span>
-          {message.is_internal && <LockIcon className="size-3 text-muted-foreground" />}
-        </div>
-        <p className="text-sm text-foreground">{message.content}</p>
-      </div>
-      {isAuthor && (
-        <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-muted-foreground hover:text-destructive"
-            onClick={handleDelete}
-        >
-          <Trash2Icon className="size-4" />
-          </Button>
-        </div>
-      )}
-    </div>
   );
 }
