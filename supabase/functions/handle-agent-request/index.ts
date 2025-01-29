@@ -1,9 +1,9 @@
 import "edge-runtime"
 
+import { BaseMessage, HumanMessage, AIMessage } from "npm:@langchain/core/messages"
 import { createReactAgent } from "npm:@langchain/langgraph/prebuilt"
 import { supabase, unwrap } from "../_shared/supabase.ts"
 import { buildSearchTool } from "../_shared/tools/searchTool.ts"
-import { HumanMessage } from "npm:@langchain/core/messages"
 import { corsHeaders } from "../_shared/cors.ts"
 import { Database } from "../_shared/global/database.d.ts"
 import { Message } from "../_shared/global/types.d.ts"
@@ -15,12 +15,17 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders })
 
   try {
+    // TODO: derive authorId from session
     const { query, orgId, authorId } = await req.json()
     
-    const finalState = await invokeAgent(query, orgId)
-    const messages = await processAgentResponse(finalState, query, authorId)
+    const messages = await loadConversationHistory(authorId, query)
 
-    return new Response(JSON.stringify(messages), {
+    const finalState = await createReactAgent({ llm, tools: [buildSearchTool(orgId)] })
+      .invoke({ messages })
+
+    const processedMessages = await processAgentResponse(finalState, query, authorId)
+
+    return new Response(JSON.stringify(processedMessages), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   } catch (error) {
@@ -32,9 +37,24 @@ Deno.serve(async (req) => {
   }
 })
 
-async function invokeAgent(query: string, orgId: string) {
-  const agent = createReactAgent({ llm, tools: [buildSearchTool(orgId)] })
-  return await agent.invoke({ messages: [new HumanMessage(query)] })
+async function loadConversationHistory(authorId: number, query: string) {
+  const messages = await supabase
+    .from('messages')
+    .select('*')
+    .eq('author_id', authorId)
+    .in('message_type', ['USER', 'AGENT'])
+    .order('created_at', { ascending: true })
+    .then(unwrap)
+
+  const history = messages.map(msg => {
+    if (msg.message_type === 'USER') {
+      return new HumanMessage(msg.content ?? '');
+    } else if (msg.ticket_id === null) {
+      return new AIMessage(msg.content ?? '');
+    }
+  }).filter(Boolean) as BaseMessage[];
+
+  return [...history, new HumanMessage(query)];
 }
 
 async function processAgentResponse(finalState: any, query: string, authorId: number): Promise<Message[]> {

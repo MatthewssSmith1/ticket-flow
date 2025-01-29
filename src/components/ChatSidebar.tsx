@@ -11,13 +11,14 @@ import { Button } from "@ui/button"
 import supabase from "@/lib/supabase"
 
 export function ChatSidebar() {
-  const { addMessages, clearMessages } = useAgentMessageStore()
+  const { addMessages, clearMessages, setIsLoading } = useAgentMessageStore()
   const { openOrg, authMember } = useOrgStore()
   const { toast } = useToast()
 
   if (!openOrg || !authMember) return null
 
   const handleSubmit = async (message: string) => {
+    setIsLoading(true)
     try {
       const { data, error } = await supabase.functions.invoke('handle-agent-request', {
         body: { 
@@ -35,6 +36,8 @@ export function ChatSidebar() {
         title: "Error",
         description: "Failed to process your request. Please try again."
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 

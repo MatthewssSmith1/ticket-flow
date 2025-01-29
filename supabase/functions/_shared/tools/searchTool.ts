@@ -1,8 +1,8 @@
+import { STATUS, PRIORITY, CHANNEL } from "../global/validation.ts"
 import { embeddings } from "../openai.ts"
 import { supabase } from "../supabase.ts"
 import { tool } from "npm:@langchain/core/tools"
 import { z } from "zod"
-import { STATUS, PRIORITY, CHANNEL } from "../global/validation.ts"
 
 const schema = z.object({
   query: z.string().describe("The search query to find relevant tickets"),
@@ -21,9 +21,9 @@ export const buildSearchTool = (orgId: string) => tool(
       query_embedding,
       org_id: orgId,
       match_count: limit,
-      status_filter: statusFilter,
-      priority_filter: priorityFilter,
-      channel_filter: channelFilter
+      status_filter: statusFilter?.length ? statusFilter : undefined,
+      priority_filter: priorityFilter?.length ? priorityFilter : undefined,
+      channel_filter: channelFilter?.length ? channelFilter : undefined
     })
     
     if (error) throw error

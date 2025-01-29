@@ -2,7 +2,6 @@ import { UserIcon, LockIcon, Trash2Icon } from 'lucide-react';
 import { useOrgStore } from '@/stores/orgStore';
 import { Message, Ticket } from '@shared/types';
 import { Button } from '@ui/button';
-import { Card } from '@ui/card';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
@@ -51,7 +50,7 @@ export function MessageView({ message, onDelete }: {
       </div>
 
       {isAuthor && onDelete && (
-        <div className="absolute right-2 opacity-0 group-hover/message:opacity-100 transition-opacity">
+        <div className="absolute right-1 top-1 opacity-0 group-hover/message:opacity-100 transition-opacity">
           <Button
             variant="ghost"
             size="icon"
