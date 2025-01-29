@@ -1,15 +1,20 @@
 import "edge-runtime"
 
-import { BaseMessage, HumanMessage, AIMessage } from "npm:@langchain/core/messages"
-import { createReactAgent } from "npm:@langchain/langgraph/prebuilt"
+import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from "npm:@langchain/core/messages"
+import { StateGraph, MessagesAnnotation } from "npm:@langchain/langgraph";
 import { supabase, unwrap } from "../_shared/supabase.ts"
 import { buildSearchTool } from "../_shared/tools/searchTool.ts"
 import { corsHeaders } from "../_shared/cors.ts"
+import { ToolNode } from "npm:@langchain/langgraph/prebuilt";
 import { Database } from "../_shared/global/database.d.ts"
 import { Message } from "../_shared/global/types.d.ts"
 import { llm } from "../_shared/openai.ts"
 
 type MessageInsertion = Database["public"]["Tables"]["messages"]["Insert"]
+
+const SYSTEM_PROMPT = `You are a ticket management chat agent with semantic ticket search capabilities. For any query about tickets, use your search tool to find and summarize relevant information. 
+If no results are found, clearly state this to the user.
+In your final response, DO NOT REPEAT ticket details that result from the search tool; ONLY reference ticket subjects when necessary. Focus on providing analysis, insights, and answering the user's specific questions about the tickets.`
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders })
@@ -18,12 +23,12 @@ Deno.serve(async (req) => {
     // TODO: derive authorId from session
     const { query, orgId, authorId } = await req.json()
     
-    const messages = await loadConversationHistory(authorId, query)
-
-    const finalState = await createReactAgent({ llm, tools: [buildSearchTool(orgId)] })
-      .invoke({ messages })
-
-    const processedMessages = await processAgentResponse(finalState, query, authorId)
+    const messages = await initMessages(authorId, query)
+    const app = createWorkflow(orgId);
+    
+    const finalState = await app.invoke({ messages });
+    console.log(finalState)
+    const processedMessages = await processAgentResponse(finalState.messages, query, authorId)
 
     return new Response(JSON.stringify(processedMessages), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -37,7 +42,36 @@ Deno.serve(async (req) => {
   }
 })
 
-async function loadConversationHistory(authorId: number, query: string) {
+function createWorkflow(orgId: string) {
+  const tools = [buildSearchTool(orgId)];
+  const toolNode = new ToolNode(tools);
+  
+  const modelWithTools = llm.bind({ tools });
+  
+  async function callModel(state: typeof MessagesAnnotation.State) {
+    const response = await modelWithTools.invoke(state.messages);
+    return { messages: [response] };
+  }
+  
+  const workflow = new StateGraph(MessagesAnnotation)
+    .addNode("agent", callModel)
+    .addEdge("__start__", "agent")
+    .addNode("tools", toolNode)
+    .addEdge("tools", "agent")
+    .addConditionalEdges("agent", shouldContinue);
+    
+  return workflow.compile();
+}
+
+function shouldContinue({ messages }: typeof MessagesAnnotation.State) {
+  const lastMessage = messages[messages.length - 1];
+  
+  if ((lastMessage as AIMessage).tool_calls) return "tools";
+
+  return "__end__";
+}
+
+async function initMessages(authorId: number, query: string) {
   const messages = await supabase
     .from('messages')
     .select('*')
@@ -49,26 +83,25 @@ async function loadConversationHistory(authorId: number, query: string) {
   const history = messages.map(msg => {
     if (msg.message_type === 'USER') {
       return new HumanMessage(msg.content ?? '');
-    } else if (msg.ticket_id === null) {
-      return new AIMessage(msg.content ?? '');
     }
-  }).filter(Boolean) as BaseMessage[];
+    return new AIMessage(msg.content ?? '');
+  });
 
-  return [...history, new HumanMessage(query)];
+  return [new SystemMessage(SYSTEM_PROMPT), ...history, new HumanMessage(query)];
 }
 
-async function processAgentResponse(finalState: any, query: string, authorId: number): Promise<Message[]> {
+async function processAgentResponse(finalMessages: BaseMessage[], query: string, authorId: number): Promise<Message[]> {
   const messagesToInsert: MessageInsertion[] = [{
     message_type: "USER",
     content: query,
     author_id: authorId
   }]
 
-  for (let i = 0; i < finalState.messages.length - 1; i++) {
-    const { name, content } = finalState.messages[i]
+  for (let i = 0; i < finalMessages.length - 1; i++) {
+    const { name, content } = finalMessages[i]
     if (name !== "findTickets") continue
 
-    const tickets = JSON.parse(content)
+    const tickets = JSON.parse(content as string)
     if (!Array.isArray(tickets)) continue
     
     for (const ticket of tickets) {
@@ -80,7 +113,7 @@ async function processAgentResponse(finalState: any, query: string, authorId: nu
     }
   }
 
-  const answer = finalState.messages[finalState.messages.length - 1]
+  const answer = finalMessages[finalMessages.length - 1]
   if (answer.content) {
     messagesToInsert.push({
       message_type: "AGENT",

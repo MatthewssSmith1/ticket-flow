@@ -29,7 +29,7 @@ export function MessageView({ message, onDelete }: {
       'group/message relative flex items-center gap-3 px-3 py-2 mb-2 rounded-lg transition-colors',
       ['AGENT', 'USER'].includes(message.message_type) ? 'max-w-[80%]' : 'w-full',
       message.message_type === 'AGENT' ? 'mr-auto' : 'ml-auto',
-      isTicketRef ? 'bg-muted' : 'hover:bg-muted'
+      isTicketRef ? 'bg-muted/50 hover:bg-muted/70' : 'hover:bg-muted'
     )}>
       {['INTERNAL', 'EXTERNAL'].includes(message.message_type) && (
         <div className="mx-2">
@@ -103,7 +103,7 @@ function TicketContent({ ticketId }: { ticketId: string }) {
 
   return (
     <div 
-      className="rounded-lg border px-2 py-1 cursor-pointer transition-colors"
+      className="rounded-lg px-2 py-1 cursor-pointer transition-colors"
       onClick={handleClick}
     >
       <div className="flex justify-between items-start mb-2">

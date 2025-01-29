@@ -17,13 +17,15 @@ export const buildSearchTool = (orgId: string) => tool(
   async ({query, limit, statusFilter, priorityFilter, channelFilter}: Schema) => {
     const query_embedding = JSON.stringify(await embeddings.embedQuery(query))
 
+    const nullifyEmptyArray = <T>(arr?: T[]) => arr?.length ? arr : undefined
+
     const { data, error } = await supabase.rpc("match_tickets", {
+      status_filter: nullifyEmptyArray(statusFilter),
+      priority_filter: nullifyEmptyArray(priorityFilter),
+      channel_filter: nullifyEmptyArray(channelFilter),
       query_embedding,
       org_id: orgId,
       match_count: limit,
-      status_filter: statusFilter?.length ? statusFilter : undefined,
-      priority_filter: priorityFilter?.length ? priorityFilter : undefined,
-      channel_filter: channelFilter?.length ? channelFilter : undefined
     })
     
     if (error) throw error
