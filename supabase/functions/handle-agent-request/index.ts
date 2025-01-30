@@ -1,6 +1,7 @@
 import "edge-runtime"
 
 import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from "npm:@langchain/core/messages"
+import { buildSystemPrompt, buildTagsPrompt } from "../_shared/prompts.ts"
 import { StateGraph, MessagesAnnotation } from "npm:@langchain/langgraph";
 import { buildFindTicketsTool } from "../_shared/tools/findTicketsTool.ts"
 import { buildEditTicketTool } from "../_shared/tools/editTicketTool.ts"
@@ -11,10 +12,6 @@ import { Database } from "../_shared/global/database.d.ts"
 import { llm } from "../_shared/openai.ts"
 
 type MessageInsertion = Database["public"]["Tables"]["messages"]["Insert"]
-
-const SYSTEM_PROMPT = `You are a ticket management chat agent with semantic ticket search capabilities. For any query about tickets, use your search tool to find and summarize relevant information. 
-If no results are found, clearly state this to the user.
-In your final response, DO NOT REPEAT ticket details that result from the search tool; ONLY reference ticket subjects when necessary. Focus on providing analysis, insights, and answering the user's specific questions about the tickets.`
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders })
@@ -30,6 +27,7 @@ Deno.serve(async (req) => {
     return await processAgentResponse(finalState.messages, authorId, query)
   } catch (error) {
     console.error("Error handling agent request:", error)
+    // TODO: return agent message 'Something went wrong. Please try again.'
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -38,7 +36,6 @@ Deno.serve(async (req) => {
 })
 
 function createWorkflow(orgId: string) {
-  // TODO: consider adding a 'time' tool because the agent operates in utc and doesn't know the current date
   const tools = [buildFindTicketsTool(orgId), buildEditTicketTool(orgId)];
   const toolNode = new ToolNode(tools);
   
@@ -69,14 +66,6 @@ function shouldContinue({ messages }: typeof MessagesAnnotation.State) {
 }
 
 async function initMessages(authorId: number, query: string) {
-  const tags = await supabase
-    .from('tags')
-    .select('id, name, color')
-    .order('name', { ascending: true })
-    .then(unwrap)
-
-  const tagsPrompt = `Here are all available tags that can be used with tickets: ${tags.map(tag => `"${tag.name}"`).join(', ')}\nWhen editing tickets, you can use any of the tag names listed above.`
-
   const messages = await supabase
     .from('messages')
     .select('*, tickets(id, parent_id, status, priority, subject, description, created_at, updated_at, due_at)')
@@ -96,8 +85,8 @@ async function initMessages(authorId: number, query: string) {
   });
 
   return [
-    new SystemMessage(SYSTEM_PROMPT),
-    new HumanMessage(tagsPrompt),
+    new SystemMessage(buildSystemPrompt()),
+    new HumanMessage(await buildTagsPrompt()),
     ...history,
     new HumanMessage(query)
   ];

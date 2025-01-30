@@ -7,10 +7,10 @@ import { z } from "zod"
 const schema = z.object({
   query: z.string().describe("The search query to find relevant tickets"),
   limit: z.number().optional().describe("Max number of tickets to return").default(10),
-  statusFilter: z.array(STATUS).optional().describe("Filter tickets by any number of status values"),
-  priorityFilter: z.array(PRIORITY).optional().describe("Filter tickets by any number of priority values"),
-  channelFilter: z.array(CHANNEL).optional().describe("Filter tickets by any number of channel values"),
-  tagFilter: z.array(z.string()).optional().describe("Filter tickets by any number of tag names"),
+  statusFilter: z.array(STATUS).optional().describe("Include tickets whose status matches at least one value from this array"),
+  priorityFilter: z.array(PRIORITY).optional().describe("Include tickets whose priority matches at least one value from this array"),
+  channelFilter: z.array(CHANNEL).optional().describe("Include tickets whose channel matches at least one value from this array"),
+  tagFilter: z.array(z.string()).optional().describe("Include tickets that have at least one tag from this array"),
 });
 type Schema = z.infer<typeof schema>
 
@@ -35,7 +35,7 @@ export const buildFindTicketsTool = (orgId: string) => tool(
   },
   {
     name: "findTickets",
-    description: "search support tickets based on a natural language query with optional filters for status, priority, channel, and tags",
+    description: "Natural language ticket search with filtering. Each filter (status, priority, channel, tags) accepts multiple values that are combined with OR logic. When multiple filter types are provided, they are combined with AND logic. Example: status=['NEW','OPEN'] with priority=['URGENT'] finds tickets that are (NEW OR OPEN) AND (URGENT)",
     schema: schema,
   }
 );
