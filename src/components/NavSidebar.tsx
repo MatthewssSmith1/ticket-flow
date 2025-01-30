@@ -12,7 +12,7 @@ import { Button } from '@ui/button'
 
 export function NavSidebar() {
   return (
-    <SidebarProvider style={{"--sidebar-width": "14rem", "--sidebar-width-mobile": "14rem"} as React.CSSProperties}>
+    <SidebarProvider defaultOpen={false} style={{"--sidebar-width": "14rem", "--sidebar-width-mobile": "14rem"} as React.CSSProperties}>
       <Sidebar collapsible="icon" side="left">
         <Header />
         <SidebarContent> 

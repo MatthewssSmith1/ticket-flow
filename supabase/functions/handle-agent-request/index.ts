@@ -11,6 +11,18 @@ import { ToolNode } from "npm:@langchain/langgraph/prebuilt";
 import { Database } from "../_shared/global/database.d.ts"
 import { llm } from "../_shared/openai.ts"
 
+globalThis.process = {
+  ...globalThis.process,
+  env: {
+    LANGCHAIN_PROJECT: Deno.env.get("LANGCHAIN_PROJECT"),
+
+    LANGSMITH_TRACING: Deno.env.get("LANGSMITH_TRACING"),
+    LANGSMITH_ENDPOINT: Deno.env.get("LANGSMITH_ENDPOINT"),
+    LANGSMITH_API_KEY: Deno.env.get("LANGSMITH_API_KEY"),
+    LANGSMITH_CALLBACKS_BACKGROUND: "false",
+  }
+}
+
 type MessageInsertion = Database["public"]["Tables"]["messages"]["Insert"]
 
 Deno.serve(async (req) => {
