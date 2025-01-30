@@ -637,6 +637,7 @@ export type Database = {
           status_filter?: Database["public"]["Enums"]["ticket_status"][]
           priority_filter?: Database["public"]["Enums"]["ticket_priority"][]
           channel_filter?: Database["public"]["Enums"]["ticket_channel"][]
+          tag_filter?: string[]
         }
         Returns: {
           id: string
@@ -650,6 +651,7 @@ export type Database = {
           created_at: string
           updated_at: string
           due_at: string
+          tags: string
           similarity: number
         }[]
       }

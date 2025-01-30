@@ -2,9 +2,9 @@ import "edge-runtime"
 
 import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from "npm:@langchain/core/messages"
 import { StateGraph, MessagesAnnotation } from "npm:@langchain/langgraph";
+import { buildFindTicketsTool } from "../_shared/tools/findTicketsTool.ts"
 import { buildEditTicketTool } from "../_shared/tools/editTicketTool.ts"
 import { supabase, unwrap } from "../_shared/supabase.ts"
-import { buildSearchTool } from "../_shared/tools/searchTool.ts"
 import { corsHeaders } from "../_shared/cors.ts"
 import { ToolNode } from "npm:@langchain/langgraph/prebuilt";
 import { Database } from "../_shared/global/database.d.ts"
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
 
 function createWorkflow(orgId: string) {
   // TODO: consider adding a 'time' tool because the agent operates in utc and doesn't know the current date
-  const tools = [buildSearchTool(orgId), buildEditTicketTool(orgId)];
+  const tools = [buildFindTicketsTool(orgId), buildEditTicketTool(orgId)];
   const toolNode = new ToolNode(tools);
   
   const modelWithTools = llm.bind({ tools });
@@ -69,6 +69,14 @@ function shouldContinue({ messages }: typeof MessagesAnnotation.State) {
 }
 
 async function initMessages(authorId: number, query: string) {
+  const tags = await supabase
+    .from('tags')
+    .select('id, name, color')
+    .order('name', { ascending: true })
+    .then(unwrap)
+
+  const tagsPrompt = `Here are all available tags that can be used with tickets: ${tags.map(tag => `"${tag.name}"`).join(', ')}\nWhen editing tickets, you can use any of the tag names listed above.`
+
   const messages = await supabase
     .from('messages')
     .select('*, tickets(id, parent_id, status, priority, subject, description, created_at, updated_at, due_at)')
@@ -87,11 +95,16 @@ async function initMessages(authorId: number, query: string) {
     return new AIMessage(msg.content ?? '');
   });
 
-  return [new SystemMessage(SYSTEM_PROMPT), ...history, new HumanMessage(query)];
+  return [
+    new SystemMessage(SYSTEM_PROMPT),
+    new HumanMessage(tagsPrompt),
+    ...history,
+    new HumanMessage(query)
+  ];
 }
 
 async function processAgentResponse(finalMessages: BaseMessage[], authorId: number, query: string): Promise<Response> {
-  const cacheInvalidationIds: string[] = []
+  const staleTicketIds: string[] = []
   const messagesToInsert: MessageInsertion[] = [{
     message_type: "USER",
     content: query,
@@ -103,19 +116,29 @@ async function processAgentResponse(finalMessages: BaseMessage[], authorId: numb
     const { name, content } = message
     
     if (name === "findTickets") {
-      const tickets = JSON.parse(content as string)
-      if (!Array.isArray(tickets)) continue
-      
-      for (const ticket of tickets) {
-        messagesToInsert.push({
-          message_type: "AGENT",
-          ticket_id: ticket.id,
-          author_id: authorId
-        })
+      try {
+        const tickets = JSON.parse(content as string)
+        if (!Array.isArray(tickets)) continue
+        
+        for (const ticket of tickets) {
+          messagesToInsert.push({
+            message_type: "AGENT",
+            ticket_id: ticket.id,
+            author_id: authorId
+          })
+        }
+      } catch (error) {
+        console.log("Error parsing findTickets response:", error, "Content:", content)
+        continue
       }
     } else if (name === "editTicket") {
-      const ticket = JSON.parse(message.content as string)
-      cacheInvalidationIds.push(ticket.id)
+      try {
+        const ticket = JSON.parse(message.content as string)
+        staleTicketIds.push(ticket.id)
+      } catch (error) {
+        console.log("Error parsing editTicket response:", error, "Content:", message.content)
+        continue
+      }
     }
   }
 
@@ -134,7 +157,7 @@ async function processAgentResponse(finalMessages: BaseMessage[], authorId: numb
     .select()
     .then(unwrap)
 
-  return new Response(JSON.stringify({ messages: processedMessages, cacheInvalidationIds }), {
+  return new Response(JSON.stringify({ messages: processedMessages, staleTicketIds }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   })
 }

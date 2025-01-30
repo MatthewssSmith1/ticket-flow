@@ -10,11 +10,12 @@ const schema = z.object({
   statusFilter: z.array(STATUS).optional().describe("Filter tickets by any number of status values"),
   priorityFilter: z.array(PRIORITY).optional().describe("Filter tickets by any number of priority values"),
   channelFilter: z.array(CHANNEL).optional().describe("Filter tickets by any number of channel values"),
+  tagFilter: z.array(z.string()).optional().describe("Filter tickets by any number of tag names"),
 });
 type Schema = z.infer<typeof schema>
 
-export const buildSearchTool = (orgId: string) => tool(
-  async ({query, limit, statusFilter, priorityFilter, channelFilter}: Schema) => {
+export const buildFindTicketsTool = (orgId: string) => tool(
+  async ({query, limit, statusFilter, priorityFilter, channelFilter, tagFilter}: Schema) => {
     const query_embedding = JSON.stringify(await embeddings.embedQuery(query))
 
     const nullifyEmptyArray = <T>(arr?: T[]) => arr?.length ? arr : undefined
@@ -23,6 +24,7 @@ export const buildSearchTool = (orgId: string) => tool(
       status_filter: nullifyEmptyArray(statusFilter),
       priority_filter: nullifyEmptyArray(priorityFilter),
       channel_filter: nullifyEmptyArray(channelFilter),
+      tag_filter: nullifyEmptyArray(tagFilter),
       query_embedding,
       org_id: orgId,
       match_count: limit,
@@ -33,7 +35,7 @@ export const buildSearchTool = (orgId: string) => tool(
   },
   {
     name: "findTickets",
-    description: "search support tickets based on a natural language query with optional filters for status, priority, and channel",
+    description: "search support tickets based on a natural language query with optional filters for status, priority, channel, and tags",
     schema: schema,
   }
 );
