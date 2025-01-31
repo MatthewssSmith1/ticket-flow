@@ -33,6 +33,7 @@ with check (
 create policy "Role-based message visibility"
 on public.messages for select to authenticated
 using (
+  -- CUSTOMER role policy for EXTERNAL messages
   (exists (
     select 1 from public.members
     where user_id = auth.uid()
@@ -46,6 +47,7 @@ using (
        and m.user_id = auth.uid()
    ))
   or
+  -- non-CUSTOMER roles and EXTERNAL/INTERNAL messages
   (exists (
     select 1 from public.tickets t
     join public.members m 
@@ -61,6 +63,14 @@ using (
        where m.id = author_id
          and m.user_id = auth.uid()
      ))))
+  or
+  -- AGENT and USER messages without ticket_id
+  (message_type in ('AGENT', 'USER') and
+   exists (
+     select 1 from public.members m
+     where m.id = author_id
+       and m.user_id = auth.uid()
+   ))
 );
 
 -- Delete policy for author-only message deletion
