@@ -40,6 +40,7 @@ export function MemberMultiSelect({ value, onValueChange, filter, placeholder }:
       onValueChange={handleValueChange}
       defaultValue={selectedIds}
       placeholder={placeholder ?? "Select members"}
+      modalPopover={true}
     />
   );
 }

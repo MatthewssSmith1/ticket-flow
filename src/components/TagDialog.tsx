@@ -112,7 +112,7 @@ export function TagDialog({ open, state, onOpenChange }: Props) {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid gap-4 py-4 grid-cols-2">
+            <section className="grid gap-4 py-4 grid-cols-2">
               <FormField
                 control={form.control}
                 name="name"
@@ -139,8 +139,8 @@ export function TagDialog({ open, state, onOpenChange }: Props) {
                   </FormItem>
                 )}
               />
-            </div>
-            <DialogFooter className="flex justify-center gap-2 sm:justify-center">
+            </section>
+            <section className="flex justify-center gap-3 sm:justify-center">
               <Button 
                 type="button" 
                 variant="outline" 
@@ -159,7 +159,7 @@ export function TagDialog({ open, state, onOpenChange }: Props) {
                   ? (mode === 'create' ? "Creating..." : "Saving...") 
                   : (mode === 'create' ? "Create" : "Save Changes")}
               </Button>
-            </DialogFooter>
+            </section>
           </form>
         </Form>
       </DialogContent>

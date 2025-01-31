@@ -1,21 +1,40 @@
 import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
 import { ColumnDef, Row } from '@tanstack/react-table'
-import { useNavigate } from '@tanstack/react-router'
+import { MemberDialog } from '@/components/MemberDialog'
 import { useOrgStore } from '@/stores/orgStore'
+import { useState } from 'react'
 import { Member } from '@shared/types'
 import { Pill } from '@/components/Pill'
 
 export function MemberTable() {
   const { openOrg } = useOrgStore()
-  const navigate = useNavigate()
+  const [dialogState, setDialogState] = useState<Member | 'create' | null>(null)
 
   if (!openOrg) return <div>Loading...</div>
 
   function handleRowClick(row: Row<Member>) {
-    navigate({ to: '/member/$id', params: { id: row.original.id.toString() } })
+    setDialogState(row.original)
   }
 
-  return <GenericTable data={openOrg.members ?? []} columns={columns} onRowClick={handleRowClick} />
+  function handleNewRowClick() {
+    setDialogState('create')
+  }
+
+  return (
+    <>
+      <GenericTable 
+        data={openOrg.members ?? []} 
+        columns={columns} 
+        onRowClick={handleRowClick}
+        onNewRowClick={handleNewRowClick}
+      />
+      <MemberDialog
+        open={dialogState !== null}
+        state={dialogState}
+        onOpenChange={(open) => !open && setDialogState(null)}
+      />
+    </>
+  )
 }
 
 const columns: ColumnDef<Member>[] = [

@@ -1,7 +1,7 @@
 import { flexRender, useReactTable, getCoreRowModel, getSortedRowModel, getFilteredRowModel, VisibilityState } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table'
 import { ColumnDef, FilterFnOption, Row, RowData, SortingState } from '@tanstack/react-table'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@ui/button'
 import { Column } from '@tanstack/react-table'
@@ -11,6 +11,7 @@ type Props<T, F> = {
   data: T[]
   columns: ColumnDef<T>[]
   onRowClick: (row: Row<T>) => void
+  onNewRowClick?: () => void
   globalFilter?: F
   globalFilterFn?: FilterFnOption<T>
   columnVisibility?: VisibilityState
@@ -54,17 +55,28 @@ export function GenericTable<T extends RowData, F>(props: Props<T, F>) {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} className="cursor-pointer" onClick={() => props.onRowClick(row)}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    <TableCellContent columnId={cell.column.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCellContent>
+            <>
+              {table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} className="cursor-pointer" onClick={() => props.onRowClick(row)}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      <TableCellContent columnId={cell.column.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCellContent>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+              {props.onNewRowClick && (
+                <TableRow className="cursor-pointer" onClick={props.onNewRowClick}>
+                  <TableCell colSpan={props.columns.length}>
+                    <div className="flex items-center justify-center">
+                      <Plus className="size-5" />
+                    </div>
                   </TableCell>
-                ))}
-              </TableRow>
-            ))
+                </TableRow>
+              )}
+            </>
           ) : (
             <TableRow>
               <TableCell colSpan={props.columns.length} className="h-24 text-center">

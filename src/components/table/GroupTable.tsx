@@ -1,24 +1,45 @@
 import { GenericTable, SortableHeader } from '@/components/table/GenericTable'
+import { GroupWithMembers } from '@shared/types'
 import { ColumnDef, Row } from '@tanstack/react-table'
-// import { useNavigate } from '@tanstack/react-router'
+import { GroupDialog } from '@/components/GroupDialog'
 import { useOrgStore } from '@/stores/orgStore'
-import { Group } from '@shared/types'
+import { useState } from 'react'
 
 export function GroupTable() {
   const { openOrg } = useOrgStore()
-  // const navigate = useNavigate()
+  const [dialogState, setDialogState] = useState<GroupWithMembers | 'create' | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
 
   if (!openOrg) return <div>Loading...</div>
 
-  function handleRowClick(row: Row<Group>) {
-    console.log(row)
-    // navigate({ to: '/group/$id', params: { id: row.original.id.toString() } })
+  function handleRowClick(row: Row<GroupWithMembers>) {
+    setDialogState(row.original)
+    setIsOpen(true)
   }
 
-  return <GenericTable data={openOrg.groups} columns={columns} onRowClick={handleRowClick} />
+  function handleNewRowClick() {
+    setDialogState('create')
+    setIsOpen(true)
+  }
+
+  return (
+    <>
+      <GenericTable 
+        data={openOrg.groups} 
+        columns={columns} 
+        onRowClick={handleRowClick}
+        onNewRowClick={handleNewRowClick}
+      />
+      <GroupDialog
+        open={isOpen}
+        state={dialogState}
+        onOpenChange={setIsOpen}
+      />
+    </>
+  )
 }
 
-const columns: ColumnDef<Group>[] = [
+const columns: ColumnDef<GroupWithMembers>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => <SortableHeader column={column} label="Name" />,

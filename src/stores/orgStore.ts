@@ -1,11 +1,11 @@
-import { Organization, Member, Group, Tag, Field } from '@shared/types'
+import { Organization, Member, GroupWithMembers, Tag, Field } from '@shared/types'
 import supabase, { unwrap } from '@/lib/supabase'
 import { create } from 'zustand'
 import { toast } from '@/hooks/use-toast'
 
 export type OrgState = Organization & {
   members: Member[]
-  groups: Group[]
+  groups: GroupWithMembers[]
   tags: Tag[]
   fields: Field[]
 }
@@ -55,10 +55,28 @@ const _useOrgStore = create<State>((set, get) => ({
     try {
       const openOrg = await supabase
         .from('organizations')
-        .select(`*, members:members(*), groups:groups(*), tags:tags(*), fields:fields(*)`)
+        .select(`
+          *,
+          members:members(*),
+          groups:groups(
+            *,
+            member_ids:groups_members(member_id)
+          ),
+          tags:tags(*),
+          fields:fields(*)
+        `)
         .eq('id', org.id)
         .single()
         .then(unwrap)
+        .then(org => ({
+          ...org,
+          groups: org.groups.map(group => ({
+            ...group,
+            member_ids: group.member_ids.map(m => m.member_id)
+          }))
+        }))
+
+      console.log(openOrg.groups)
 
       const authMember = openOrg.members.find(m => m.user_id === userId) ?? null
       set({ openOrg, authMember })

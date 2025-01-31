@@ -22,3 +22,6 @@ export type Channel = Enums<"ticket_channel">
 export type Priority = Enums<"ticket_priority">
 export type FieldType = Enums<"field_type">
 export type MessageType = Enums<"message_type">
+
+// Other
+export type GroupWithMembers = Group & { member_ids: number[] }

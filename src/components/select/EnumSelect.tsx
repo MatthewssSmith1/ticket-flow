@@ -18,13 +18,15 @@ type Props = {
   value: EnumInstance
   onValueChange: (value: EnumInstance) => void
   disabled?: boolean
+  filter?: (value: EnumInstance) => boolean
 }
 
 export function EnumSelect({ 
   enumKey,
   value, 
   onValueChange,
-  disabled = false
+  disabled = false,
+  filter,
 }: Props) {
   const [currentValue, setCurrentValue] = useState(value);
 
@@ -33,8 +35,9 @@ export function EnumSelect({
     onValueChange(val);
   };
 
-  const options = ENUM_OPTIONS[enumKey]
-  const placeholder = `Select ${enumKey}...`
+  const options = filter 
+    ? ENUM_OPTIONS[enumKey].filter(filter) 
+    : ENUM_OPTIONS[enumKey]
 
   return (
     <Select
@@ -44,7 +47,7 @@ export function EnumSelect({
     >
       <SelectTrigger className="min-w-[120px] md:max-w-[150px]">
         <SelectValue>
-          {currentValue ? <Pill text={currentValue} /> : placeholder}
+          {currentValue ? <Pill text={currentValue} /> : `Select ${enumKey}...`}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>

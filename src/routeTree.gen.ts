@@ -23,7 +23,6 @@ import { Route as authSignupImport } from './routes/(auth)/signup'
 import { Route as authLogoutImport } from './routes/(auth)/logout'
 import { Route as authLoginImport } from './routes/(auth)/login'
 import { Route as DashboardTicketIdImport } from './routes/_dashboard/ticket.$id'
-import { Route as DashboardMemberIdImport } from './routes/_dashboard/member.$id'
 
 // Create/Update Routes
 
@@ -94,12 +93,6 @@ const authLoginRoute = authLoginImport.update({
 const DashboardTicketIdRoute = DashboardTicketIdImport.update({
   id: '/ticket/$id',
   path: '/ticket/$id',
-  getParentRoute: () => DashboardRoute,
-} as any)
-
-const DashboardMemberIdRoute = DashboardMemberIdImport.update({
-  id: '/member/$id',
-  path: '/member/$id',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -184,13 +177,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexImport
       parentRoute: typeof PublicImport
     }
-    '/_dashboard/member/$id': {
-      id: '/_dashboard/member/$id'
-      path: '/member/$id'
-      fullPath: '/member/$id'
-      preLoaderRoute: typeof DashboardMemberIdImport
-      parentRoute: typeof DashboardImport
-    }
     '/_dashboard/ticket/$id': {
       id: '/_dashboard/ticket/$id'
       path: '/ticket/$id'
@@ -207,7 +193,6 @@ interface DashboardRouteChildren {
   DashboardMembersRoute: typeof DashboardMembersRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTicketsRoute: typeof DashboardTicketsRoute
-  DashboardMemberIdRoute: typeof DashboardMemberIdRoute
   DashboardTicketIdRoute: typeof DashboardTicketIdRoute
 }
 
@@ -215,7 +200,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardMembersRoute: DashboardMembersRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTicketsRoute: DashboardTicketsRoute,
-  DashboardMemberIdRoute: DashboardMemberIdRoute,
   DashboardTicketIdRoute: DashboardTicketIdRoute,
 }
 
@@ -249,7 +233,6 @@ export interface FileRoutesByFullPath {
   '/ticket': typeof PublicTicketRoute
   '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
-  '/member/$id': typeof DashboardMemberIdRoute
   '/ticket/$id': typeof DashboardTicketIdRoute
 }
 
@@ -264,7 +247,6 @@ export interface FileRoutesByTo {
   '/ticket': typeof PublicTicketRoute
   '/verify-ticket': typeof PublicVerifyTicketRoute
   '/': typeof PublicIndexRoute
-  '/member/$id': typeof DashboardMemberIdRoute
   '/ticket/$id': typeof DashboardTicketIdRoute
 }
 
@@ -281,7 +263,6 @@ export interface FileRoutesById {
   '/_public/ticket': typeof PublicTicketRoute
   '/_public/verify-ticket': typeof PublicVerifyTicketRoute
   '/_public/': typeof PublicIndexRoute
-  '/_dashboard/member/$id': typeof DashboardMemberIdRoute
   '/_dashboard/ticket/$id': typeof DashboardTicketIdRoute
 }
 
@@ -298,7 +279,6 @@ export interface FileRouteTypes {
     | '/ticket'
     | '/verify-ticket'
     | '/'
-    | '/member/$id'
     | '/ticket/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -312,7 +292,6 @@ export interface FileRouteTypes {
     | '/ticket'
     | '/verify-ticket'
     | '/'
-    | '/member/$id'
     | '/ticket/$id'
   id:
     | '__root__'
@@ -327,7 +306,6 @@ export interface FileRouteTypes {
     | '/_public/ticket'
     | '/_public/verify-ticket'
     | '/_public/'
-    | '/_dashboard/member/$id'
     | '/_dashboard/ticket/$id'
   fileRoutesById: FileRoutesById
 }
@@ -371,7 +349,6 @@ export const routeTree = rootRoute
         "/_dashboard/members",
         "/_dashboard/settings",
         "/_dashboard/tickets",
-        "/_dashboard/member/$id",
         "/_dashboard/ticket/$id"
       ]
     },
@@ -415,10 +392,6 @@ export const routeTree = rootRoute
     "/_public/": {
       "filePath": "_public/index.tsx",
       "parent": "/_public"
-    },
-    "/_dashboard/member/$id": {
-      "filePath": "_dashboard/member.$id.tsx",
-      "parent": "/_dashboard"
     },
     "/_dashboard/ticket/$id": {
       "filePath": "_dashboard/ticket.$id.tsx",

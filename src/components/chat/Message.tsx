@@ -23,7 +23,7 @@ export function MessageView({ message, onDelete }: {
 
   return (
     <div className={cn(
-      'group/message relative flex items-center gap-3 px-3 py-2 mb-3 rounded-lg transition-colors',
+      'group/message relative flex items-center gap-3 px-3 py-2 mb-3 rounded transition-colors',
       ['AGENT', 'USER'].includes(message.message_type) ? 'max-w-[80%]' : 'w-full',
       message.message_type === 'AGENT' ? 'mr-auto' : 'ml-auto',
       'bg-muted/50 hover:bg-muted',
