@@ -1,10 +1,10 @@
 import "edge-runtime"
 
 import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from "npm:@langchain/core/messages"
-import { buildSystemPrompt, buildTagsPrompt } from "../_shared/prompts.ts"
 import { StateGraph, MessagesAnnotation } from "npm:@langchain/langgraph";
 import { buildFindTicketsTool } from "../_shared/tools/findTicketsTool.ts"
 import { buildEditTicketTool } from "../_shared/tools/editTicketTool.ts"
+import { buildSystemPrompt } from "../_shared/prompts.ts"
 import { supabase, unwrap } from "../_shared/supabase.ts"
 import { corsHeaders } from "../_shared/cors.ts"
 import { ToolNode } from "npm:@langchain/langgraph/prebuilt";
@@ -14,8 +14,7 @@ import { llm } from "../_shared/openai.ts"
 globalThis.process = {
   ...globalThis.process,
   env: {
-    LANGCHAIN_PROJECT: Deno.env.get("LANGCHAIN_PROJECT"),
-
+    LANGCHAIN_PROJECT: Deno.env.get("LANGSMITH_PROJECT"),
     LANGSMITH_TRACING: Deno.env.get("LANGSMITH_TRACING"),
     LANGSMITH_ENDPOINT: Deno.env.get("LANGSMITH_ENDPOINT"),
     LANGSMITH_API_KEY: Deno.env.get("LANGSMITH_API_KEY"),
@@ -30,12 +29,12 @@ Deno.serve(async (req) => {
 
   try {
     // TODO: derive authorId from session
-    const { query, orgId, authorId } = await req.json()
+    const { orgId, authorId, query } = await req.json()
     
-    const messages = await initMessages(authorId, query)
-    const app = createWorkflow(orgId);
-    
-    const finalState = await app.invoke({ messages });
+    const finalState = await createWorkflow(orgId, authorId).invoke({ 
+      messages: await initMessages(orgId, authorId, query)
+    });
+
     return await processAgentResponse(finalState.messages, authorId, query)
   } catch (error) {
     console.error("Error handling agent request:", error)
@@ -47,8 +46,8 @@ Deno.serve(async (req) => {
   }
 })
 
-function createWorkflow(orgId: string) {
-  const tools = [buildFindTicketsTool(orgId), buildEditTicketTool(orgId)];
+function createWorkflow(orgId: string, authorId: number) {
+  const tools = [buildFindTicketsTool(orgId), buildEditTicketTool(orgId, authorId)];
   const toolNode = new ToolNode(tools);
   
   const modelWithTools = llm.bind({ tools });
@@ -77,7 +76,7 @@ function shouldContinue({ messages }: typeof MessagesAnnotation.State) {
   return "__end__";
 }
 
-async function initMessages(authorId: number, query: string) {
+async function initMessages(orgId: string, authorId: number, query: string) {
   const messages = await supabase
     .from('messages')
     .select('*, tickets(id, parent_id, status, priority, subject, description, created_at, updated_at, due_at)')
@@ -97,8 +96,7 @@ async function initMessages(authorId: number, query: string) {
   });
 
   return [
-    new SystemMessage(buildSystemPrompt()),
-    new HumanMessage(await buildTagsPrompt()),
+    new SystemMessage(await buildSystemPrompt(orgId)),
     ...history,
     new HumanMessage(query)
   ];

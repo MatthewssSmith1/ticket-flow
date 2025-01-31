@@ -12,10 +12,9 @@ const schema = z.object({
   channelFilter: z.array(CHANNEL).optional().describe("Include tickets whose channel matches at least one value from this array"),
   tagFilter: z.array(z.string()).optional().describe("Include tickets that have at least one tag from this array"),
 });
-type Schema = z.infer<typeof schema>
 
 export const buildFindTicketsTool = (orgId: string) => tool(
-  async ({query, limit, statusFilter, priorityFilter, channelFilter, tagFilter}: Schema) => {
+  async ({query, limit, statusFilter, priorityFilter, channelFilter, tagFilter}: z.infer<typeof schema>) => {
     const query_embedding = JSON.stringify(await embeddings.embedQuery(query))
 
     const nullifyEmptyArray = <T>(arr?: T[]) => arr?.length ? arr : undefined
