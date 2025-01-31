@@ -14,16 +14,19 @@ import { Button } from "@ui/button";
 export function TicketMessages() {
   const { ticket } = getRouteApi("/_dashboard/ticket/$id").useLoaderData()
   const { addMessages } = useTicketMessageStore();
-  const { authMember } = useOrgStore();
+  const { authMember, isCustomer } = useOrgStore();
   const [isInternal, setIsInternal] = useState(false);
 
   // TODO: optimistic updates
   const handleSubmit = async (content: string) => {
+    const message_type = isCustomer ? "EXTERNAL" 
+      : (isInternal ? "INTERNAL" : "EXTERNAL")
+
     const rawMessages = [{
       ticket_id: ticket.id,
       content,
       author_id: authMember?.id ?? null,
-      message_type: (isInternal ? "INTERNAL" : "EXTERNAL") as MessageType,
+      message_type: message_type as MessageType,
       embedding: null
     }]
 
@@ -74,7 +77,7 @@ export function TicketMessages() {
       <CardFooter>
         <ChatInput
           onSubmit={handleSubmit}
-          additionalButtons={<InternalToggleButton />}
+          additionalButtons={!isCustomer ? <InternalToggleButton /> : undefined}
         />
       </CardFooter>
     </Card>

@@ -39,7 +39,6 @@ export function ChatSidebar() {
         }
       })
 
-      console.log(data.staleTicketIds)
       queryClient.invalidateQueries({ queryKey: ['tickets', openOrg.id] })
       data.staleTicketIds.forEach((ticketId: string) => {
         queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] })

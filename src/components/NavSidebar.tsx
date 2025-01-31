@@ -32,12 +32,15 @@ const pageLinks: Array<{ to: string, label: string, icon: ElementType }> = [
 ]
 
 function PagesGroup() {
+  const { isCustomer } = useOrgStore()
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="select-none">Pages</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
-          {pageLinks.map(({ to, label, icon: Icon }, index) => (
+          {pageLinks
+            .filter(({ to }) => !isCustomer || to === '/tickets')
+            .map(({ to, label, icon: Icon }, index) => (
             <SidebarMenuItem key={index}>
               <SidebarMenuButton asChild tooltip={label}>
                 <Link to={to} activeProps={{ className: 'bg-accent' }} className="transition-colors select-none">

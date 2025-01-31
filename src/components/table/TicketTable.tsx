@@ -53,6 +53,7 @@ export function TicketTable(props: { filters?: Filter[], visibleColumns?: string
       data={data ?? []}
       columns={columns}
       onRowClick={(row: Row<Ticket>) => navigate({ to: '/ticket/$id', params: { id: row.original.id } })}
+      onNewRowClick={() => navigate({ to: '/ticket' })}
       globalFilterFn={ticketFilter}
       globalFilter={props.filters ?? selectedView?.filters ?? []}
       columnVisibility={columnVisibility}

@@ -76,8 +76,6 @@ const _useOrgStore = create<State>((set, get) => ({
           }))
         }))
 
-      console.log(openOrg.groups)
-
       const authMember = openOrg.members.find(m => m.user_id === userId) ?? null
       set({ openOrg, authMember })
     } catch (e) {
@@ -98,9 +96,11 @@ export function useOrgStore() {
   const getMemberName = (id: number | null) => id === authId ? 'You' 
     : store.openOrg?.members.find(m => m.id === id)?.name || null
 
+  const isCustomer = store.authMember?.role === 'CUSTOMER'
+
   const getTag = (id: number) => store.openOrg?.tags.find(t => t.id === id) || null
 
   const getField = (id: number) => store.openOrg?.fields.find(f => f.id === id) || null
 
-  return { ...store, getMemberName, getTag, getField }
+  return { ...store, getMemberName, getTag, getField, isCustomer }
 }

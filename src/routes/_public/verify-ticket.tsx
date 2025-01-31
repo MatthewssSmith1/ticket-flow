@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import supabase, { unwrap } from '@/lib/supabase'
 import { useEffect } from 'react'
-import { toast } from '@/hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
+import supabase from '@/lib/supabase'
 import { z } from 'zod'
 
 const searchSchema = z.object({
@@ -17,61 +17,37 @@ function VerifyTicket() {
   const { id: ticketId } = Route.useSearch()
   const { user } = Route.useRouteContext()
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   useEffect(() => {
     async function verifyTicket() {
       if (!user) return
 
-      const ticket = await supabase
-        .from('tickets')
-        .select()
-        .eq('id', ticketId)
-        .single()
-        .then(unwrap)
+      const { error } = await supabase.functions.invoke('verify-ticket', {
+        body: {
+          ticketId,
+          userId: user.id,
+        },
+      })
 
-      const author_id = await getOrCreateMember(user.id, ticket.org_id, ticket.name)
-      const verified_at = new Date().toISOString()
+      if (error) throw new Error(error.message || 'Failed to verify ticket')
 
-      await supabase
-        .from('tickets')
-        .update({ author_id, verified_at, email: null, name: null })
-        .eq('id', ticketId)
-        .then(unwrap)
-
+      toast({
+        title: 'Success',
+        description: 'Ticket verified successfully',
+      })
       navigate({ to: '/tickets' })
     }
 
-    try {
-      verifyTicket()
-    } catch (e) {
-      console.error(e)
+    verifyTicket().catch((error) => {
+      console.error(error)
       toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive'
+        title: 'Verification Failed',
+        description: error.message,
+        variant: 'destructive',
       })
-    }
-  }, [ticketId, navigate, user])
+    })
+  }, [ticketId, navigate, user, toast])
 
   return <div>Verifying ticket...</div>
-}
-
-// TODO: share across backend and frontend
-async function getOrCreateMember(user_id: string, org_id: string, name: string | null) {
-  const member = await supabase.from('members')
-    .select()
-    .eq('user_id', user_id)
-    .eq('org_id', org_id)
-    .maybeSingle()
-    .then(unwrap)
-
-  if (member) return member.id
-  
-  name ??= 'Unnamed User'
-  return await supabase.from('members')
-      .insert({ user_id, org_id, role: 'CUSTOMER', name })
-      .select()
-      .single()
-      .then(unwrap)
-      .then(member => member.id)
 }

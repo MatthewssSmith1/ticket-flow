@@ -15,6 +15,8 @@ export type TicketWithRefs = Ticket & {
   tickets_fields: FieldInstance[]
 }
 
+export const CUSTOMER_COLUMN_IDS = ['status', 'subject', 'author_id', 'channel', 'verified_at']
+
 export const COLUMN_IDS = [
   'status',
   'priority',
