@@ -43,7 +43,7 @@ export function MessageView({ message, onDelete }: {
           </span>
           {message.message_type === 'INTERNAL' && <LockIcon className="size-3 text-muted-foreground" />}
         </div>}
-        {message.ticket_id ? (
+        {(isTicketRef && message.ticket_id) ? (
           <TicketContent ticketId={message.ticket_id} />
         ) : (
           <div className="whitespace-pre-wrap">

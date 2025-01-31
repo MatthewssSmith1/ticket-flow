@@ -34,7 +34,8 @@ export const buildFindTicketsTool = (orgId: string) => tool(
   },
   {
     name: "findTickets",
-    description: "Natural language ticket search with filtering. Each filter (status, priority, channel, tags) accepts multiple values that are combined with OR logic. When multiple filter types are provided, they are combined with AND logic. Example: status=['NEW','OPEN'] with priority=['URGENT'] finds tickets that are (NEW OR OPEN) AND (URGENT)",
+    // TODO: evaluate if providing an example like `Example: status=['NEW','OPEN'] with priority=['URGENT'] finds tickets that are (NEW OR OPEN) AND (URGENT)` improves accuracy/error rate
+    description: "Natural language ticket search. The optional filters use conjunctive normal form: the AND operator is applied between filters, with the OR operator applied within each filter array. Only provide filters the user explicitly mentions.",
     schema: schema,
   }
 );

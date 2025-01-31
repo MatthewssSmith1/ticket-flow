@@ -7,7 +7,7 @@ import { MemberMultiSelect } from './select/MemberMultiSelect'
 import { GroupMultiSelect } from './select/GroupMultiSelect'
 import supabase, { unwrap } from '@/lib/supabase'
 import { TagMultiSelect } from './select/TagMultiSelect'
-import { getRouteApi } from '@tanstack/react-router'
+import { getRouteApi, useNavigate } from '@tanstack/react-router'
 import { useOrgStore } from '@/stores/orgStore'
 import { EnumSelect } from './select/EnumSelect'
 import { Separator } from './ui/separator'
@@ -36,6 +36,7 @@ export function EditTicket() {
   const { openOrg, getMemberName, authMember } = useOrgStore()
   const { toast } = useToast()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const form = useForm<Form>({
     defaultValues: {
@@ -146,6 +147,37 @@ export function EditTicket() {
 
   async function onSubmit(data: Form) {
     updateTicketMutation.mutate(data)
+  }
+
+  const deleteTicketMutation = useMutation({
+    mutationFn: async () => {
+      await supabase.from('tickets')
+        .delete()
+        .eq('id', ticket.id)
+        .then(unwrap)
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Ticket deleted successfully",
+      })
+      queryClient.invalidateQueries({ queryKey: ['tickets', openOrg?.id] })
+      navigate({ to: '/tickets' })
+    },
+    onError: (error) => {
+      console.error(error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete ticket",
+      })
+    }
+  })
+
+  async function onDelete() {
+    if (confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) {
+      deleteTicketMutation.mutate()
+    }
   }
 
   const memberName = getMemberName(ticket.author_id) ?? ticket.name ?? '-'
@@ -310,7 +342,14 @@ export function EditTicket() {
             </>
           )}
 
-          <section className="mt-auto flex flex-col items-center pt-6">
+          <section className="mt-auto flex flex-row items-center justify-center gap-4 pt-6">
+            <Button 
+              variant="destructive"
+              onClick={onDelete}
+              disabled={deleteTicketMutation.isPending}
+            >
+              {deleteTicketMutation.isPending ? 'Deleting...' : 'Delete Ticket'}
+            </Button>
             <Button 
               type="submit" 
               onClick={form.handleSubmit(onSubmit)}

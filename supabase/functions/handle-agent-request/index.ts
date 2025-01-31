@@ -2,6 +2,7 @@ import "edge-runtime"
 
 import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from "npm:@langchain/core/messages"
 import { StateGraph, MessagesAnnotation } from "npm:@langchain/langgraph";
+import { buildSendMessageTool } from "../_shared/tools/sendMessageTool.ts";
 import { buildFindTicketsTool } from "../_shared/tools/findTicketsTool.ts"
 import { buildEditTicketTool } from "../_shared/tools/editTicketTool.ts"
 import { buildSystemPrompt } from "../_shared/prompts.ts"
@@ -47,7 +48,11 @@ Deno.serve(async (req) => {
 })
 
 function createWorkflow(orgId: string, authorId: number) {
-  const tools = [buildFindTicketsTool(orgId), buildEditTicketTool(orgId, authorId)];
+  const tools = [
+    buildFindTicketsTool(orgId), 
+    buildSendMessageTool(authorId),
+    buildEditTicketTool(orgId, authorId),
+  ];
   const toolNode = new ToolNode(tools);
   
   const modelWithTools = llm.bind({ tools });
