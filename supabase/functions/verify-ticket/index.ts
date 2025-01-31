@@ -1,4 +1,5 @@
 import "edge-runtime"
+
 import { supabase, unwrap, getOrCreateMember } from "../_shared/supabase.ts"
 import { corsHeaders } from "../_shared/cors.ts"
 import { z } from "zod"
@@ -21,7 +22,7 @@ Deno.serve(async (req) => {
 
     const ticket = await supabase
       .from("tickets")
-      .select()
+      .select("id, org_id, name")
       .eq("id", ticketId)
       .single()
       .then(unwrap)

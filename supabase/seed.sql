@@ -44,27 +44,27 @@ INSERT INTO public.groups_members (group_id, member_id) VALUES
 
 INSERT INTO public.tickets (org_id, author_id, subject, description, status, priority) VALUES
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 8, 'Export feature not working', 'Export button does nothing when clicked in reports section', 'NEW', 'HIGH'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 9, 'Mobile app crashing', 'App crashes immediately after splash screen on iPhone 14', 'OPEN', 'HIGH'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 9, 'Mobile app crashing', 'App crashes immediately after splash screen on iPhone 14', 'OPEN', 'HIGH'), -- tags: mobile
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 10, 'Missing data in reports', 'Last week''s data is not showing up in monthly report', 'PENDING', 'NORMAL'),
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 11, 'Login issue', 'Unable to reset password via email', 'NEW', 'HIGH'),
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 12, 'Email notifications not received', 'No notification emails received for ticket updates', 'OPEN', 'NORMAL'),
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 13, 'Broken link on help page', 'FAQ section has a broken link to documentation', 'PENDING', 'LOW'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 14, 'UI glitch in dark mode', 'Text color is unreadable in dark mode on mobile', 'ON_HOLD', 'NORMAL'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 14, 'UI glitch in dark mode', 'Text color is unreadable in dark mode on mobile', 'ON_HOLD', 'NORMAL'), -- tags: UX
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 15, 'Report generation timeout', 'Generating large reports times out', 'OPEN', 'HIGH'),
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 16, 'API rate limit issues', 'Experiencing unexpected rate limiting on API', 'SOLVED', 'URGENT'),
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 17, 'Integration setup help', 'Need assistance connecting Slack integration', 'PENDING', 'URGENT'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 8, 'Slow dashboard loading', 'Dashboard takes over 30 seconds to load', 'OPEN', 'HIGH'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 8, 'Slow dashboard loading', 'Dashboard takes over 30 seconds to load', 'OPEN', 'HIGH'), -- tags: performance
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 9, 'CSV import failing', 'Getting validation error when importing customer list', 'CLOSED', 'LOW'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 10, 'Two-factor authentication issue', '2FA not working for multiple users', 'NEW', 'HIGH'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 10, 'Two-factor authentication issue', '2FA not working for multiple users', 'NEW', 'HIGH'), -- tags: security
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 11, 'Billing discrepancy', 'Charged twice for the same invoice', 'PENDING', 'URGENT'),
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 12, 'User role permissions incorrect', 'New users getting incorrect permissions', 'OPEN', 'NORMAL'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 13, 'Webhook failures', 'Webhooks are not triggering as expected', 'ON_HOLD', 'HIGH'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 14, 'Search function broken', 'No results returned for valid queries', 'REOPENED', 'NORMAL'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 13, 'Webhook failures', 'Webhooks are not triggering as expected', 'ON_HOLD', 'HIGH'), -- tags: bug
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 14, 'Search function broken', 'No results returned for valid queries', 'REOPENED', 'NORMAL'), -- tags: bug
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 15, 'Exported CSV format incorrect', 'Date format in exported CSV is incorrect', 'SOLVED', 'LOW'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 1, 'Security Audit Results', 'Review needed for latest penetration testing findings', 'NEW', 'URGENT'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 2, 'Performance Optimization Plan', 'Database query optimization recommendations', 'OPEN', 'HIGH'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 4, 'Customer Support Training Materials', 'Updated documentation needed for new feature rollout', 'PENDING', 'NORMAL'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 6, 'API Documentation Update', 'New endpoints need documentation review', 'NEW', 'HIGH'),
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 1, 'Security Audit Results', 'Review needed for latest penetration testing findings', 'NEW', 'URGENT'), -- tags: security
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 2, 'Performance Optimization Plan', 'Database query optimization recommendations', 'OPEN', 'HIGH'), -- tags: performance
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 4, 'Customer Support Training Materials', 'Updated documentation needed for new feature rollout', 'PENDING', 'NORMAL'), -- tags: documentation
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 6, 'API Documentation Update', 'New endpoints need documentation review', 'NEW', 'HIGH'), -- tags: documentation
     ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 7, 'Billing System Integration Issue', 'Reconciliation errors in payment processing', 'OPEN', 'URGENT');
 
 UPDATE public.tickets SET 
@@ -72,13 +72,13 @@ UPDATE public.tickets SET
     due_at = now() + (random() * interval '30 days');
 
 INSERT INTO public.tags (org_id, name, color) VALUES
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'bug', '#EF4444'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'feature', '#3B82F6'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'documentation', '#10B981'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'security', '#F59E0B'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'performance', '#8B5CF6'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'UX', '#EC4899'),
-    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'mobile', '#14B8A6');
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'bug', '#EF4444'), 
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'feature', '#3B82F6'), 
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'documentation', '#10B981'), 
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'security', '#F59E0B'), 
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'performance', '#8B5CF6'), 
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'UX', '#EC4899'), 
+    ('7e7a9db6-d2bc-44a4-95b1-21df9400b7a7', 'mobile', '#14B8A6'); 
 
 INSERT INTO public.tags_tickets (tag_id, ticket_id) VALUES
     (1, (SELECT id FROM tickets WHERE subject = 'Search function broken')),

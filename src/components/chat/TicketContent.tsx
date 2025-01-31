@@ -5,7 +5,6 @@ import { formatAssignee } from '@/lib/string'
 import { useNavigate } from '@tanstack/react-router' 
 import { useOrgStore } from '@/stores/orgStore' 
 import { useQuery } from '@tanstack/react-query' 
-import { Badge } from '@/components/ui/badge'
 import { Pill } from '@/components/Pill' 
 import { Tag } from '@shared/types'
 

@@ -18,6 +18,7 @@ import { Route as PublicVerifyTicketImport } from './routes/_public/verify-ticke
 import { Route as PublicTicketImport } from './routes/_public/ticket'
 import { Route as DashboardTicketsImport } from './routes/_dashboard/tickets'
 import { Route as DashboardSettingsImport } from './routes/_dashboard/settings'
+import { Route as DashboardPromoteImport } from './routes/_dashboard/promote'
 import { Route as DashboardMembersImport } from './routes/_dashboard/members'
 import { Route as authSignupImport } from './routes/(auth)/signup'
 import { Route as authLogoutImport } from './routes/(auth)/logout'
@@ -63,6 +64,12 @@ const DashboardTicketsRoute = DashboardTicketsImport.update({
 const DashboardSettingsRoute = DashboardSettingsImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardPromoteRoute = DashboardPromoteImport.update({
+  id: '/promote',
+  path: '/promote',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -142,6 +149,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardMembersImport
       parentRoute: typeof DashboardImport
     }
+    '/_dashboard/promote': {
+      id: '/_dashboard/promote'
+      path: '/promote'
+      fullPath: '/promote'
+      preLoaderRoute: typeof DashboardPromoteImport
+      parentRoute: typeof DashboardImport
+    }
     '/_dashboard/settings': {
       id: '/_dashboard/settings'
       path: '/settings'
@@ -191,6 +205,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardMembersRoute: typeof DashboardMembersRoute
+  DashboardPromoteRoute: typeof DashboardPromoteRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTicketsRoute: typeof DashboardTicketsRoute
   DashboardTicketIdRoute: typeof DashboardTicketIdRoute
@@ -198,6 +213,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardMembersRoute: DashboardMembersRoute,
+  DashboardPromoteRoute: DashboardPromoteRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTicketsRoute: DashboardTicketsRoute,
   DashboardTicketIdRoute: DashboardTicketIdRoute,
@@ -228,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof authLogoutRoute
   '/signup': typeof authSignupRoute
   '/members': typeof DashboardMembersRoute
+  '/promote': typeof DashboardPromoteRoute
   '/settings': typeof DashboardSettingsRoute
   '/tickets': typeof DashboardTicketsRoute
   '/ticket': typeof PublicTicketRoute
@@ -242,6 +259,7 @@ export interface FileRoutesByTo {
   '/logout': typeof authLogoutRoute
   '/signup': typeof authSignupRoute
   '/members': typeof DashboardMembersRoute
+  '/promote': typeof DashboardPromoteRoute
   '/settings': typeof DashboardSettingsRoute
   '/tickets': typeof DashboardTicketsRoute
   '/ticket': typeof PublicTicketRoute
@@ -258,6 +276,7 @@ export interface FileRoutesById {
   '/(auth)/logout': typeof authLogoutRoute
   '/(auth)/signup': typeof authSignupRoute
   '/_dashboard/members': typeof DashboardMembersRoute
+  '/_dashboard/promote': typeof DashboardPromoteRoute
   '/_dashboard/settings': typeof DashboardSettingsRoute
   '/_dashboard/tickets': typeof DashboardTicketsRoute
   '/_public/ticket': typeof PublicTicketRoute
@@ -274,6 +293,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/signup'
     | '/members'
+    | '/promote'
     | '/settings'
     | '/tickets'
     | '/ticket'
@@ -287,6 +307,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/signup'
     | '/members'
+    | '/promote'
     | '/settings'
     | '/tickets'
     | '/ticket'
@@ -301,6 +322,7 @@ export interface FileRouteTypes {
     | '/(auth)/logout'
     | '/(auth)/signup'
     | '/_dashboard/members'
+    | '/_dashboard/promote'
     | '/_dashboard/settings'
     | '/_dashboard/tickets'
     | '/_public/ticket'
@@ -347,6 +369,7 @@ export const routeTree = rootRoute
       "filePath": "_dashboard.tsx",
       "children": [
         "/_dashboard/members",
+        "/_dashboard/promote",
         "/_dashboard/settings",
         "/_dashboard/tickets",
         "/_dashboard/ticket/$id"
@@ -371,6 +394,10 @@ export const routeTree = rootRoute
     },
     "/_dashboard/members": {
       "filePath": "_dashboard/members.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/promote": {
+      "filePath": "_dashboard/promote.tsx",
       "parent": "/_dashboard"
     },
     "/_dashboard/settings": {
