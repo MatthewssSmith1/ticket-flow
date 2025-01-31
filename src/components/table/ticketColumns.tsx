@@ -3,6 +3,7 @@ import { formatAssignee, formatAssigner, formatTags } from '@/lib/string'
 import { SortableHeader } from '@/components/table/GenericTable'
 import { useOrgStore } from '@/stores/orgStore'
 import { ColumnDef } from '@tanstack/react-table'
+import { TagBadge } from '../chat/TicketContent'
 import { Pill } from '@/components/Pill'
 
 export const TICKET_WITH_REFS_QUERY = '*, tags_tickets(tag_id), tickets_members(member_id, assigned_by), tickets_groups(group_id, assigned_by), tickets_fields(field_id, value)'
@@ -71,7 +72,17 @@ export const createTicketColumns = (store: ReturnType<typeof useOrgStore>): Colu
   {
     accessorKey: 'tags',
     header: ({ column }) => <SortableHeader column={column} label="Tags" />,
-    cell: ({ row }) => formatTags(row, store.getTag) ?? '-',
+    cell: ({ row }) => {
+      const ticket = row.original as TicketWithRefs
+      const tags = ticket.tags_tickets.map(t => store.getTag(t.tag_id))
+      return tags.length ? (
+        <div className="flex flex-row gap-1 flex-wrap">
+          {tags.map((tag, i) => (
+            <TagBadge key={i} tag={tag} />
+          ))}
+        </div>
+      ) : '-'
+    },
   },
   {
     accessorKey: 'channel',

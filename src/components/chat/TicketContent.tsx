@@ -76,7 +76,7 @@ function TimestampLine({ verb, name, date }: { verb: string, name: string | null
   return <p className="text-xs whitespace-nowrap">{message}</p>;
 }
 
-function TagBadge({ tag }: { tag: Tag | null }) {
+export function TagBadge({ tag }: { tag: Tag | null }) {
   if (!tag) return null;
   return (
     <TooltipProvider>

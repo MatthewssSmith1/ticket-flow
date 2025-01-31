@@ -64,7 +64,6 @@ function ColumnMultiSelect({onValueChange, options, defaultValue }: ColumnMultiS
     value: id
   })) 
 
-  // TODO: store selected columns in cookies
   return (
     <MultiSelect
       options={columnOptions}

@@ -2,6 +2,7 @@ import "edge-runtime"
 
 import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from "npm:@langchain/core/messages"
 import { StateGraph, MessagesAnnotation } from "npm:@langchain/langgraph";
+import { buildFindMessagesTool } from "../_shared/tools/findMessagesTool.ts"
 import { buildSendMessageTool } from "../_shared/tools/sendMessageTool.ts";
 import { buildFindTicketsTool } from "../_shared/tools/findTicketsTool.ts"
 import { buildEditTicketTool } from "../_shared/tools/editTicketTool.ts"
@@ -52,6 +53,7 @@ function createWorkflow(orgId: string, authorId: number) {
     buildFindTicketsTool(orgId), 
     buildSendMessageTool(authorId),
     buildEditTicketTool(orgId, authorId),
+    buildFindMessagesTool(),
   ];
   const toolNode = new ToolNode(tools);
   
